@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/juce-populate"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/b4dde4b90d5bc1f5ea085434a5a8b921/juce-populate.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/fef1f703f9a980763b9bf2f2bd6f634c/juce-populate-complete.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-build.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-configure.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-download.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-install.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-patch.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-test.rule"
+		},
+		{
+			"file" : "C:/anna/sampr/build/_deps/juce-subbuild/CMakeFiles/00c63a37b7cce52b5c8f67088deab5b5/juce-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"juce-populate"
+		],
+		"name" : "juce-populate"
+	}
+}

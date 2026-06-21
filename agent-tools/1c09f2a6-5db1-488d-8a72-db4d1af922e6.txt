@@ -1,0 +1,678 @@
+== Configure ==
+-- Selecting Windows SDK version 10.0.26100.0 to target Windows 10.0.26200.
+-- Configuring juceaide
+-- Building juceaide
+-- Exporting juceaide
+-- Testing juceaide
+-- Finished setting up juceaide
+-- Rubber Band Library enabled from C:/anna/sampr/build/_deps/rubberband-src
+-- Configuring done (5.2s)
+-- Generating done (0.3s)
+-- Build files have been written to: C:/anna/sampr/build
+== Build Release ==
+MSBuild version 17.14.40+3e7442088 for .NET Framework
+
+  Checking File Globs
+  SAMPR_Tests_rc_lib.vcxproj -> C:\anna\sampr\build\SAMPR_Tests_rc_lib.dir\Release\SAMPR_Tests_rc_lib.lib
+  SAMPR_rc_lib.vcxproj -> C:\anna\sampr\build\SAMPR_rc_lib.dir\Release\SAMPR_rc_lib.lib
+  rubberband_static.vcxproj -> C:\anna\sampr\build\Release\rubberband_static.lib
+  Generating SAMPR_artefacts/JuceLibraryCode/JuceHeader.h
+  SamprUnitTests.cpp
+  Application.cpp
+  MainComponent.cpp
+  MvpFlow.cpp
+  SampleImportService.cpp
+  AudioCommandQueue.cpp
+  AudioEngine.cpp
+  LevelMeterBank.cpp
+  OfflineExporter.cpp
+  NoteScheduler.cpp
+  PatternScheduler.cpp
+  SampleVoice.cpp
+  VoicePool.cpp
+  OnsetDetector.cpp
+  PeakGenerator.cpp
+  RubberBandStreamProcessor.cpp
+  StretchBakeWorker.cpp
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(46,39): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(46,39): error C3861: 'isAvailable': identifier not found [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(50,9): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(50,26): error C2039: 'begin': is not a member of 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3347,7):
+      see declaration of 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>'
+  
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(185,15): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\anna\sampr\Source\Audio\SampleVoice.cpp(185,32): error C2039: 'renderSample': is not a member of 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3347,7):
+      see declaration of 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>'
+  
+  PatternStore.cpp
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(75,61): error C2039: 'OptionEngineR2': is not a member of 'RubberBand::RubberBandStretcher' [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(132,1):
+      see declaration of 'RubberBand::RubberBandStretcher'
+  
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(75,61): error C2065: 'OptionEngineR2': undeclared identifier [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(74,16): error C2737: 'options': const object must be initialized [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(80,9): error C3536: 'options': cannot be used before it is initialized [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(111,27): error C2660: 'RubberBand::RubberBandStretcher::process': function does not take 2 arguments [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(937,10):
+      see declaration of 'RubberBand::RubberBandStretcher::process'
+      C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(111,27):
+      while trying to match the argument list '(_Ty *, size_t)'
+          with
+          [
+              _Ty=const float *
+          ]
+  
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(116,27): error C2660: 'RubberBand::RubberBandStretcher::process': function does not take 2 arguments [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(937,10):
+      see declaration of 'RubberBand::RubberBandStretcher::process'
+      C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(116,27):
+      while trying to match the argument list '(nullptr, int)'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/PatternScheduler.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/PatternScheduler.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/PatternScheduler.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  ProjectController.cpp
+  ProjectModel.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/NoteScheduler.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/NoteScheduler.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/NoteScheduler.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  SampleManager.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/AudioEngine.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/AudioEngine.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/AudioEngine.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  UndoHistory.cpp
+  ProjectSerializer.cpp
+  ArrangementTimelineComponent.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/VoicePool.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/VoicePool.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/VoicePool.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  MixerComponent.cpp
+  PianoRollComponent.cpp
+  StepSequencerComponent.cpp
+C:\anna\sampr\Source\Audio\OfflineExporter.cpp(41,72): warning C4100: 'project': unreferenced parameter [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\Audio\OfflineExporter.cpp(114,33): warning C4996: 'juce::AudioFormat::createWriterFor': Use the function taking an AudioFormatWriterOptions instead. [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/SampleImportService.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/SampleImportService.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/SampleImportService.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  SampleBrowserComponent.cpp
+  SliceEditorPanel.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/MvpFlow.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/MvpFlow.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/App/MvpFlow.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  WaveformComponent.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/OfflineExporter.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/OfflineExporter.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Audio/OfflineExporter.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  OnsetDetector.cpp
+C:\anna\sampr\Source\Shell\MainComponent.cpp(617,16): warning C4458: declaration of 'flags' hides class member [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\components\juce_Component.h(2709,24):
+      see declaration of 'juce::Component::flags'
+  
+C:\anna\sampr\Source\Shell\MainComponent.cpp(819,16): warning C4458: declaration of 'flags' hides class member [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\components\juce_Component.h(2709,24):
+      see declaration of 'juce::Component::flags'
+  
+C:\anna\sampr\Source\Shell\MainComponent.cpp(859,16): warning C4458: declaration of 'flags' hides class member [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\components\juce_Component.h(2709,24):
+      see declaration of 'juce::Component::flags'
+  
+C:\anna\sampr\Source\Shell\MainComponent.cpp(895,16): warning C4458: declaration of 'flags' hides class member [C:\anna\sampr\build\SAMPR.vcxproj]
+      C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\components\juce_Component.h(2709,24):
+      see declaration of 'juce::Component::flags'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/Application.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/Application.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/Application.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/MainComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/MainComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Shell/MainComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/PatternStore.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/PatternStore.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/PatternStore.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/SampleManager.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/SampleManager.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/SampleManager.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/ProjectController.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/ProjectController.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Model/ProjectController.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\anna\sampr\Source\UI\PianoRollComponent.cpp(422,34): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data [C:\anna\sampr\build\SAMPR.vcxproj]
+C:\anna\sampr\Source\UI\PianoRollComponent.cpp(422,54): warning C4244: 'argument': conversion from 'const int' to 'float', possible loss of data [C:\anna\sampr\build\SAMPR.vcxproj]
+  PeakGenerator.cpp
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/ArrangementTimelineComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/ArrangementTimelineComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/ArrangementTimelineComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/MixerComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/MixerComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/MixerComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/PianoRollComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/PianoRollComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/PianoRollComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/StepSequencerComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/StepSequencerComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/StepSequencerComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/SampleBrowserComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/SampleBrowserComponent.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/UI/SampleBrowserComponent.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27): error C2027: use of undefined type 'sampr::SampleVoice::RubberBandStreamProcessor' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/SliceEditorPanel.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+      C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,27):
+      the template instantiation context (the oldest one first) is
+          C:\anna\sampr\Source\Audio\SampleVoice.h(61,48):
+          see reference to class template instantiation 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3352,92):
+          see reference to class template instantiation 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>' being compiled
+          C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3307,23):
+          while compiling class template member function 'void std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()(_Ty *) noexcept const'
+          with
+          [
+              _Ty=sampr::SampleVoice::RubberBandStreamProcessor
+          ]
+              C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3427,33):
+              see the first reference to 'std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>::operator ()' in 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr'
+              C:\anna\sampr\Source\Audio\SampleVoice.h(62,1):
+              see the first reference to 'std::unique_ptr<sampr::SampleVoice::RubberBandStreamProcessor,std::default_delete<sampr::SampleVoice::RubberBandStreamProcessor>>::~unique_ptr' in 'sampr::SampleVoice::SampleVoice'
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3308,25): error C2338: static_assert failed: 'can't delete an incomplete type' [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/SliceEditorPanel.cpp')
+  
+C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\VC\Tools\MSVC\14.44.35207\include\memory(3309,9): warning C4150: deletion of pointer to incomplete type 'sampr::SampleVoice::RubberBandStreamProcessor'; no destructor called [C:\anna\sampr\build\SAMPR.vcxproj]
+  (compiling source file '../Source/Patches/SliceEditorPanel.cpp')
+      C:\anna\sampr\Source\Audio\SampleVoice.h(60,11):
+      see declaration of 'sampr::SampleVoice::RubberBandStreamProcessor'
+  
+  RubberBandOfflineProcessor.cpp
+  RubberBandStreamProcessor.cpp
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(75,61): error C2039: 'OptionEngineR2': is not a member of 'RubberBand::RubberBandStretcher' [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(132,1):
+      see declaration of 'RubberBand::RubberBandStretcher'
+  
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(75,61): error C2065: 'OptionEngineR2': undeclared identifier [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(74,16): error C2737: 'options': const object must be initialized [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(80,9): error C3536: 'options': cannot be used before it is initialized [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(111,27): error C2660: 'RubberBand::RubberBandStretcher::process': function does not take 2 arguments [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(937,10):
+      see declaration of 'RubberBand::RubberBandStretcher::process'
+      C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(111,27):
+      while trying to match the argument list '(_Ty *, size_t)'
+          with
+          [
+              _Ty=const float *
+          ]
+  
+C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(116,27): error C2660: 'RubberBand::RubberBandStretcher::process': function does not take 2 arguments [C:\anna\sampr\build\SAMPR_Tests.vcxproj]
+      C:\anna\sampr\build\_deps\rubberband-src\rubberband\RubberBandStretcher.h(937,10):
+      see declaration of 'RubberBand::RubberBandStretcher::process'
+      C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp(116,27):
+      while trying to match the argument list '(nullptr, int)'
+  
+  ProjectModel.cpp
+  ProjectSerializer.cpp
+  juce_audio_basics.cpp
+  juce_core.cpp
+  juce_core_CompilationTime.cpp
+  juce_audio_formats.cpp
+  juce_data_structures.cpp
+  juce_events.cpp
+  juce_graphics.cpp
+  juce_graphics_Harfbuzz.cpp
+  Generating Code...
+== Unit + smoke tests ==
+All SAMPR unit tests passed.
+== App artifact ==
+SAMPR.exe 7,223,296 bytes @ 6/20/2026 4:37:09 PM
+All smoke checks passed.

@@ -1,0 +1,1 @@
+C:\anna\sampr\build\SAMPR_rc_lib.dir\Release\SAMPR_rc_lib.lib

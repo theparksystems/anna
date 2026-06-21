@@ -1,0 +1,20 @@
+^C:\ANNA\SAMPR\BUILD\CMAKEFILES\A86F2E74E44BF9B7E32273FDA282FDF9\SAMPR_RESOURCES.RC.RULE
+setlocal
+_deps\juce-build\tools\extras\Build\juceaide\juceaide_artefacts\Custom\juceaide.exe rcfile C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/Info.txt C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/SAMPR_resources.rc
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
+^C:\ANNA\SAMPR\CMAKELISTS.TXT
+setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/anna/sampr -BC:/anna/sampr/build --check-stamp-file C:/anna/sampr/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

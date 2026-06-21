@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\rubberband-c.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\RubberBandStretcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\AudioCurveCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\CompoundAudioCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\HighFrequencyAudioCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\SilentAudioCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\PercussiveAudioCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\StretcherChannelData.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\R2Stretcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\faster\StretcherProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\BQResampler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\Profiler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\Resampler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\FFT.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\Allocators.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\StretchCalculator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\sysutils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\mathmisc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\common\Thread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\anna\sampr\build\_deps\rubberband-src\src\finer\R3Stretcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\anna\sampr\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{89FC7F6C-1D73-32DA-AA3D-87C784265C16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

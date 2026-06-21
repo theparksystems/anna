@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\anna\sampr\build\CMakeFiles\a86f2e74e44bf9b7e32273fda282fdf9\SAMPR_resources.rc.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\anna\sampr\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\SAMPR_resources.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{DD747354-42AB-362B-B9F3-A250297F8CCC}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{89FC7F6C-1D73-32DA-AA3D-87C784265C16}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

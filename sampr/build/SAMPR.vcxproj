@@ -1,0 +1,492 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7448B392-87EB-31A0-BC42-6F59AF2F7205}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>SAMPR</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\anna\sampr\build\SAMPR_artefacts\Debug\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SAMPR.dir\Debug\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">SAMPR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\anna\sampr\build\SAMPR_artefacts\Release\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SAMPR.dir\Release\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">SAMPR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\anna\sampr\build\SAMPR_artefacts\MinSizeRel\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">SAMPR.dir\MinSizeRel\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">SAMPR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</GenerateManifest>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\anna\sampr\build\SAMPR_artefacts\RelWithDebInfo\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">SAMPR.dir\RelWithDebInfo\</IntDir>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">SAMPR</TargetName>
+    <TargetExt Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">.exe</TargetExt>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</LinkIncremental>
+    <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</GenerateManifest>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>Disabled</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;DEBUG=1;_DEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;DEBUG=1;_DEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>Debug\rubberband_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/anna/sampr/build/SAMPR_artefacts/Debug/SAMPR.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/anna/sampr/build/SAMPR_artefacts/Debug/SAMPR.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>Release\rubberband_static.lib;-LTCG;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/anna/sampr/build/SAMPR_artefacts/Release/SAMPR.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/anna/sampr/build/SAMPR_artefacts/Release/SAMPR.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR="MinSizeRel"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR=\"MinSizeRel\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>MinSizeRel\rubberband_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/anna/sampr/build/SAMPR_artefacts/MinSizeRel/SAMPR.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/anna/sampr/build/SAMPR_artefacts/MinSizeRel/SAMPR.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /bigobj</AdditionalOptions>
+      <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
+      <BasicRuntimeChecks>Default</BasicRuntimeChecks>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <LanguageStandard>stdcpp20</LanguageStandard>
+      <MinimalRebuild></MinimalRebuild>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Full</Optimization>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <SupportJustMyCode></SupportJustMyCode>
+      <UseFullPaths>false</UseFullPaths>
+      <WarningLevel>Level4</WarningLevel>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR="RelWithDebInfo"</PreprocessorDefinitions>
+      <ObjectFileName>$(IntDir)</ObjectFileName>
+      <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;JUCE_STANDALONE_APPLICATION=1;JUCE_WEB_BROWSER=0;JUCE_USE_CURL=0;JUCE_DISPLAY_SPLASH_SCREEN=0;JUCE_MODAL_LOOPS_PERMITTED=0;JUCE_STRICT_REFCOUNTEDPOINTER=1;JUCE_USE_MP3AUDIOFORMAT=1;SAMPR_HAS_RUBBERBAND=1;JUCE_MODULE_AVAILABLE_juce_audio_basics=1;JUCE_GLOBAL_MODULE_SETTINGS_INCLUDED=1;NDEBUG=1;_NDEBUG=1;JUCE_MODULE_AVAILABLE_juce_core=1;JUCE_MODULE_AVAILABLE_juce_audio_devices=1;JUCE_MODULE_AVAILABLE_juce_events=1;JUCE_MODULE_AVAILABLE_juce_audio_formats=1;JUCE_MODULE_AVAILABLE_juce_audio_utils=1;JUCE_MODULE_AVAILABLE_juce_audio_processors=1;JUCE_MODULE_AVAILABLE_juce_gui_extra=1;JUCE_MODULE_AVAILABLE_juce_gui_basics=1;JUCE_MODULE_AVAILABLE_juce_graphics=1;JUCE_MODULE_AVAILABLE_juce_data_structures=1;JUCE_MODULE_AVAILABLE_juce_audio_processors_headless=1;JUCE_MODULE_AVAILABLE_juce_dsp=1;RUBBERBAND_STATIC=1;CMAKE_INTDIR=\"RelWithDebInfo\"</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Midl>
+      <AdditionalIncludeDirectories>C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode;C:\anna\sampr\build\_deps\juce-src\modules;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\VST3_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lv2;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\serd;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sord\src;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\sratom;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv;C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\format_types\LV2_SDK\lilv\src;C:\anna\sampr\build\_deps\rubberband-src;C:\anna\sampr\build\_deps\rubberband-src\rubberband;C:\anna\sampr\build\_deps\rubberband-src\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+    <Link>
+      <AdditionalDependencies>RelWithDebInfo\rubberband_static.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_core/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_devices/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_events/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_formats/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_utils/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_extra/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_gui_basics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_graphics/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_data_structures/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_audio_processors_headless/libs/VisualStudio2022/x64/MDd/$(Configuration);C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd;C:/anna/sampr/build/_deps/juce-src/modules/juce_dsp/libs/VisualStudio2022/x64/MDd/$(Configuration);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <ImportLibrary>C:/anna/sampr/build/SAMPR_artefacts/RelWithDebInfo/SAMPR.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/anna/sampr/build/SAMPR_artefacts/RelWithDebInfo/SAMPR.pdb</ProgramDataBaseFile>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\anna\sampr\build\CMakeFiles\a86f2e74e44bf9b7e32273fda282fdf9\JuceHeader.h.rule">
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Generating SAMPR_artefacts/JuceLibraryCode/JuceHeader.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+_deps\juce-build\tools\extras\Build\juceaide\juceaide_artefacts\Custom\juceaide.exe header C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/Debug/Defs.txt C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/JuceHeader.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\Debug\Defs.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\JuceHeader.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Generating SAMPR_artefacts/JuceLibraryCode/JuceHeader.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+_deps\juce-build\tools\extras\Build\juceaide\juceaide_artefacts\Custom\juceaide.exe header C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/Release/Defs.txt C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/JuceHeader.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\Release\Defs.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\JuceHeader.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Generating SAMPR_artefacts/JuceLibraryCode/JuceHeader.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+_deps\juce-build\tools\extras\Build\juceaide\juceaide_artefacts\Custom\juceaide.exe header C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/MinSizeRel/Defs.txt C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/JuceHeader.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\MinSizeRel\Defs.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\JuceHeader.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Generating SAMPR_artefacts/JuceLibraryCode/JuceHeader.h</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+_deps\juce-build\tools\extras\Build\juceaide\juceaide_artefacts\Custom\juceaide.exe header C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/RelWithDebInfo/Defs.txt C:/anna/sampr/build/SAMPR_artefacts/JuceLibraryCode/JuceHeader.h
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\RelWithDebInfo\Defs.txt;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\JuceHeader.h</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\anna\sampr\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/anna/sampr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/anna/sampr -BC:/anna/sampr/build --check-stamp-file C:/anna/sampr/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeCXXCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeRCCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\anna\sampr\build\CMakeFiles\cmake.verify_globs;C:\anna\sampr\cmake\FetchRubberBand.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\anna\sampr\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/anna/sampr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/anna/sampr -BC:/anna/sampr/build --check-stamp-file C:/anna/sampr/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeCXXCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeRCCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\anna\sampr\build\CMakeFiles\cmake.verify_globs;C:\anna\sampr\cmake\FetchRubberBand.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\anna\sampr\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule C:/anna/sampr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/anna/sampr -BC:/anna/sampr/build --check-stamp-file C:/anna/sampr/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeCXXCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeRCCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\anna\sampr\build\CMakeFiles\cmake.verify_globs;C:\anna\sampr\cmake\FetchRubberBand.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">C:\anna\sampr\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule C:/anna/sampr/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/anna/sampr -BC:/anna/sampr/build --check-stamp-file C:/anna/sampr/build/CMakeFiles/generate.stamp
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCXXInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeCommonLanguageInclude.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeLanguageInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeRCInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\CMakeCommonCompilerMacros.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Compiler\MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FetchContent\CMakeLists.cmake.in;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindGit.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageHandleStandardArgs.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\FindPackageMessage.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCXXLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Internal\CMakeCommonLinkerInformation.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Linker\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC-CXX.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-MSVC.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files (x86)\Microsoft Visual Studio\2022\BuildTools\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeCXXCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeRCCompiler.cmake;C:\anna\sampr\build\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\anna\sampr\build\CMakeFiles\cmake.verify_globs;C:\anna\sampr\cmake\FetchRubberBand.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">C:\anna\sampr\build\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\anna\sampr\build\SAMPR_artefacts\JuceLibraryCode\JuceHeader.h" />
+    <ClCompile Include="C:\anna\sampr\Source\Shell\Application.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Shell\MainComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\App\MvpFlow.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\App\SampleImportService.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\AudioCommandQueue.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\AudioDiagnostics.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\AudioEngine.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\ChannelMixer.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\LevelMeterBank.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\OfflineExporter.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\Mixer.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\NoteScheduler.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\PatternScheduler.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\SampleRegistry.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\SampleVoice.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\Transport.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Audio\VoicePool.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\DSP\OnsetDetector.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\DSP\PeakGenerator.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\DSP\RubberBandOfflineProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\DSP\RubberBandStreamProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\DSP\StretchBakeWorker.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\MixerState.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\PatternStore.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\ProjectController.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\ProjectModel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\SampleManager.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Model\UndoHistory.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Persistence\BeatSerializer.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Persistence\ProjectSerializer.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Plugins\CompressorProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Plugins\DelayProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Plugins\ParametricEqProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Plugins\ReverbProcessor.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\ArrangementTimelineComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\CompressorEditorPanel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\DelayEditorPanel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\EqEditorPanel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\FxWorkspaceComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\ReverbEditorPanel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\SamprLookAndFeel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\TopNavBarComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\MixerComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\TransportBarComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\PianoRollComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Patches\StepSequencerComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\SampleBrowserComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\Patches\SliceEditorPanel.cpp" />
+    <ClCompile Include="C:\anna\sampr\Source\UI\WaveformComponent.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_basics\juce_audio_basics.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_core\juce_core.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_core\juce_core_CompilationTime.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_devices\juce_audio_devices.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_events\juce_events.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_formats\juce_audio_formats.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_utils\juce_audio_utils.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors\juce_audio_processors.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_extra\juce_gui_extra.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\juce_gui_basics.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\juce_gui_basics_2.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\juce_gui_basics_3.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\juce_gui_basics_4.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_gui_basics\juce_gui_basics_5.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_graphics\juce_graphics.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_graphics\juce_graphics_Harfbuzz.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_graphics\juce_graphics_Sheenbidi.c" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_data_structures\juce_data_structures.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\juce_audio_processors_headless.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\juce_audio_processors_headless_ara.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_audio_processors_headless\juce_audio_processors_headless_lv2_libs.cpp" />
+    <ClCompile Include="C:\anna\sampr\build\_deps\juce-src\modules\juce_dsp\juce_dsp.cpp" />
+    <Object Include="C:\anna\sampr\build\SAMPR_rc_lib.dir\$(Configuration)\SAMPR_resources.res" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="C:\anna\sampr\build\ZERO_CHECK.vcxproj">
+      <Project>{A47F1F25-5D97-36B4-9E31-74C722F34EA8}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\anna\sampr\build\SAMPR_rc_lib.vcxproj">
+      <Project>{C70822B1-3465-3556-9309-65928B6A315B}</Project>
+      <Name>SAMPR_rc_lib</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="C:\anna\sampr\build\rubberband_static.vcxproj">
+      <Project>{3DBD2B15-9AD3-3D67-858D-BFCF444AF5F6}</Project>
+      <Name>rubberband_static</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
