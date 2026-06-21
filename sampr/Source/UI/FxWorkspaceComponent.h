@@ -17,10 +17,12 @@ class FxWorkspaceComponent final : public juce::Component
 {
 public:
     using ChangeCallback = std::function<void()>;
+    using AskCallback = std::function<void (int rowIndex)>;
 
     explicit FxWorkspaceComponent (PatternStore& store);
 
     void setChangeCallback (ChangeCallback callback);
+    void setAskCallback (AskCallback callback);
     void setChannel (int rowIndex);
     void refreshFromStore();
     int getChannelIndex() const noexcept { return channelIndex; }
@@ -35,9 +37,11 @@ private:
 
     PatternStore& patternStore;
     ChangeCallback onChange;
+    AskCallback onAsk;
     int channelIndex = 0;
 
     juce::Label titleLabel;
+    juce::TextButton askButton { "Ask Gemma" };
     juce::Label channelLabel { {}, "Channel" };
     juce::ComboBox channelBox;
     juce::TabbedComponent fxTabs { juce::TabbedButtonBar::TabsAtTop };

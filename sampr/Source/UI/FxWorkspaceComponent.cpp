@@ -40,9 +40,17 @@ FxWorkspaceComponent::FxWorkspaceComponent (PatternStore& store)
     fxTabs.addTab ("Reverb", SamprLookAndFeel::panel(), &reverbPanel, false);
     fxTabs.setCurrentTabIndex (0);
 
+    askButton.setTooltip ("Ask Gemma about this channel's FX chain");
+    askButton.onClick = [this]
+    {
+        if (channelIndex >= 0 && onAsk != nullptr)
+            onAsk (channelIndex);
+    };
+
     addAndMakeVisible (titleLabel);
     addAndMakeVisible (channelLabel);
     addAndMakeVisible (channelBox);
+    addAndMakeVisible (askButton);
     addAndMakeVisible (fxTabs);
 
     rebuildChannelList();
@@ -51,6 +59,11 @@ FxWorkspaceComponent::FxWorkspaceComponent (PatternStore& store)
 void FxWorkspaceComponent::setChangeCallback (ChangeCallback callback)
 {
     onChange = std::move (callback);
+}
+
+void FxWorkspaceComponent::setAskCallback (AskCallback callback)
+{
+    onAsk = std::move (callback);
 }
 
 void FxWorkspaceComponent::setChannel (int rowIndex)
@@ -153,7 +166,9 @@ void FxWorkspaceComponent::resized()
     titleLabel.setBounds (header.removeFromLeft (juce::jmax (180, header.getWidth() / 3)));
     header.removeFromLeft (8);
     channelLabel.setBounds (header.removeFromLeft (52));
-    channelBox.setBounds (header);
+    channelBox.setBounds (header.removeFromLeft (juce::jmax (120, header.getWidth() - 96)));
+    header.removeFromLeft (6);
+    askButton.setBounds (header.removeFromRight (88));
     area.removeFromTop (4);
     fxTabs.setBounds (area);
 }

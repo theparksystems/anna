@@ -16,6 +16,7 @@ class MixerComponent final : public juce::Component,
 public:
     using ChangeCallback = std::function<void()>;
     using FxOpenCallback = std::function<void (int rowIndex)>;
+    using AskCallback = std::function<void (int rowIndex)>;
 
     MixerComponent (PatternStore& patterns, AudioEngine& engine);
     ~MixerComponent() override;
@@ -23,6 +24,7 @@ public:
     void setChangeCallback (ChangeCallback callback);
     void setMasterGainChangeCallback (ChangeCallback callback);
     void setFxOpenCallback (FxOpenCallback callback);
+    void setAskCallback (AskCallback callback);
     void setMasterGain (float gain);
     float getMasterGain() const;
     void refresh();
@@ -37,12 +39,14 @@ private:
     void timerCallback() override;
     void rebuildStrips();
     void openFxForRow (int rowIndex);
+    void openAskForRow (int rowIndex);
 
     PatternStore& patternStore;
     AudioEngine& audioEngine;
     ChangeCallback onChange;
     ChangeCallback onMasterGainChange;
     FxOpenCallback onFxOpen;
+    AskCallback onAsk;
 
     juce::Viewport stripViewport;
     juce::Component stripContainer;

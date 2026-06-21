@@ -33,9 +33,11 @@ public:
         muteButton.setButtonText ("M");
         soloButton.setButtonText ("S");
         fxButton.setButtonText ("FX");
+        askButton.setButtonText ("Ask");
         muteButton.setTooltip ("Mute channel");
         soloButton.setTooltip ("Solo channel");
         fxButton.setTooltip ("Open FX Rack for this channel");
+        askButton.setTooltip ("Ask Gemma about this channel");
         muteButton.setClickingTogglesState (true);
         soloButton.setClickingTogglesState (true);
         muteButton.onClick = [this]
@@ -52,6 +54,10 @@ public:
         {
             owner.openFxForRow (rowIndex);
         };
+        askButton.onClick = [this]
+        {
+            owner.openAskForRow (rowIndex);
+        };
 
         addAndMakeVisible (nameLabel);
         addAndMakeVisible (gainSlider);
@@ -59,6 +65,7 @@ public:
         addAndMakeVisible (muteButton);
         addAndMakeVisible (soloButton);
         addAndMakeVisible (fxButton);
+        addAndMakeVisible (askButton);
         addAndMakeVisible (meter);
     }
 
@@ -100,8 +107,10 @@ public:
         area.removeFromTop (4);
         panSlider.setBounds (area.removeFromTop (64));
         area.removeFromTop (4);
-        auto buttons = area.removeFromTop (22);
+        auto buttons = area.removeFromTop (48);
         fxButton.setBounds (buttons.removeFromTop (22));
+        buttons.removeFromTop (2);
+        askButton.setBounds (buttons.removeFromTop (22));
         buttons.removeFromTop (2);
         muteButton.setBounds (buttons.removeFromLeft (buttons.getWidth() / 2).reduced (1));
         soloButton.setBounds (buttons.reduced (1));
@@ -140,6 +149,7 @@ private:
     juce::TextButton muteButton;
     juce::TextButton soloButton;
     juce::TextButton fxButton;
+    juce::TextButton askButton;
     Meter meter { *this };
     juce::Colour stripColour { 0xff4cc2ff };
     float meterLevel = 0.0f;
@@ -189,6 +199,11 @@ void MixerComponent::setFxOpenCallback (FxOpenCallback callback)
     onFxOpen = std::move (callback);
 }
 
+void MixerComponent::setAskCallback (AskCallback callback)
+{
+    onAsk = std::move (callback);
+}
+
 void MixerComponent::setMasterGain (float gain)
 {
     masterGainSlider.setValue (gain, juce::dontSendNotification);
@@ -211,6 +226,12 @@ void MixerComponent::openFxForRow (int rowIndex)
         onFxOpen (rowIndex);
 }
 
+void MixerComponent::openAskForRow (int rowIndex)
+{
+    if (onAsk != nullptr)
+        onAsk (rowIndex);
+}
+
 void MixerComponent::refresh()
 {
     rebuildStrips();
@@ -229,13 +250,13 @@ void MixerComponent::rebuildStrips()
     {
         auto strip = std::make_unique<ChannelStrip> (*this, i);
         strip->syncFromRow (pattern.rows[static_cast<size_t> (i)]);
-        strip->setBounds (x, 0, stripWidth, 300);
+        strip->setBounds (x, 0, stripWidth, 318);
         stripContainer.addAndMakeVisible (strip.get());
         x += stripWidth + 2;
         strips.push_back (std::move (strip));
     }
 
-    stripContainer.setSize (juce::jmax (x, 1), 300);
+    stripContainer.setSize (juce::jmax (x, 1), 318);
 }
 
 void MixerComponent::timerCallback()

@@ -2,6 +2,11 @@
 sampr/build/
 build/
 
+# Gemma assistant sidecar
+sampr/assistant/node_modules/
+sampr/assistant/data/
+sampr/assistant/.env
+
 # Harness / local tooling
 agent-tools/
 terminals/

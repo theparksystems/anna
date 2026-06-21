@@ -12,6 +12,7 @@
 #include "../Source/Model/Pattern.h"
 #include "../Source/Model/ProjectModel.h"
 #include "../Source/Model/SampleAsset.h"
+#include "../Source/Assistant/TrackContextBuilder.h"
 #include "../Source/Persistence/BeatSerializer.h"
 #include "../Source/Persistence/ProjectSerializer.h"
 
@@ -189,6 +190,53 @@ namespace
         slice.processingMode = sampr::StretchProcessingMode::realTimeStream;
         expect (static_cast<int> (slice.processingMode) == 2, "realTimeStream enum value");
     }
+
+    void testTrackContextBuilder()
+    {
+        sampr::ProjectModel project;
+        auto& pattern = project.getPatterns().front();
+        pattern.name = "Test Beat";
+        pattern.numSteps = 16;
+
+        sampr::PatternRow row;
+        row.label = "Snare";
+        row.channelGain = 0.75f;
+        row.channelCompressor.enabled = true;
+        row.channelCompressor.ratio = 3.0f;
+        row.steps.resize (16);
+
+        for (int i = 0; i < 16; ++i)
+        {
+            row.steps[static_cast<size_t> (i)].active = (i % 4 == 0);
+            row.steps[static_cast<size_t> (i)].velocity = 0.6f + static_cast<float> (i) * 0.02f;
+        }
+
+        pattern.rows.push_back (row);
+
+        sampr::TrackContextInput input;
+        input.scope = sampr::ContextScope::channel;
+        input.project = &project;
+        input.pattern = &pattern;
+        input.patternIndex = 0;
+        input.channelIndex = 0;
+        input.bpm = 128.0;
+
+        const auto json = sampr::TrackContextBuilder::build (input);
+        expect (json.isObject(), "track context is object");
+        expect (json.getProperty ("scope", juce::String()).toString() == "channel", "scope is channel");
+
+        const auto channelVar = json.getProperty ("channel", juce::var());
+        const auto* channel = channelVar.getDynamicObject();
+        expect (channel != nullptr, "channel object exists");
+        expect (static_cast<double> (channel->getProperty ("gain")) == 0.75, "channel gain");
+        expect (channel->getProperty ("compressor").getDynamicObject() != nullptr,
+                "compressor nested");
+
+        const auto stepsVar = channel->getProperty ("steps");
+        const auto* steps = stepsVar.getDynamicObject();
+        expect (steps != nullptr, "step stats exist");
+        expect (static_cast<int> (steps->getProperty ("activeSteps")) == 4, "active step count");
+    }
 }
 
 int main (int argc, char* argv[])
@@ -204,6 +252,7 @@ int main (int argc, char* argv[])
     testOnsetDetector();
     testStretchModesAvailable();
     testProcessingModeEnum();
+    testTrackContextBuilder();
 
     if (failures == 0)
     {

@@ -1,0 +1,18 @@
+{
+  "name": "sampr-assistant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Gemma mixing assistant sidecar for SAMPR",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node test/smoke.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "sql.js": "^1.12.0",
+    "uuid": "^11.0.5",
+    "wink-pos-tagger": "^2.2.2"
+  }
+}

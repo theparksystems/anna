@@ -58,6 +58,8 @@ target_sources(SAMPR
         Source/Shell/MainComponent.cpp
         Source/App/MvpFlow.cpp
         Source/App/SampleImportService.cpp
+        Source/Assistant/AssistantClient.cpp
+        Source/Assistant/TrackContextBuilder.cpp
         Source/Audio/AudioCommandQueue.cpp
         Source/Audio/AudioDiagnostics.cpp
         Source/Audio/AudioEngine.cpp
@@ -89,6 +91,7 @@ target_sources(SAMPR
         Source/Plugins/ParametricEqProcessor.cpp
         Source/Plugins/ReverbProcessor.cpp
         Source/UI/ArrangementTimelineComponent.cpp
+        Source/UI/AssistantPanel.cpp
         Source/UI/CompressorEditorPanel.cpp
         Source/UI/DelayEditorPanel.cpp
         Source/UI/EqEditorPanel.cpp
@@ -155,6 +158,8 @@ if(SAMPR_BUILD_TESTS)
     target_sources(SAMPR_Tests
         PRIVATE
             Tests/SamprUnitTests.cpp
+            Source/Assistant/TrackContextBuilder.cpp
+            Source/Audio/LevelMeterBank.cpp
             Source/DSP/OnsetDetector.cpp
             Source/DSP/PeakGenerator.cpp
             Source/DSP/RubberBandOfflineProcessor.cpp

@@ -15,6 +15,7 @@ constexpr int kTabStepSeq = 0;
 constexpr int kTabPianoRoll = 1;
 constexpr int kTabArrangement = 2;
 constexpr int kTabFxRack = 3;
+constexpr int kTabAssistant = 4;
 }
 
 MainComponent::MainComponent()
@@ -27,7 +28,8 @@ MainComponent::MainComponent()
       stepSequencer (patternStore),
       pianoRoll (patternStore, sampleManager),
       arrangementTimeline (projectController, patternStore),
-      fxWorkspace (patternStore)
+      fxWorkspace (patternStore),
+      assistantPanel (assistantClient, patternStore, projectModel, sampleManager, audioEngine)
 {
     formatManager.registerBasicFormats();
     setAudioChannels (2, 2);
@@ -76,6 +78,7 @@ MainComponent::MainComponent()
         arrangementTimeline.refresh();
         mixerPanel.refresh();
         fxWorkspace.refreshFromStore();
+        assistantPanel.refreshChannelList();
         publishPatternSnapshot();
     });
 
@@ -96,7 +99,31 @@ MainComponent::MainComponent()
         fxWorkspace.setChannel (rowIndex);
         focusActiveEditorTab();
     });
+    mixerPanel.setAskCallback ([this] (int rowIndex)
+    {
+        const auto& pattern = patternStore.getCurrentPattern();
+        if (! juce::isPositiveAndBelow (rowIndex, static_cast<int> (pattern.rows.size())))
+            return;
+
+        const auto& row = pattern.rows[static_cast<size_t> (rowIndex)];
+        const auto label = row.label.isNotEmpty() ? row.label : ("channel " + juce::String (rowIndex + 1));
+        openAssistantWithContext (sampr::ContextScope::channel,
+                                  rowIndex,
+                                  "Analyze " + label + " - what could make this track sound better?");
+    });
     fxWorkspace.setChangeCallback ([this] { publishPatternSnapshot(); });
+    fxWorkspace.setAskCallback ([this] (int rowIndex)
+    {
+        const auto& pattern = patternStore.getCurrentPattern();
+        if (! juce::isPositiveAndBelow (rowIndex, static_cast<int> (pattern.rows.size())))
+            return;
+
+        const auto& row = pattern.rows[static_cast<size_t> (rowIndex)];
+        const auto label = row.label.isNotEmpty() ? row.label : ("channel " + juce::String (rowIndex + 1));
+        openAssistantWithContext (sampr::ContextScope::channel,
+                                  rowIndex,
+                                  "Review FX settings for " + label + " - any issues with EQ, compression, delay, or reverb?");
+    });
     mixerPanel.setMasterGainChangeCallback ([this]
     {
         projectModel.getSettings().masterGain = static_cast<float> (mixerPanel.getMasterGain());
@@ -108,7 +135,9 @@ MainComponent::MainComponent()
     patternTabs.addTab ("Piano Roll (2)", sampr::SamprLookAndFeel::panel(), &pianoRoll, false);
     patternTabs.addTab ("Arrangement (3)", sampr::SamprLookAndFeel::panel(), &arrangementTimeline, false);
     patternTabs.addTab ("FX Rack (4)", sampr::SamprLookAndFeel::panel(), &fxWorkspace, false);
+    patternTabs.addTab ("Assistant (5)", sampr::SamprLookAndFeel::panel(), &assistantPanel, false);
     patternTabs.setCurrentTabIndex (0);
+
     patternTabs.getTabbedButtonBar().addChangeListener (this);
 
     sampleBrowser.setLoadRequestedCallback ([this] { loadSampleFromDisk(); });
@@ -247,6 +276,13 @@ MainComponent::MainComponent()
     loadProjectButton.setTooltip ("Load project (Ctrl+O)");
     saveBeatButton.setTooltip ("Save current pattern as beat preset");
     loadBeatButton.setTooltip ("Load beat preset into current pattern");
+    askPatternButton.setTooltip ("Ask Gemma about the current pattern mix");
+    askPatternButton.onClick = [this]
+    {
+        openAssistantWithContext (sampr::ContextScope::pattern,
+                                  fxWorkspace.getChannelIndex(),
+                                  "Analyze this pattern — which channels sound flat, muddy, or unbalanced?");
+    };
     undoButton.setTooltip ("Undo (Ctrl+Z)");
     redoButton.setTooltip ("Redo (Ctrl+Y)");
     songModeButton.setTooltip ("Song Mode plays the Arrangement timeline instead of looping the current pattern.");
@@ -286,6 +322,7 @@ MainComponent::MainComponent()
     addAndMakeVisible (loadProjectButton);
     addAndMakeVisible (saveBeatButton);
     addAndMakeVisible (loadBeatButton);
+    addAndMakeVisible (askPatternButton);
     addAndMakeVisible (undoButton);
     addAndMakeVisible (redoButton);
     addAndMakeVisible (songModeButton);
@@ -300,6 +337,12 @@ MainComponent::MainComponent()
     updateToolbarState();
 
     publishPatternSnapshot();
+    assistantClient.checkHealth ([this] (bool online, const juce::String& detail)
+    {
+        juce::ignoreUnused (online, detail);
+        updateStatusLabel();
+    });
+
     updateStatusLabel();
     startTimerHz (60);
 }
@@ -388,6 +431,20 @@ void MainComponent::timerCallback()
     if (audioWarningTicks > 0)
         --audioWarningTicks;
 
+    if (++assistantHealthTicks >= 300)
+    {
+        assistantHealthTicks = 0;
+
+        if (! assistantClient.isBusy())
+        {
+            assistantClient.checkHealth ([this] (bool, const juce::String&)
+            {
+                assistantPanel.updateOnlineStatus();
+                updateStatusLabel();
+            });
+        }
+    }
+
     updateStatusLabel();
     drainAudioDiagnostics();
 }
@@ -472,6 +529,7 @@ bool MainComponent::keyPressed (const juce::KeyPress& key)
     if (key.getTextCharacter() == '2') { patternTabs.setCurrentTabIndex (kTabPianoRoll); focusActiveEditorTab(); return true; }
     if (key.getTextCharacter() == '3') { patternTabs.setCurrentTabIndex (kTabArrangement); focusActiveEditorTab(); return true; }
     if (key.getTextCharacter() == '4') { patternTabs.setCurrentTabIndex (kTabFxRack); focusActiveEditorTab(); return true; }
+    if (key.getTextCharacter() == '5') { patternTabs.setCurrentTabIndex (kTabAssistant); focusActiveEditorTab(); return true; }
 
     return false;
 }
@@ -623,6 +681,8 @@ void MainComponent::resized()
     saveBeatButton.setBounds (projectRow.removeFromLeft (76));
     projectRow.removeFromLeft (4);
     loadBeatButton.setBounds (projectRow.removeFromLeft (76));
+    projectRow.removeFromLeft (4);
+    askPatternButton.setBounds (projectRow.removeFromLeft (88));
     projectRow.removeFromLeft (4);
     undoButton.setBounds (projectRow.removeFromLeft (60));
     projectRow.removeFromLeft (4);
@@ -878,22 +938,36 @@ void MainComponent::showSliceEditorPopup()
 
     struct SliceDialogContent final : public juce::Component
     {
-        explicit SliceDialogContent (sampr::SliceEditorPanel& panel)
-            : slicePanel (panel)
+        SliceDialogContent (sampr::SliceEditorPanel& panel, std::function<void()> onAskGemma)
+            : slicePanel (panel),
+              askCallback (std::move (onAskGemma))
         {
             if (slicePanel.getParentComponent() != nullptr)
                 slicePanel.getParentComponent()->removeChildComponent (&slicePanel);
 
+            askButton.setTooltip ("Ask Gemma about this slice's pitch, timing, and boundaries");
+            askButton.onClick = [this]
+            {
+                if (askCallback != nullptr)
+                    askCallback();
+            };
+
             addAndMakeVisible (slicePanel);
-            setSize (420, 360);
+            addAndMakeVisible (askButton);
+            setSize (420, 396);
         }
 
         void resized() override
         {
-            slicePanel.setBounds (getLocalBounds().reduced (8));
+            auto area = getLocalBounds().reduced (8);
+            askButton.setBounds (area.removeFromBottom (28));
+            area.removeFromBottom (6);
+            slicePanel.setBounds (area);
         }
 
         sampr::SliceEditorPanel& slicePanel;
+        juce::TextButton askButton { "Ask Gemma" };
+        std::function<void()> askCallback;
     };
 
     sliceEditor.syncFromSelectedSlice();
@@ -905,8 +979,26 @@ void MainComponent::showSliceEditorPopup()
     options.useNativeTitleBar            = true;
     options.resizable                    = true;
     options.componentToCentreAround      = this;
-    options.content.setOwned (new SliceDialogContent (sliceEditor));
+    options.content.setOwned (new SliceDialogContent (sliceEditor, [this]
+    {
+        if (sliceEditorDialog != nullptr)
+            sliceEditorDialog->exitModalState (0);
+
+        openAssistantWithContext (sampr::ContextScope::slice,
+                                  fxWorkspace.getChannelIndex(),
+                                  "Does this slice need pitch or time adjustments for a tighter mix?");
+        assistantPanel.setScope (sampr::ContextScope::slice);
+    }));
     sliceEditorDialog = options.launchAsync();
+}
+
+void MainComponent::openAssistantWithContext (sampr::ContextScope scope,
+                                              int channelIndex,
+                                              const juce::String& seedMessage)
+{
+    patternTabs.setCurrentTabIndex (kTabAssistant);
+    assistantPanel.openWithPrompt (scope, channelIndex, seedMessage);
+    focusActiveEditorTab();
 }
 
 void MainComponent::saveBeatToDisk()
@@ -1079,6 +1171,12 @@ void MainComponent::updateStatusLabel()
         text << "Warning: " << audioWarningText;
     else if (auto* device = deviceManager.getCurrentAudioDevice())
         text << device->getName() << "  " << juce::String (device->getCurrentSampleRate(), 0) << " Hz";
+
+    text << "  |  Gemma: "
+         << (assistantClient.isOnline() ? "online" : "offline");
+
+    if (assistantPanel.isWaitingForResponse())
+        text << " (thinking)";
 
     statusLabel.setText (text, juce::dontSendNotification);
 }

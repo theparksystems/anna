@@ -9,7 +9,9 @@
 #include "../Model/ProjectController.h"
 #include "../Model/ProjectModel.h"
 #include "../Model/SampleManager.h"
+#include "../Assistant/AssistantClient.h"
 #include "../UI/ArrangementTimelineComponent.h"
+#include "../UI/AssistantPanel.h"
 #include "../UI/FxWorkspaceComponent.h"
 #include "../UI/MixerComponent.h"
 #include "../UI/PianoRollComponent.h"
@@ -77,7 +79,11 @@ private:
     void changeListenerCallback (juce::ChangeBroadcaster* source) override;
     void focusActiveEditorTab();
     void showUserMessage (const juce::String& message);
+    void openAssistantWithContext (sampr::ContextScope scope,
+                                   int channelIndex,
+                                   const juce::String& seedMessage);
 
+    sampr::AssistantClient assistantClient;
     sampr::ProjectModel projectModel;
     sampr::MixerState mixerState;
     sampr::AudioEngine audioEngine;
@@ -95,6 +101,7 @@ private:
     sampr::PianoRollComponent pianoRoll;
     sampr::ArrangementTimelineComponent arrangementTimeline;
     sampr::FxWorkspaceComponent fxWorkspace;
+    sampr::AssistantPanel assistantPanel;
     juce::Component centralEditor;
     juce::Component chopArea;
     juce::Label chopHintLabel;
@@ -105,6 +112,7 @@ private:
     juce::TextButton loadProjectButton { "Load" };
     juce::TextButton saveBeatButton { "Save Beat" };
     juce::TextButton loadBeatButton { "Load Beat" };
+    juce::TextButton askPatternButton { "Ask Gemma" };
     juce::TextButton undoButton { "Undo" };
     juce::TextButton redoButton { "Redo" };
     juce::ToggleButton songModeButton { "Song Mode" };
@@ -122,6 +130,7 @@ private:
     int audioWarningTicks = 0;
     juce::String userMessageText;
     int userMessageTicks = 0;
+    int assistantHealthTicks = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
