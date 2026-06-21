@@ -1,7 +1,0 @@
-C:/anna/sampr/build/_deps/juce-build/tools/CMakeFiles/INSTALL.dir
-C:/anna/sampr/build/_deps/juce-build/tools/CMakeFiles/ALL_BUILD.dir
-C:/anna/sampr/build/_deps/juce-build/tools/CMakeFiles/ZERO_CHECK.dir
-C:/anna/sampr/build/_deps/juce-build/tools/modules/CMakeFiles/INSTALL.dir
-C:/anna/sampr/build/_deps/juce-build/tools/extras/Build/CMakeFiles/INSTALL.dir
-C:/anna/sampr/build/_deps/juce-build/tools/extras/Build/juceaide/CMakeFiles/juceaide.dir
-C:/anna/sampr/build/_deps/juce-build/tools/extras/Build/juceaide/CMakeFiles/INSTALL.dir

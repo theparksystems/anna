@@ -1,0 +1,15 @@
+# Build outputs
+sampr/build/
+build/
+
+# Harness / local tooling
+agent-tools/
+terminals/
+mcps/
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.user
+.vs/
+.idea/
