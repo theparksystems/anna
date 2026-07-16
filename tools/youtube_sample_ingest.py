@@ -17,13 +17,41 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+class CommandFailed(RuntimeError):
+    def __init__(self, command: list[str], returncode: int, output: str):
+        super().__init__(output)
+        self.command = command
+        self.returncode = returncode
+        self.output = output
+
+
+def command_output(error: subprocess.CalledProcessError) -> str:
+    parts = []
+    if error.stdout:
+        parts.append(str(error.stdout).strip())
+    if error.stderr:
+        parts.append(str(error.stderr).strip())
+
+    output = "\n".join(part for part in parts if part)
+    if not output:
+        output = f"Command failed with exit code {error.returncode}: {' '.join(error.cmd)}"
+
+    return output
+
+
 def run_json(command: list[str]) -> dict:
-    result = subprocess.run(command, check=True, text=True, capture_output=True)
-    return json.loads(result.stdout)
+    try:
+        result = subprocess.run(command, check=True, text=True, capture_output=True)
+        return json.loads(result.stdout)
+    except subprocess.CalledProcessError as error:
+        raise CommandFailed(command, error.returncode, command_output(error)) from error
 
 
 def run(command: list[str]) -> None:
-    subprocess.run(command, check=True)
+    try:
+        subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as error:
+        raise CommandFailed(command, error.returncode, command_output(error)) from error
 
 
 def main() -> int:
@@ -43,41 +71,62 @@ def main() -> int:
             print("yt-dlp is required. Install it with: python -m pip install yt-dlp", file=sys.stderr)
             return 2
 
-    if shutil.which("ffmpeg") is None:
-        try:
+    try:
+        ffmpeg_location = shutil.which("ffmpeg")
+        if ffmpeg_location is None:
             import imageio_ffmpeg
 
             ffmpeg = Path(imageio_ffmpeg.get_ffmpeg_exe())
             if ffmpeg.exists():
+                ffmpeg_location = str(ffmpeg)
                 path = str(ffmpeg.parent)
                 import os
 
                 os.environ["PATH"] = path + os.pathsep + os.environ.get("PATH", "")
-        except Exception:
-            print("ffmpeg is required on PATH for audio extraction.", file=sys.stderr)
+
+        if not ffmpeg_location:
+            print("ffmpeg is required for audio extraction. Install ffmpeg or imageio-ffmpeg.", file=sys.stderr)
             return 2
+
+        subprocess.run([ffmpeg_location, "-version"], check=True, text=True, capture_output=True)
+    except Exception as error:
+        print(f"ffmpeg is required for audio extraction, but ANNA could not start it: {error}", file=sys.stderr)
+        return 2
 
     output_dir = Path(args.out).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    info = run_json(ytdlp + ["--dump-single-json", "--no-playlist", args.url])
+    try:
+        info = run_json(ytdlp + ["--dump-single-json", "--no-playlist", args.url])
+    except CommandFailed as error:
+        print("YouTube metadata fetch failed.", file=sys.stderr)
+        print(error.output, file=sys.stderr)
+        return error.returncode or 1
     title_template = "%(title).180B [%(id)s].%(ext)s"
     output_template = str(output_dir / title_template)
 
-    run(
-        [
-            *ytdlp,
-            "--no-playlist",
-            "--extract-audio",
-            "--audio-format",
-            args.format,
-            "--audio-quality",
-            "0",
-            "--output",
-            output_template,
-            args.url,
-        ]
-    )
+    download_command = [
+        *ytdlp,
+        "--no-playlist",
+        "--extract-audio",
+        "--audio-format",
+        args.format,
+        "--audio-quality",
+        "0",
+        "--output",
+        output_template,
+    ]
+
+    if ffmpeg_location:
+        download_command.extend(["--ffmpeg-location", ffmpeg_location])
+
+    download_command.append(args.url)
+    try:
+        run(download_command)
+    except CommandFailed as error:
+        print("YouTube audio conversion failed.", file=sys.stderr)
+        print(error.output, file=sys.stderr)
+        return error.returncode or 1
 
     video_id = str(info.get("id", "")).strip()
     expected_suffix = f"[{video_id}].{args.format}"

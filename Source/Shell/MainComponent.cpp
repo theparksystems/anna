@@ -284,7 +284,7 @@ private:
             return;
         }
 
-        finish ({}, "YouTube import failed.\n\nInstall yt-dlp and ffmpeg, then try again.\n\n" + lastOutput);
+        finish ({}, "YouTube import failed.\n\nCheck the converter details below. The source may be unavailable, blocked by YouTube, or missing a local conversion dependency.\n\n" + lastOutput);
     }
 
     void finish (juce::File audioFile, juce::String errorMessage)
