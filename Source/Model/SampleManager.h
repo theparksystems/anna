@@ -11,6 +11,7 @@
 #include "../Audio/SampleVoice.h"
 #include "../DSP/OnsetDetector.h"
 #include "../DSP/StretchBakeWorker.h"
+#include "../Plugins/FxTypes.h"
 #include "ProjectModel.h"
 #include "SampleAsset.h"
 #include "SampleRefData.h"
@@ -57,6 +58,9 @@ public:
 
     void requestSliceBake (AssetId assetId, int sliceIndex);
     void requestSelectedSliceBake();
+    bool exportSelectedSliceToWav (const juce::File& outputFile,
+                                   juce::String& errorOut,
+                                   const ChannelFxState* channelFxToRender = nullptr) const;
 
     std::optional<SampleId> resolvePlaybackSampleId (AssetId assetId, int sliceIndex) const;
     bool slicePlaybackUsesBakedBuffer (AssetId assetId, int sliceIndex) const;

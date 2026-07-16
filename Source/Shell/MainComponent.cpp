@@ -129,6 +129,31 @@ juce::String buildSampledFromText (const sampr::ProjectModel& project)
 
     return text;
 }
+
+bool writeCommittedSliceOriginSidecar (const juce::File& audioFile,
+                                       const sampr::SampleAsset& sourceAsset,
+                                       const sampr::SliceRegion& sourceSlice)
+{
+    auto obj = new juce::DynamicObject();
+    obj->setProperty ("sourceType", "anna-clip");
+    obj->setProperty ("sourceUrl", sourceAsset.origin.sourceUrl);
+    obj->setProperty ("sourceTitle", sourceAsset.origin.sourceTitle.isNotEmpty()
+                                         ? sourceAsset.origin.sourceTitle
+                                         : sourceAsset.displayName);
+    obj->setProperty ("sourceAuthor", sourceAsset.origin.sourceAuthor);
+    obj->setProperty ("sourceId", sourceAsset.origin.sourceId);
+    obj->setProperty ("downloadedAt", sourceAsset.origin.downloadedAt);
+    obj->setProperty ("localFileName", audioFile.getFileName());
+    obj->setProperty ("parentSampleFile", sourceAsset.filePath.getFullPathName());
+    obj->setProperty ("parentSampleName", sourceAsset.displayName);
+    obj->setProperty ("clipStartSample", sourceSlice.startSample);
+    obj->setProperty ("clipEndSample", sourceSlice.endSample);
+    obj->setProperty ("clipPitchSemitones", sourceSlice.pitchSemitones);
+    obj->setProperty ("clipTimeRatio", sourceSlice.timeRatio);
+
+    const auto sidecar = audioFile.getSiblingFile (audioFile.getFileNameWithoutExtension() + ".anna-origin.json");
+    return sidecar.replaceWithText (juce::JSON::toString (juce::var (obj), true));
+}
 }
 
 class MainComponent::AsyncExportJob final : private juce::Thread
@@ -523,33 +548,15 @@ MainComponent::MainComponent()
     });
     sliceEditor.setOpenFxCallback ([this]
     {
-        const auto assetId = sampleManager.getSelectedAssetId();
-        const auto* asset = sampleManager.getAsset (assetId);
+        const auto rowIndex = ensureSelectedSliceTrackRow();
 
-        if (asset == nullptr)
-        {
-            showUserMessage ("Select a sample slice first.");
+        if (rowIndex < 0)
             return;
-        }
 
-        const auto sliceIndex = asset->selectedSliceIndex;
-        const auto& pattern = patternStore.getCurrentPattern();
-
-        for (int i = 0; i < static_cast<int> (pattern.rows.size()); ++i)
-        {
-            const auto& row = pattern.rows[static_cast<size_t> (i)];
-
-            if (row.assetId == assetId && row.sliceIndex == sliceIndex)
-            {
-                patternTabs.setCurrentTabIndex (kTabFxRack);
-                fxWorkspace.setChannel (i);
-                focusActiveEditorTab();
-                showUserMessage ("FX opened for selected slice channel.");
-                return;
-            }
-        }
-
-        showUserMessage ("Add this slice to the sequencer, then open FX.");
+        patternTabs.setCurrentTabIndex (kTabFxRack);
+        fxWorkspace.setChannel (rowIndex);
+        focusActiveEditorTab();
+        showUserMessage ("FX opened for selected slice channel.");
     });
 
     transportBar.setPlayCallback ([this]
@@ -1256,6 +1263,114 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
     showUserMessage ("Imported YouTube sample with metadata.");
 }
 
+int MainComponent::ensureSelectedSliceTrackRow()
+{
+    const auto assetId = sampleManager.getSelectedAssetId();
+    const auto* asset = sampleManager.getAsset (assetId);
+
+    if (asset == nullptr)
+    {
+        showUserMessage ("Select a sample slice first.");
+        return -1;
+    }
+
+    if (asset->slices.empty())
+    {
+        showUserMessage ("The selected sample has no slices.");
+        return -1;
+    }
+
+    const auto sliceIndex = juce::jlimit (0,
+                                          static_cast<int> (asset->slices.size()) - 1,
+                                          asset->selectedSliceIndex);
+    const auto& pattern = patternStore.getCurrentPattern();
+
+    for (int i = 0; i < static_cast<int> (pattern.rows.size()); ++i)
+    {
+        const auto& row = pattern.rows[static_cast<size_t> (i)];
+
+        if (row.assetId == assetId && row.sliceIndex == sliceIndex)
+            return i;
+    }
+
+    const auto rowIndex = patternStore.addRowFromAsset (assetId, sliceIndex);
+    refreshProjectViews();
+    publishPatternSnapshot();
+    return rowIndex;
+}
+
+void MainComponent::commitSelectedSliceToSampleBrowser()
+{
+    const auto sourceAssetId = sampleManager.getSelectedAssetId();
+    const auto* sourceAsset = sampleManager.getAsset (sourceAssetId);
+
+    if (sourceAsset == nullptr || sourceAsset->slices.empty())
+    {
+        showUserMessage ("Select a sample slice first.");
+        return;
+    }
+
+    const auto sliceIndex = juce::jlimit (0,
+                                          static_cast<int> (sourceAsset->slices.size()) - 1,
+                                          sourceAsset->selectedSliceIndex);
+    const auto sourceSlice = sourceAsset->slices[static_cast<size_t> (sliceIndex)];
+    const auto committedFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+        .getChildFile ("ANNA Committed Samples");
+    const auto stem = makeSafeFileStem (sourceAsset->displayName + " Clip " + juce::String (sliceIndex + 1));
+    const auto outputFile = getUniqueChildFile (committedFolder, stem, ".wav");
+    const auto rowIndex = ensureSelectedSliceTrackRow();
+    sampr::ChannelFxState channelFx;
+    const sampr::ChannelFxState* channelFxToRender = nullptr;
+
+    if (rowIndex >= 0)
+    {
+        const auto& rows = patternStore.getCurrentPattern().rows;
+
+        if (juce::isPositiveAndBelow (rowIndex, static_cast<int> (rows.size())))
+        {
+            const auto& row = rows[static_cast<size_t> (rowIndex)];
+            channelFx.eq = row.channelEq;
+            channelFx.color = row.channelColor;
+            channelFx.compressor = row.channelCompressor;
+            channelFx.delay = row.channelDelay;
+            channelFx.reverb = row.channelReverb;
+            channelFxToRender = &channelFx;
+        }
+    }
+
+    juce::String error;
+    if (! sampleManager.exportSelectedSliceToWav (outputFile, error, channelFxToRender))
+    {
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "Commit clip failed",
+            error);
+        showUserMessage ("Clip commit failed.");
+        return;
+    }
+
+    if (! writeCommittedSliceOriginSidecar (outputFile, *sourceAsset, sourceSlice))
+        showUserMessage ("Clip committed, but metadata sidecar could not be written.");
+
+    juce::StringArray paths;
+    paths.add (outputFile.getFullPathName());
+    const auto result = importSampleFiles (paths);
+
+    if (result.loadedCount <= 0)
+    {
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "Committed sample import failed",
+            result.lastError.isNotEmpty() ? result.lastError : outputFile.getFullPathName());
+        showUserMessage ("Clip wrote to disk, but ANNA could not add it to the browser.");
+        return;
+    }
+
+    patternStore.syncRowsFromLoadedAssets();
+    refreshProjectViews();
+    showUserMessage ("Committed clip to the sample browser.");
+}
+
 void MainComponent::loadSampleFromDisk()
 {
     fileChooser = std::make_unique<juce::FileChooser> (
@@ -1541,12 +1656,41 @@ void MainComponent::showSliceEditorPopup()
 
     struct SliceDialogContent final : public juce::Component
     {
-        SliceDialogContent (sampr::SliceEditorPanel& panel, std::function<void()> onAskGemma)
+        SliceDialogContent (sampr::SliceEditorPanel& panel,
+                            sampr::PatternStore& store,
+                            int rowIndex,
+                            std::function<void()> onCommit,
+                            std::function<void()> onFxChange,
+                            std::function<void (int)> onAskFx,
+                            std::function<void()> onAskGemma)
             : slicePanel (panel),
+              fxWorkspacePanel (store),
+              commitCallback (std::move (onCommit)),
+              fxChangeCallback (std::move (onFxChange)),
+              fxAskCallback (std::move (onAskFx)),
               askCallback (std::move (onAskGemma))
         {
             if (slicePanel.getParentComponent() != nullptr)
                 slicePanel.getParentComponent()->removeChildComponent (&slicePanel);
+
+            fxWorkspacePanel.setChannel (rowIndex);
+            fxWorkspacePanel.setChangeCallback ([this]
+            {
+                if (fxChangeCallback != nullptr)
+                    fxChangeCallback();
+            });
+            fxWorkspacePanel.setAskCallback ([this] (int channelIndex)
+            {
+                if (fxAskCallback != nullptr)
+                    fxAskCallback (channelIndex);
+            });
+
+            commitButton.setTooltip ("Render this edited clip as a new sample in the left browser");
+            commitButton.onClick = [this]
+            {
+                if (commitCallback != nullptr)
+                    commitCallback();
+            };
 
             askButton.setTooltip ("Ask Gemma about this slice's pitch, timing, and boundaries");
             askButton.onClick = [this]
@@ -1556,24 +1700,45 @@ void MainComponent::showSliceEditorPopup()
             };
 
             addAndMakeVisible (slicePanel);
+            addAndMakeVisible (fxWorkspacePanel);
+            addAndMakeVisible (commitButton);
             addAndMakeVisible (askButton);
-            setSize (420, 396);
+            setSize (1040, 560);
         }
 
         void resized() override
         {
-            auto area = getLocalBounds().reduced (8);
-            askButton.setBounds (area.removeFromBottom (28));
-            area.removeFromBottom (6);
-            slicePanel.setBounds (area);
+            auto area = getLocalBounds().reduced (10);
+            auto footer = area.removeFromBottom (32);
+            askButton.setBounds (footer.removeFromRight (112));
+            footer.removeFromRight (8);
+            commitButton.setBounds (footer.removeFromRight (172));
+            area.removeFromBottom (8);
+
+            auto left = area.removeFromLeft (juce::jmin (420, area.getWidth() / 2));
+            area.removeFromLeft (10);
+            slicePanel.setBounds (left);
+            fxWorkspacePanel.setBounds (area);
         }
 
         sampr::SliceEditorPanel& slicePanel;
+        sampr::FxWorkspaceComponent fxWorkspacePanel;
+        juce::TextButton commitButton { "Commit To Samples" };
         juce::TextButton askButton { "Ask Gemma" };
+        std::function<void()> commitCallback;
+        std::function<void()> fxChangeCallback;
+        std::function<void (int)> fxAskCallback;
         std::function<void()> askCallback;
     };
 
     sliceEditor.syncFromSelectedSlice();
+    const auto rowIndex = ensureSelectedSliceTrackRow();
+
+    if (rowIndex >= 0)
+    {
+        fxWorkspace.setChannel (rowIndex);
+        fxWorkspace.refreshFromStore();
+    }
 
     juce::DialogWindow::LaunchOptions options;
     options.dialogTitle                  = "Slice Editor";
@@ -1582,13 +1747,29 @@ void MainComponent::showSliceEditorPopup()
     options.useNativeTitleBar            = true;
     options.resizable                    = true;
     options.componentToCentreAround      = this;
-    options.content.setOwned (new SliceDialogContent (sliceEditor, [this]
+    options.content.setOwned (new SliceDialogContent (sliceEditor, patternStore, rowIndex,
+    [this]
+    {
+        commitSelectedSliceToSampleBrowser();
+    },
+    [this]
+    {
+        publishPatternSnapshot();
+        fxWorkspace.refreshFromStore();
+    },
+    [this] (int channelIndex)
+    {
+        openAssistantWithContext (sampr::ContextScope::channel,
+                                  channelIndex,
+                                  "Suggest a polished production FX chain for this sampled track.");
+    },
+    [this]
     {
         if (sliceEditorDialog != nullptr)
             sliceEditorDialog->exitModalState (0);
 
         openAssistantWithContext (sampr::ContextScope::slice,
-                                  fxWorkspace.getChannelIndex(),
+                                  ensureSelectedSliceTrackRow(),
                                   "Does this slice need pitch or time adjustments for a tighter mix?");
         assistantPanel.setScope (sampr::ContextScope::slice);
     }));

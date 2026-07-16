@@ -6,6 +6,11 @@
 #include "../DSP/PeakGenerator.h"
 #include "../DSP/RubberBandOfflineProcessor.h"
 #include "../DSP/RubberBandStreamProcessor.h"
+#include "../Plugins/ColorProcessor.h"
+#include "../Plugins/CompressorProcessor.h"
+#include "../Plugins/DelayProcessor.h"
+#include "../Plugins/ParametricEqProcessor.h"
+#include "../Plugins/ReverbProcessor.h"
 
 namespace sampr
 {
@@ -49,6 +54,66 @@ namespace
         origin.downloadedAt = parsed.getProperty ("downloadedAt", juce::String()).toString();
         origin.localFileName = parsed.getProperty ("localFileName", audioFile.getFileName()).toString();
         return origin;
+    }
+
+    bool fxStateNeedsTail (const ChannelFxState& fx) noexcept
+    {
+        return fx.delay.enabled
+               || fx.reverb.enabled
+               || (fx.color.enabled && (fx.color.chorusMix > 0.0001f || fx.color.phaserMix > 0.0001f));
+    }
+
+    std::unique_ptr<juce::AudioBuffer<float>> renderChannelFx (const juce::AudioBuffer<float>& input,
+                                                               double sampleRate,
+                                                               const ChannelFxState& fx)
+    {
+        constexpr int kBlockSize = 512;
+        const auto tailSamples = fxStateNeedsTail (fx)
+            ? static_cast<int> (juce::jmax (sampleRate * 2.0, 1.0))
+            : 0;
+        const auto outputSamples = input.getNumSamples() + tailSamples;
+        auto output = std::make_unique<juce::AudioBuffer<float>> (2, outputSamples);
+        output->clear();
+
+        if (input.getNumChannels() <= 0 || input.getNumSamples() <= 0)
+            return output;
+
+        output->copyFrom (0, 0, input, 0, 0, input.getNumSamples());
+
+        if (input.getNumChannels() > 1)
+            output->copyFrom (1, 0, input, 1, 0, input.getNumSamples());
+        else
+            output->copyFrom (1, 0, input, 0, 0, input.getNumSamples());
+
+        ParametricEqProcessor eq;
+        CompressorProcessor compressor;
+        ColorProcessor color;
+        DelayProcessor delay;
+        ReverbProcessor reverb;
+
+        eq.prepare (sampleRate, kBlockSize);
+        compressor.prepare (sampleRate, kBlockSize);
+        color.prepare (sampleRate, kBlockSize);
+        delay.prepare (sampleRate, kBlockSize);
+        reverb.prepare (sampleRate, kBlockSize);
+
+        eq.setParameters (fx.eq);
+        compressor.setParameters (fx.compressor);
+        color.setParameters (fx.color);
+        delay.setParameters (fx.delay);
+        reverb.setParameters (fx.reverb);
+
+        for (int offset = 0; offset < outputSamples; offset += kBlockSize)
+        {
+            const auto block = juce::jmin (kBlockSize, outputSamples - offset);
+            eq.process (*output, offset, block);
+            compressor.process (*output, offset, block);
+            color.process (*output, offset, block);
+            delay.process (*output, offset, block);
+            reverb.process (*output, offset, block);
+        }
+
+        return output;
     }
 }
 
@@ -432,6 +497,94 @@ void SampleManager::requestSelectedSliceBake()
         return;
 
     requestSliceBake (selectedAssetId, asset->selectedSliceIndex);
+}
+
+bool SampleManager::exportSelectedSliceToWav (const juce::File& outputFile,
+                                              juce::String& errorOut,
+                                              const ChannelFxState* channelFxToRender) const
+{
+    const auto* asset = getAsset (selectedAssetId);
+
+    if (asset == nullptr)
+    {
+        errorOut = "Select a sample slice first.";
+        return false;
+    }
+
+    if (asset->slices.empty())
+    {
+        errorOut = "The selected sample has no slices to export.";
+        return false;
+    }
+
+    const auto sliceIndex = juce::jlimit (0,
+                                          static_cast<int> (asset->slices.size()) - 1,
+                                          asset->selectedSliceIndex);
+    const auto& slice = asset->slices[static_cast<size_t> (sliceIndex)];
+    const auto sliceData = extractSliceData (*asset, slice);
+
+    if (sliceData == nullptr || sliceData->buffer == nullptr || sliceData->buffer->getNumSamples() <= 0)
+    {
+        errorOut = "ANNA could not read the selected slice audio.";
+        return false;
+    }
+
+    auto renderBuffer = std::make_unique<juce::AudioBuffer<float>> (*sliceData->buffer);
+
+#if ANNA_HAS_RUBBERBAND
+    if (sliceNeedsRubberBandBake (slice))
+    {
+        StretchParameters params;
+        params.pitchSemitones = slice.pitchSemitones;
+        params.timeRatio = slice.timeRatio;
+
+        if (auto processed = RubberBandOfflineProcessor::process (*renderBuffer, asset->sampleRate, params))
+            renderBuffer = std::move (processed);
+    }
+#endif
+
+    if (channelFxToRender != nullptr)
+        renderBuffer = renderChannelFx (*renderBuffer, asset->sampleRate, *channelFxToRender);
+
+    const auto parent = outputFile.getParentDirectory();
+    if (! parent.exists() && ! parent.createDirectory())
+    {
+        errorOut = "ANNA could not create the committed samples folder.";
+        return false;
+    }
+
+    juce::WavAudioFormat wav;
+    std::unique_ptr<juce::FileOutputStream> stream (outputFile.createOutputStream());
+
+    if (stream == nullptr || ! stream->openedOk())
+    {
+        errorOut = "ANNA could not open the committed sample file for writing.";
+        return false;
+    }
+
+    std::unique_ptr<juce::AudioFormatWriter> writer (
+        wav.createWriterFor (stream.get(),
+                             asset->sampleRate,
+                             static_cast<unsigned int> (renderBuffer->getNumChannels()),
+                             24,
+                             {},
+                             0));
+
+    if (writer == nullptr)
+    {
+        errorOut = "ANNA could not create a WAV writer for the committed sample.";
+        return false;
+    }
+
+    stream.release();
+
+    if (! writer->writeFromAudioSampleBuffer (*renderBuffer, 0, renderBuffer->getNumSamples()))
+    {
+        errorOut = "ANNA could not write the committed sample audio.";
+        return false;
+    }
+
+    return true;
 }
 
 std::optional<SampleId> SampleManager::resolvePlaybackSampleId (AssetId assetId, int sliceIndex) const

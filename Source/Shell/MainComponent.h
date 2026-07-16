@@ -78,6 +78,8 @@ private:
     void triggerPatternRow (int rowIndex, float velocity);
     void showAudioSettings();
     void showSliceEditorPopup();
+    int ensureSelectedSliceTrackRow();
+    void commitSelectedSliceToSampleBrowser();
     void saveBeatToDisk();
     void loadBeatFromDisk();
     void applyLoadedBeat (const sampr::Pattern& pattern);
