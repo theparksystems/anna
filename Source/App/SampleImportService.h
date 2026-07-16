@@ -18,6 +18,7 @@ public:
         int loadedCount = 0;
         int failedCount = 0;
         juce::String lastError;
+        std::vector<AssetId> loadedAssetIds;
     };
 
     static juce::String getSupportedFileChooserPatterns();

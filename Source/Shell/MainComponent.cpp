@@ -292,7 +292,14 @@ private:
             if (! parsed.isObject())
                 finish ({}, "Import completed but ANNA could not read the converter result.\n" + lastOutput);
             else
-                finish (juce::File (parsed.getProperty ("audio", juce::String()).toString()), {});
+            {
+                auto importAudio = parsed.getProperty ("importAudio", juce::String()).toString();
+
+                if (importAudio.isEmpty())
+                    importAudio = parsed.getProperty ("audio", juce::String()).toString();
+
+                finish (juce::File (importAudio), {});
+            }
 
             return;
         }
@@ -1150,16 +1157,20 @@ void MainComponent::refreshSampleViews()
     waveformView.setSliceMarkers (asset->slices, asset->selectedSliceIndex, asset->numSamples);
 }
 
-void MainComponent::importSampleFiles (const juce::StringArray& paths)
+sampr::SampleImportService::ImportResult MainComponent::importSampleFiles (const juce::StringArray& paths)
 {
     const auto result = sampr::SampleImportService::importFiles (
         paths, projectModel, sampleManager, formatManager);
 
     if (result.loadedCount > 0)
     {
+        if (! result.loadedAssetIds.empty())
+            sampleManager.setSelectedAssetId (result.loadedAssetIds.back());
+
         patternStore.syncRowsFromLoadedAssets();
         refreshProjectViews();
         sliceEditor.syncFromSelectedSlice();
+        waveformView.repaint();
         showUserMessage ("Imported " + juce::String (result.loadedCount) + " sample(s).");
     }
 
@@ -1170,6 +1181,8 @@ void MainComponent::importSampleFiles (const juce::StringArray& paths)
             "Import failed",
             result.lastError + "\n(" + juce::String (result.failedCount) + " file(s) failed)");
     }
+
+    return result;
 }
 
 void MainComponent::startYouTubeImport (const juce::String& url, const juce::String& format)
@@ -1221,7 +1234,23 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
 
     juce::StringArray paths;
     paths.add (audioFile.getFullPathName());
-    importSampleFiles (paths);
+    const auto result = importSampleFiles (paths);
+
+    if (result.loadedCount <= 0)
+    {
+        const auto detail = result.lastError.isNotEmpty()
+            ? result.lastError
+            : ("ANNA could not decode the converted audio:\n" + audioFile.getFullPathName());
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "YouTube import decoded no sample",
+            detail);
+        showUserMessage ("YouTube conversion finished, but ANNA could not load the waveform.");
+        return;
+    }
+
+    patternTabs.setCurrentTabIndex (kTabStepSeq);
+    focusActiveEditorTab();
     showUserMessage ("Imported YouTube sample with metadata.");
 }
 

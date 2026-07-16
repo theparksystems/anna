@@ -104,6 +104,7 @@ SampleImportService::ImportResult SampleImportService::importFiles (
         if (auto* asset = samples.getAsset (*assetId); asset != nullptr && asset->refId.isEmpty())
             asset->refId = project.allocateSampleRefId();
 
+        result.loadedAssetIds.push_back (*assetId);
         ++result.loadedCount;
     }
 

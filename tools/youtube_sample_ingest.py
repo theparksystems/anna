@@ -54,6 +54,12 @@ def run(command: list[str]) -> None:
         raise CommandFailed(command, error.returncode, command_output(error)) from error
 
 
+def write_origin_sidecar(audio_file: Path, metadata: dict) -> Path:
+    sidecar = audio_file.with_name(f"{audio_file.stem}.anna-origin.json")
+    sidecar.write_text(json.dumps(metadata, indent=2, ensure_ascii=False), encoding="utf-8")
+    return sidecar
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Download a YouTube sample with ANNA metadata.")
     parser.add_argument("url", help="YouTube URL to download")
@@ -136,25 +142,57 @@ def main() -> int:
         print("Download completed, but the output file could not be located.", file=sys.stderr)
         return 1
 
-    audio_file = candidates[-1]
-    sidecar = audio_file.with_name(f"{audio_file.stem}.anna-origin.json")
+    delivery_file = candidates[-1]
+    import_file = delivery_file
     metadata = {
         "sourceType": "youtube",
         "sourceUrl": info.get("webpage_url") or args.url,
-        "sourceTitle": info.get("title") or audio_file.stem,
+        "sourceTitle": info.get("title") or delivery_file.stem,
         "sourceAuthor": info.get("uploader") or info.get("channel") or "",
         "sourceId": video_id,
         "downloadedAt": datetime.now(timezone.utc).isoformat(),
-        "localFileName": audio_file.name,
+        "localFileName": delivery_file.name,
     }
-    sidecar.write_text(json.dumps(metadata, indent=2, ensure_ascii=False), encoding="utf-8")
+    sidecar = write_origin_sidecar(delivery_file, metadata)
+
+    if args.format != "wav":
+        import_file = delivery_file.with_suffix(".anna-import.wav")
+        try:
+            run(
+                [
+                    ffmpeg_location,
+                    "-y",
+                    "-i",
+                    str(delivery_file),
+                    "-vn",
+                    "-acodec",
+                    "pcm_s16le",
+                    "-ar",
+                    "44100",
+                    "-ac",
+                    "2",
+                    str(import_file),
+                ]
+            )
+        except CommandFailed as error:
+            print("ANNA waveform import render failed.", file=sys.stderr)
+            print(error.output, file=sys.stderr)
+            return error.returncode or 1
+
+        import_metadata = dict(metadata)
+        import_metadata["localFileName"] = import_file.name
+        import_metadata["deliveryFileName"] = delivery_file.name
+        import_metadata["importRenderedFrom"] = str(delivery_file)
+        sidecar = write_origin_sidecar(import_file, import_metadata)
 
     if args.json_output:
         print(
             json.dumps(
                 {
                     "success": True,
-                    "audio": str(audio_file),
+                    "audio": str(import_file),
+                    "importAudio": str(import_file),
+                    "deliveryAudio": str(delivery_file),
                     "metadata": str(sidecar),
                     "sourceTitle": metadata["sourceTitle"],
                     "sourceUrl": metadata["sourceUrl"],

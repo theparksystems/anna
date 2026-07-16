@@ -7,6 +7,7 @@
 #include "../Audio/AudioCommand.h"
 #include "../Audio/AudioEngine.h"
 #include "../Audio/OfflineExporter.h"
+#include "../App/SampleImportService.h"
 #include "../Model/MixerState.h"
 #include "../Model/PatternStore.h"
 #include "../Model/ProjectController.h"
@@ -57,7 +58,7 @@ private:
     void refreshProjectViews();
     void publishPatternSnapshot();
     void applyTransportSettings();
-    void importSampleFiles (const juce::StringArray& paths);
+    sampr::SampleImportService::ImportResult importSampleFiles (const juce::StringArray& paths);
     void loadSampleFromDisk();
     void togglePlayPause();
     void stopTransport();
