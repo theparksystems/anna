@@ -5,6 +5,10 @@ async function main() {
   if (!health.ok) throw new Error(`health failed: ${health.status}`);
   const healthJson = await health.json();
   console.log('health:', healthJson.status, healthJson.model);
+  if (!healthJson.modelAvailable) {
+    console.log('assistant reachable; Gemma model unavailable');
+    return;
+  }
 
   const mockContext = {
     scope: 'channel',

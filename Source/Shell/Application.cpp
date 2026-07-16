@@ -5,10 +5,10 @@
 
 namespace
 {
-    constexpr int kDefaultWidth  = 1280;
-    constexpr int kDefaultHeight = 920;
-    constexpr int kMinWidth      = 960;
-    constexpr int kMinHeight     = 640;
+    constexpr int kDefaultWidth  = 1680;
+    constexpr int kDefaultHeight = 1000;
+    constexpr int kMinWidth      = 1180;
+    constexpr int kMinHeight     = 720;
 
     juce::PropertiesFile& getAppProperties()
     {
@@ -60,7 +60,7 @@ namespace
         juce::AlertWindow::showMessageBoxAsync (
             juce::AlertWindow::InfoIcon,
             "Welcome to ANNA",
-            "Native desktop sampler — no browser required.\n\n"
+            "Native desktop sampler - no browser required.\n\n"
             "Quick start:\n"
             "  Drop audio files anywhere, or Ctrl+Shift+L to load\n"
             "  Auto Slice in the slice editor to chop samples\n"

@@ -431,7 +431,7 @@ void PianoRollComponent::mouseDown (const juce::MouseEvent& event)
     if (event.mods.isRightButtonDown())
         return;
 
-    createNoteAt (xToBeats (event.x), yToPitch (event.y));
+    createNoteAt (xToBeats (static_cast<float> (event.x)), yToPitch (static_cast<float> (event.y)));
 }
 
 void PianoRollComponent::mouseDrag (const juce::MouseEvent& event)

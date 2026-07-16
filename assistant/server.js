@@ -107,12 +107,13 @@ app.use((req, res, next) => {
 app.get('/health', (_, res) => {
   const model = getModelInfo();
   res.json({
-    status: 'ok',
+    status: model.modelAvailable ? 'ok' : 'degraded',
     db: DB_PATH,
     llm: 'ollama',
     model: model.model,
     host: model.host,
-    ollamaReachable: model.ollamaReachable
+    ollamaReachable: model.ollamaReachable,
+    modelAvailable: model.modelAvailable
   });
 });
 

@@ -51,12 +51,17 @@ juce::String quoteCommandArg (juce::String value)
 juce::File findSourceRoot()
 {
     juce::Array<juce::File> candidates;
+    const auto envRoot = juce::SystemStats::getEnvironmentVariable ("ANNA_SOURCE_ROOT", {});
     const auto cwd = juce::File::getCurrentWorkingDirectory();
     const auto exe = juce::File::getSpecialLocation (juce::File::currentExecutableFile);
+
+    if (envRoot.isNotEmpty())
+        candidates.add (juce::File (envRoot));
 
     candidates.add (cwd);
     candidates.add (cwd.getChildFile ("anna"));
     candidates.add (exe.getParentDirectory());
+    candidates.add (exe.getParentDirectory().getParentDirectory().getParentDirectory().getChildFile ("anna"));
     candidates.add (exe.getParentDirectory().getParentDirectory().getParentDirectory().getParentDirectory().getChildFile ("anna"));
     candidates.add (juce::File ("C:\\anna\\anna"));
 
@@ -225,11 +230,13 @@ private:
             return;
         }
 
-        const juce::StringArray launchers {
-            quoteCommandArg ("C:\\Users\\User\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"),
-            "py -3",
-            "python"
-        };
+        juce::StringArray launchers;
+        const auto envPython = juce::SystemStats::getEnvironmentVariable ("ANNA_PYTHON", {});
+        if (envPython.isNotEmpty())
+            launchers.add (quoteCommandArg (envPython));
+        launchers.add (quoteCommandArg ("C:\\Users\\User\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"));
+        launchers.add ("py -3");
+        launchers.add ("python");
         juce::String lastOutput;
 
         for (const auto& launcher : launchers)
@@ -1003,10 +1010,14 @@ void MainComponent::toggleFullscreen()
 void MainComponent::paint (juce::Graphics& g)
 {
     const auto bounds = getLocalBounds().toFloat();
-    g.setGradientFill (juce::ColourGradient (juce::Colour (0xff121720), bounds.getX(), bounds.getY(),
-                                             juce::Colour (0xff080a0f), bounds.getX(), bounds.getBottom(),
+    g.setGradientFill (juce::ColourGradient (juce::Colour (0xff0d1118), bounds.getX(), bounds.getY(),
+                                             juce::Colour (0xff050608), bounds.getX(), bounds.getBottom(),
                                              false));
     g.fillRect (bounds);
+    g.setGradientFill (juce::ColourGradient (sampr::SamprLookAndFeel::accent().withAlpha (0.10f), bounds.getX(), bounds.getY(),
+                                             sampr::SamprLookAndFeel::accentCool().withAlpha (0.07f), bounds.getRight(), bounds.getY(),
+                                             false));
+    g.fillRect (bounds.withHeight (72.0f));
 
     if (dragSamplesActive)
     {
@@ -1025,9 +1036,9 @@ void MainComponent::paint (juce::Graphics& g)
 void MainComponent::resized()
 {
     auto area = getLocalBounds().reduced (4);
-    topNavBar.setBounds (area.removeFromTop (32));
+    topNavBar.setBounds (area.removeFromTop (38));
 
-    auto projectRow = area.removeFromTop (30);
+    auto projectRow = area.removeFromTop (32);
     saveProjectButton.setBounds (projectRow.removeFromLeft (60));
     projectRow.removeFromLeft (4);
     loadProjectButton.setBounds (projectRow.removeFromLeft (60));

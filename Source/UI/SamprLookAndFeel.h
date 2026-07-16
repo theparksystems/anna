@@ -10,18 +10,18 @@ class SamprLookAndFeel final : public juce::LookAndFeel_V4
 public:
     SamprLookAndFeel();
 
-    static juce::Colour background() noexcept { return juce::Colour (0xff101216); }
-    static juce::Colour panel() noexcept { return juce::Colour (0xff181b22); }
-    static juce::Colour surface() noexcept { return juce::Colour (0xff242934); }
-    static juce::Colour border() noexcept { return juce::Colour (0xff343b49); }
-    static juce::Colour divider() noexcept { return juce::Colour (0xff465064); }
-    static juce::Colour accent() noexcept { return juce::Colour (0xffffa21a); }
-    static juce::Colour accentCool() noexcept { return juce::Colour (0xff35c7ff); }
+    static juce::Colour background() noexcept { return juce::Colour (0xff080a0d); }
+    static juce::Colour panel() noexcept { return juce::Colour (0xff12161c); }
+    static juce::Colour surface() noexcept { return juce::Colour (0xff1b212b); }
+    static juce::Colour border() noexcept { return juce::Colour (0xff303947); }
+    static juce::Colour divider() noexcept { return juce::Colour (0xff4b5668); }
+    static juce::Colour accent() noexcept { return juce::Colour (0xffff9f1a); }
+    static juce::Colour accentCool() noexcept { return juce::Colour (0xff23d6c8); }
     static juce::Colour success() noexcept { return juce::Colour (0xff68d86d); }
     static juce::Colour danger() noexcept { return juce::Colour (0xffff4f63); }
-    static juce::Colour transport() noexcept { return juce::Colour (0xff1e232c); }
-    static juce::Colour textMuted() noexcept { return juce::Colour (0xff9aa3b4); }
-    static juce::Colour textPrimary() noexcept { return juce::Colour (0xffeef2f8); }
+    static juce::Colour transport() noexcept { return juce::Colour (0xff151a22); }
+    static juce::Colour textMuted() noexcept { return juce::Colour (0xffa8b0bf); }
+    static juce::Colour textPrimary() noexcept { return juce::Colour (0xfff5f7fb); }
 
     static void paintPanelOutline (juce::Graphics& g, juce::Rectangle<int> bounds);
     static void paintHorizontalDivider (juce::Graphics& g, int y, int width);

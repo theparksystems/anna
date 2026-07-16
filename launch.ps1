@@ -6,6 +6,8 @@ $buildDir = Join-Path (Split-Path -Parent $root) "build-anna"
 $exe  = Join-Path $buildDir "ANNA_artefacts\Release\ANNA.exe"
 $assistantDir = Join-Path $root "assistant"
 $assistantPort = 3921
+$bundledPython = "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
+$bundledNode = "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\node\bin\node.exe"
 
 function Find-CMake {
     $candidates = @(
@@ -79,6 +81,77 @@ function Import-VsBuildEnv {
     }
 }
 
+function Find-PythonRuntime {
+    if (Test-Path $bundledPython) { return $bundledPython }
+
+    $fromPath = Get-Command python -ErrorAction SilentlyContinue
+    if ($null -ne $fromPath) { return $fromPath.Source }
+
+    $fromLauncher = Get-Command py -ErrorAction SilentlyContinue
+    if ($null -ne $fromLauncher) { return $fromLauncher.Source }
+
+    return $null
+}
+
+function Find-NodeRuntime {
+    $fromPath = Get-Command node -ErrorAction SilentlyContinue
+    if ($null -ne $fromPath) { return $fromPath.Source }
+
+    if (Test-Path $bundledNode) { return $bundledNode }
+
+    return $null
+}
+
+function Find-NpmRuntime {
+    $fromPath = Get-Command npm -ErrorAction SilentlyContinue
+    if ($null -ne $fromPath) { return $fromPath.Source }
+
+    $nodeFolder = Split-Path -Parent $bundledNode
+    foreach ($candidate in @("npm.cmd", "npm.ps1", "npm")) {
+        $path = Join-Path $nodeFolder $candidate
+        if (Test-Path $path) { return $path }
+    }
+
+    return $null
+}
+
+function Find-PnpmRuntime {
+    $fromPath = Get-Command pnpm -ErrorAction SilentlyContinue
+    if ($null -ne $fromPath) { return $fromPath.Source }
+
+    $candidate = "C:\Users\User\.cache\codex-runtimes\codex-primary-runtime\dependencies\bin\fallback\pnpm.cmd"
+    if (Test-Path $candidate) { return $candidate }
+
+    return $null
+}
+
+function Ensure-YouTubeImportRuntime {
+    $python = Find-PythonRuntime
+    if ($null -eq $python) {
+        Write-Warning "Python not found - YouTube import will ask for Python, yt-dlp, and ffmpeg."
+        return
+    }
+
+    $env:ANNA_PYTHON = $python
+    $env:ANNA_SOURCE_ROOT = $root
+
+    $check = @"
+import importlib.util
+import sys
+missing = [name for name in ("yt_dlp", "imageio_ffmpeg") if importlib.util.find_spec(name) is None]
+sys.exit(1 if missing else 0)
+"@
+
+    $check | & $python - 2>$null
+    if ($LASTEXITCODE -eq 0) { return }
+
+    Write-Host "Installing YouTube import runtime packages..."
+    & $python -m pip install yt-dlp imageio-ffmpeg --disable-pip-version-check | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        Write-Warning "Could not install yt-dlp/imageio-ffmpeg - YouTube import may be unavailable."
+    }
+}
+
 function Test-AssistantHealth {
     try {
         $resp = Invoke-WebRequest -Uri "http://127.0.0.1:$assistantPort/health" -UseBasicParsing -TimeoutSec 2
@@ -145,7 +218,11 @@ function Start-AssistantSidecar {
     if (Test-AssistantHealth) {
         $info = Get-AssistantHealthInfo
         $model = if ($info) { $info.model } else { "unknown" }
-        Write-Host "Gemma assistant already running on port $assistantPort ($model)"
+        if ($info -and $info.modelAvailable) {
+            Write-Host "Gemma assistant already running on port $assistantPort ($model)"
+        } else {
+            Write-Warning "Assistant sidecar is running, but no usable Gemma model is available. Recommended: ollama pull gemma2:9b"
+        }
         return
     }
 
@@ -154,7 +231,7 @@ function Start-AssistantSidecar {
         return
     }
 
-    $node = Get-Command node -ErrorAction SilentlyContinue
+    $node = Find-NodeRuntime
     if ($null -eq $node) {
         Write-Warning "Node.js not found - install Node 18+ for Gemma assistant."
         return
@@ -166,23 +243,45 @@ function Start-AssistantSidecar {
     }
 
     if (-not (Test-Path (Join-Path $assistantDir "node_modules"))) {
-        Write-Host "Installing assistant dependencies..."
+        $npm = Find-NpmRuntime
         Push-Location $assistantDir
-        & npm install --no-fund --no-audit | Out-Host
+        if ($null -ne $npm) {
+            Write-Host "Installing assistant dependencies..."
+            & $npm install --no-fund --no-audit | Out-Host
+        } else {
+            $pnpm = Find-PnpmRuntime
+            if ($null -eq $pnpm) {
+                Pop-Location
+                Write-Warning "npm/pnpm not found - install Node 18+ with npm to enable the Gemma assistant sidecar."
+                return
+            }
+
+            Write-Host "Installing assistant dependencies with bundled package manager..."
+            & $pnpm install --prod --no-frozen-lockfile --lockfile=false | Out-Host
+        }
+        if ($LASTEXITCODE -ne 0) {
+            Pop-Location
+            Write-Warning "Assistant dependencies could not be installed - ANNA will show offline assistant status."
+            return
+        }
         Pop-Location
     }
 
     Configure-AssistantEnv
 
     Write-Host "Starting Gemma assistant sidecar..."
-    Start-Process -FilePath "node" -ArgumentList "server.js" -WorkingDirectory $assistantDir -WindowStyle Hidden | Out-Null
+    Start-Process -FilePath $node -ArgumentList "server.js" -WorkingDirectory $assistantDir -WindowStyle Hidden | Out-Null
 
     $deadline = (Get-Date).AddSeconds(8)
     while ((Get-Date) -lt $deadline) {
         if (Test-AssistantHealth) {
             $info = Get-AssistantHealthInfo
             $model = if ($info) { $info.model } else { $gemmaModel }
-            Write-Host "Gemma assistant online ($model)"
+            if ($info -and $info.modelAvailable) {
+                Write-Host "Gemma assistant online ($model)"
+            } else {
+                Write-Warning "Assistant sidecar started, but no usable Gemma model is available. Recommended: ollama pull gemma2:9b"
+            }
             return
         }
         Start-Sleep -Milliseconds 400
@@ -223,6 +322,7 @@ if ($needsBuild) {
 
 if (-not (Test-Path $exe)) { throw "ANNA.exe not found at $exe" }
 
+Ensure-YouTubeImportRuntime
 Start-AssistantSidecar
 
 Write-Host "Launching ANNA..."

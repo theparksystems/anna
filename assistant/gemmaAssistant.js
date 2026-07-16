@@ -14,6 +14,7 @@ const MODEL_PRIORITY = [
 
 let activeModel = process.env.OLLAMA_MODEL || 'gemma2:9b';
 let ollamaReachable = false;
+let modelAvailable = false;
 
 function listLocalModels() {
   try {
@@ -54,6 +55,7 @@ export async function initModel() {
       const picked = pickModel(installed, preferred);
       if (picked) {
         activeModel = picked;
+        modelAvailable = true;
         console.log(`[Ollama] Using model: ${activeModel}`);
         return activeModel;
       }
@@ -67,17 +69,25 @@ export async function initModel() {
   if (picked) {
     ollamaReachable = true;
     activeModel = picked;
+    modelAvailable = true;
     console.log(`[Ollama] Using model (local list): ${activeModel}`);
     return activeModel;
   }
 
   activeModel = preferred;
+  modelAvailable = false;
   console.warn(`[Ollama] No Gemma model found. Defaulting to ${activeModel}`);
   console.warn('         Run: ollama pull gemma2:9b  (or gemma3:4b)');
   return activeModel;
 }
 
 export async function callOllama(messages, options = {}) {
+  if (!modelAvailable) {
+    await initModel();
+    if (!modelAvailable)
+      throw new Error(`Gemma model unavailable. Run: ollama pull ${activeModel}`);
+  }
+
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 90000);
 
@@ -160,5 +170,5 @@ export async function generateResponse({ message, trackContext, history, memoryC
 }
 
 export function getModelInfo() {
-  return { host: OLLAMA_HOST, model: activeModel, ollamaReachable };
+  return { host: OLLAMA_HOST, model: activeModel, ollamaReachable, modelAvailable };
 }
