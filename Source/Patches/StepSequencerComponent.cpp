@@ -103,22 +103,6 @@ int StepSequencerComponent::addSelectedSampleRow()
     return row;
 }
 
-int StepSequencerComponent::addDraggedSampleRow (const juce::var& description)
-{
-    const auto text = description.toString();
-
-    if (! text.startsWith ("anna-sample:"))
-        return -1;
-
-    const auto assetId = static_cast<AssetId> (text.fromFirstOccurrenceOf ("anna-sample:", false, false).getLargeIntValue());
-    const auto row = patternStore.addRowFromAsset (assetId, 0);
-
-    if (row >= 0 && onUserMessage != nullptr)
-        onUserMessage ("Dropped sample into track " + juce::String (row + 1) + ".");
-
-    return row;
-}
-
 void StepSequencerComponent::onToolbarChanged()
 {
     if (refreshingToolbar)
@@ -138,17 +122,6 @@ void StepSequencerComponent::onToolbarChanged()
 
     if (onChange != nullptr)
         onChange();
-}
-
-bool StepSequencerComponent::isInterestedInDragSource (const SourceDetails& dragSourceDetails)
-{
-    return dragSourceDetails.description.toString().startsWith ("anna-sample:");
-}
-
-void StepSequencerComponent::itemDropped (const SourceDetails& dragSourceDetails)
-{
-    if (addDraggedSampleRow (dragSourceDetails.description) >= 0)
-        repaint();
 }
 
 juce::Rectangle<int> StepSequencerComponent::getGridBounds() const
@@ -302,6 +275,9 @@ bool StepSequencerComponent::keyPressed (const juce::KeyPress& key)
 
 void StepSequencerComponent::paintBeatMarkers (juce::Graphics& g, juce::Rectangle<int> gridArea)
 {
+    if (gridArea.getWidth() <= metrics.rowHeaderWidth || gridArea.getHeight() <= 0)
+        return;
+
     const auto& pattern = patternStore.getCurrentPattern();
     const auto gridContent = gridArea.withTrimmedLeft (metrics.rowHeaderWidth);
     const auto cellWidth = gridContent.getWidth() / juce::jmax (1, pattern.numSteps);
@@ -323,6 +299,9 @@ void StepSequencerComponent::paintBeatMarkers (juce::Graphics& g, juce::Rectangl
 
 void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> gridArea)
 {
+    if (gridArea.getWidth() <= metrics.rowHeaderWidth || gridArea.getHeight() <= 0)
+        return;
+
     const auto& pattern = patternStore.getCurrentPattern();
     const auto gridContent = gridArea.withTrimmedLeft (metrics.rowHeaderWidth);
     const auto cellWidth = gridContent.getWidth() / juce::jmax (1, pattern.numSteps);
@@ -404,6 +383,9 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
 
 void StepSequencerComponent::paintEmptyPlaylistRows (juce::Graphics& g, juce::Rectangle<int> gridArea)
 {
+    if (gridArea.getWidth() <= metrics.rowHeaderWidth || gridArea.getHeight() <= 0)
+        return;
+
     const auto visibleRows = juce::jmax (8, gridArea.getHeight() / metrics.rowHeight);
     const auto gridContent = gridArea.withTrimmedLeft (metrics.rowHeaderWidth);
     const auto& pattern = patternStore.getCurrentPattern();
@@ -450,6 +432,9 @@ void StepSequencerComponent::paintEmptyPlaylistRows (juce::Graphics& g, juce::Re
 
 void StepSequencerComponent::paint (juce::Graphics& g)
 {
+    if (getWidth() <= 0 || getHeight() <= 0)
+        return;
+
     g.setGradientFill (juce::ColourGradient (juce::Colour (0xff203039), 0.0f, 0.0f,
                                              juce::Colour (0xff0f1b21), 0.0f, static_cast<float> (getHeight()),
                                              false));

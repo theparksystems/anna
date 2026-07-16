@@ -26,7 +26,6 @@
 #include "../UI/WaveformComponent.h"
 
 class MainComponent final : public juce::AudioAppComponent,
-                            public juce::DragAndDropContainer,
                             private juce::Timer,
                             private juce::ChangeListener,
                             private juce::MidiInputCallback,

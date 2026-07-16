@@ -25,7 +25,6 @@ public:
     int getNumRows() override;
     void paintListBoxItem (int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override;
     void listBoxItemClicked (int row, const juce::MouseEvent&) override;
-    juce::var getDragSourceDescription (const juce::SparseSet<int>& rowsToDescribe) override;
 
     void paint (juce::Graphics& g) override;
     void resized() override;

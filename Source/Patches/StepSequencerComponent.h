@@ -9,8 +9,7 @@
 namespace sampr
 {
 
-class StepSequencerComponent final : public juce::Component,
-                                     public juce::DragAndDropTarget
+class StepSequencerComponent final : public juce::Component
 {
 public:
     using ChangeCallback = std::function<void()>;
@@ -29,8 +28,6 @@ public:
     void mouseDrag (const juce::MouseEvent& event) override;
     void mouseUp (const juce::MouseEvent& event) override;
     bool keyPressed (const juce::KeyPress& key) override;
-    bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override;
-    void itemDropped (const SourceDetails& dragSourceDetails) override;
 
 private:
     struct LayoutMetrics
@@ -48,7 +45,6 @@ private:
     void paintRows (juce::Graphics& g, juce::Rectangle<int> gridArea);
     void paintEmptyPlaylistRows (juce::Graphics& g, juce::Rectangle<int> gridArea);
     int addSelectedSampleRow();
-    int addDraggedSampleRow (const juce::var& description);
     void onToolbarChanged();
 
     PatternStore& patternStore;
