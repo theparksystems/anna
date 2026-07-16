@@ -26,34 +26,14 @@ StepSequencerComponent::StepSequencerComponent (PatternStore& store)
 
     patternSelector.onChange = [this] { onToolbarChanged(); };
     stepCountSelector.onChange = [this] { onToolbarChanged(); };
+    addRowButton.setTooltip ("Add the selected sample as a new instrument track.");
+    addPatternButton.setButtonText ("+ Track");
+    addPatternButton.setTooltip ("Add the selected sample as a new instrument track.");
+    syncAssetsButton.setTooltip ("Create one sequencer track for every loaded sample.");
 
-    addRowButton.onClick = [this]
-    {
-        const auto row = patternStore.addRowFromSelectedAsset();
+    addRowButton.onClick = [this] { addSelectedSampleRow(); };
 
-        if (row < 0)
-        {
-            if (onUserMessage != nullptr)
-                onUserMessage ("Select or import a sample before adding a row.");
-            return;
-        }
-
-        if (onUserMessage != nullptr)
-            onUserMessage ("Added row " + juce::String (row + 1) + " from selected sample.");
-    };
-
-    addPatternButton.onClick = [this]
-    {
-        if (! patternStore.addPattern())
-        {
-            if (onUserMessage != nullptr)
-                onUserMessage ("Pattern limit reached.");
-            return;
-        }
-
-        if (onUserMessage != nullptr)
-            onUserMessage ("Added new pattern.");
-    };
+    addPatternButton.onClick = [this] { addSelectedSampleRow(); };
 
     clearPatternButton.onClick = [this]
     {
@@ -106,6 +86,39 @@ void StepSequencerComponent::refresh()
     repaint();
 }
 
+int StepSequencerComponent::addSelectedSampleRow()
+{
+    const auto row = patternStore.addRowFromSelectedAsset();
+
+    if (row < 0)
+    {
+        if (onUserMessage != nullptr)
+            onUserMessage ("Select a sample on the left, then add or drag it into the sequencer.");
+        return row;
+    }
+
+    if (onUserMessage != nullptr)
+        onUserMessage ("Added track " + juce::String (row + 1) + " from selected sample.");
+
+    return row;
+}
+
+int StepSequencerComponent::addDraggedSampleRow (const juce::var& description)
+{
+    const auto text = description.toString();
+
+    if (! text.startsWith ("anna-sample:"))
+        return -1;
+
+    const auto assetId = static_cast<AssetId> (text.fromFirstOccurrenceOf ("anna-sample:", false, false).getLargeIntValue());
+    const auto row = patternStore.addRowFromAsset (assetId, 0);
+
+    if (row >= 0 && onUserMessage != nullptr)
+        onUserMessage ("Dropped sample into track " + juce::String (row + 1) + ".");
+
+    return row;
+}
+
 void StepSequencerComponent::onToolbarChanged()
 {
     if (refreshingToolbar)
@@ -125,6 +138,17 @@ void StepSequencerComponent::onToolbarChanged()
 
     if (onChange != nullptr)
         onChange();
+}
+
+bool StepSequencerComponent::isInterestedInDragSource (const SourceDetails& dragSourceDetails)
+{
+    return dragSourceDetails.description.toString().startsWith ("anna-sample:");
+}
+
+void StepSequencerComponent::itemDropped (const SourceDetails& dragSourceDetails)
+{
+    if (addDraggedSampleRow (dragSourceDetails.description) >= 0)
+        repaint();
 }
 
 juce::Rectangle<int> StepSequencerComponent::getGridBounds() const
@@ -308,23 +332,39 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
         const auto& patternRow = pattern.rows[static_cast<size_t> (row)];
         auto rowArea = gridArea.removeFromTop (metrics.rowHeight);
 
-        g.setColour (patternRow.colour.withAlpha (0.85f));
+        g.setColour (row % 2 == 0 ? SamprLookAndFeel::panel().brighter (0.02f)
+                                  : SamprLookAndFeel::panel().darker (0.03f));
+        g.fillRect (rowArea);
+        g.setColour (SamprLookAndFeel::border().withAlpha (0.65f));
+        g.drawHorizontalLine (rowArea.getBottom() - 1,
+                              static_cast<float> (gridArea.getX()),
+                              static_cast<float> (gridArea.getRight()));
+
+        auto header = rowArea.removeFromLeft (metrics.rowHeaderWidth);
+        g.setColour (SamprLookAndFeel::surface().withAlpha (0.84f));
+        g.fillRect (header);
+        g.setColour (patternRow.colour.withAlpha (0.95f));
+        g.fillEllipse (static_cast<float> (header.getRight() - 14),
+                       static_cast<float> (header.getCentreY() - 4),
+                       8.0f,
+                       8.0f);
+
+        g.setColour (patternRow.colour.withAlpha (0.9f));
         g.setFont (juce::FontOptions { 12.0f, juce::Font::bold });
-        g.drawText (patternRow.label, rowArea.removeFromLeft (metrics.rowHeaderWidth),
-                    juce::Justification::centredLeft, true);
+        g.drawText (patternRow.label, header.reduced (8, 0), juce::Justification::centredLeft, true);
 
         for (int step = 0; step < pattern.numSteps; ++step)
         {
             auto cell = gridContent.withWidth (cellWidth).withX (gridContent.getX() + step * cellWidth)
-                                   .withY (rowArea.getY()).withHeight (metrics.rowHeight - 2);
+                                   .withY (rowArea.getY()).withHeight (metrics.rowHeight - 1);
 
             const auto& cellData = patternRow.steps[static_cast<size_t> (step)];
             const bool isCurrent = step == currentStepIndex;
 
             const auto cellBounds = cell.toFloat().reduced (1.0f);
-            g.setColour (step % 4 == 0 ? SamprLookAndFeel::surface().brighter (0.05f)
-                                        : SamprLookAndFeel::surface().darker (0.03f));
-            g.fillRoundedRectangle (cellBounds, 3.0f);
+            g.setColour (step % 4 == 0 ? SamprLookAndFeel::surface().brighter (0.02f)
+                                        : SamprLookAndFeel::background().brighter (0.08f));
+            g.fillRect (cellBounds);
 
             if (isCurrent)
             {
@@ -348,7 +388,7 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
                                                          patternRow.colour.darker (0.22f).withAlpha (alpha),
                                                          active.getX(), active.getBottom(),
                                                          false));
-                g.fillRoundedRectangle (active, 3.0f);
+                g.fillRoundedRectangle (active.reduced (1.0f, 5.0f), 3.0f);
 
                 if (cellData.probability < 0.99f)
                 {
@@ -362,30 +402,83 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
     }
 }
 
+void StepSequencerComponent::paintEmptyPlaylistRows (juce::Graphics& g, juce::Rectangle<int> gridArea)
+{
+    const auto visibleRows = juce::jmax (8, gridArea.getHeight() / metrics.rowHeight);
+    const auto gridContent = gridArea.withTrimmedLeft (metrics.rowHeaderWidth);
+    const auto& pattern = patternStore.getCurrentPattern();
+    const auto cellWidth = gridContent.getWidth() / juce::jmax (1, pattern.numSteps);
+
+    for (int row = 0; row < visibleRows; ++row)
+    {
+        auto rowArea = gridArea.withY (gridArea.getY() + row * metrics.rowHeight).withHeight (metrics.rowHeight);
+
+        if (rowArea.getY() >= gridArea.getBottom())
+            break;
+
+        g.setColour (row % 2 == 0 ? juce::Colour (0xff17242b) : juce::Colour (0xff142027));
+        g.fillRect (rowArea);
+
+        auto header = rowArea.removeFromLeft (metrics.rowHeaderWidth);
+        g.setColour (juce::Colour (0xff253039));
+        g.fillRect (header);
+
+        g.setColour (SamprLookAndFeel::textMuted().withAlpha (0.72f));
+        g.setFont (juce::FontOptions { 12.0f });
+        g.drawText ("Track " + juce::String (row + 1), header.reduced (8, 0), juce::Justification::centredLeft, true);
+
+        g.setColour (SamprLookAndFeel::success().withAlpha (0.82f));
+        g.fillEllipse (static_cast<float> (header.getRight() - 14),
+                       static_cast<float> (header.getCentreY() - 4),
+                       8.0f,
+                       8.0f);
+
+        for (int step = 0; step < pattern.numSteps; ++step)
+        {
+            const auto x = gridContent.getX() + step * cellWidth;
+            g.setColour (step % 4 == 0 ? SamprLookAndFeel::border().withAlpha (0.72f)
+                                        : SamprLookAndFeel::divider().withAlpha (0.22f));
+            g.drawVerticalLine (x, static_cast<float> (rowArea.getY()), static_cast<float> (rowArea.getBottom()));
+        }
+
+        g.setColour (SamprLookAndFeel::border().withAlpha (0.58f));
+        g.drawHorizontalLine (rowArea.getBottom() - 1,
+                              static_cast<float> (gridArea.getX()),
+                              static_cast<float> (gridArea.getRight()));
+    }
+}
+
 void StepSequencerComponent::paint (juce::Graphics& g)
 {
-    g.setGradientFill (juce::ColourGradient (SamprLookAndFeel::background().brighter (0.05f), 0.0f, 0.0f,
-                                             SamprLookAndFeel::background().darker (0.12f), 0.0f, static_cast<float> (getHeight()),
+    g.setGradientFill (juce::ColourGradient (juce::Colour (0xff203039), 0.0f, 0.0f,
+                                             juce::Colour (0xff0f1b21), 0.0f, static_cast<float> (getHeight()),
                                              false));
     g.fillRect (getLocalBounds());
 
-    g.setColour (SamprLookAndFeel::accent());
-    g.setFont (juce::FontOptions { 12.0f, juce::Font::bold });
-    g.drawText ("CHANNEL RACK", 4, 4, 200, 18, juce::Justification::centredLeft);
+    g.setColour (SamprLookAndFeel::accentCool());
+    g.setFont (juce::FontOptions { 12.5f, juce::Font::bold });
+    g.drawText ("PLAYLIST SEQUENCER", 8, 5, 220, 18, juce::Justification::centredLeft);
 
     auto markerArea = getLocalBounds();
     markerArea.removeFromTop (metrics.toolbarHeight + 2);
     markerArea.setHeight (metrics.beatMarkerHeight);
+    g.setColour (juce::Colour (0xff1a2a32));
+    g.fillRect (markerArea);
     paintBeatMarkers (g, markerArea);
-
-    paintRows (g, getGridBounds());
 
     if (patternStore.getCurrentPattern().rows.empty())
     {
-        g.setColour (juce::Colours::grey);
-        g.drawText ("Add rows with '+ Row' or 'Sync Samples'",
-                    getGridBounds(), juce::Justification::centred);
+        paintEmptyPlaylistRows (g, getGridBounds());
+        g.setColour (SamprLookAndFeel::textMuted().withAlpha (0.82f));
+        g.setFont (juce::FontOptions { 13.0f, juce::Font::bold });
+        g.drawText ("Drag samples from the left panel into a track lane",
+                    getGridBounds().reduced (metrics.rowHeaderWidth + 24, 0),
+                    juce::Justification::centred,
+                    true);
+        return;
     }
+
+    paintRows (g, getGridBounds());
 }
 
 void StepSequencerComponent::resized()
@@ -398,16 +491,16 @@ void StepSequencerComponent::resized()
     const int h = toolbar.getHeight();
     const int gap = 6;
 
-    patternSelector.setBounds (x, toolbar.getY(), 130, h);
-    x += 130 + gap;
+    patternSelector.setBounds (x, toolbar.getY(), 150, h);
+    x += 150 + gap;
     stepCountSelector.setBounds (x, toolbar.getY(), 100, h);
     x += 100 + gap;
     addRowButton.setBounds (x, toolbar.getY(), 70, h);
     x += 70 + gap;
     syncAssetsButton.setBounds (x, toolbar.getY(), 100, h);
     x += 100 + gap;
-    addPatternButton.setBounds (x, toolbar.getY(), 90, h);
-    x += 90 + gap;
+    addPatternButton.setBounds (x, toolbar.getY(), 82, h);
+    x += 82 + gap;
     clearPatternButton.setBounds (x, toolbar.getY(), 60, h);
 }
 

@@ -164,6 +164,17 @@ void SampleBrowserComponent::listBoxItemClicked (int row, const juce::MouseEvent
         onSelectionChanged (assetId);
 }
 
+juce::var SampleBrowserComponent::getDragSourceDescription (const juce::SparseSet<int>& rowsToDescribe)
+{
+    const auto row = rowsToDescribe[0];
+    const auto& ids = sampleManager.getAssetIds();
+
+    if (! juce::isPositiveAndBelow (row, static_cast<int> (ids.size())))
+        return {};
+
+    return "anna-sample:" + juce::String (ids[static_cast<size_t> (row)]);
+}
+
 void SampleBrowserComponent::paint (juce::Graphics& g)
 {
     g.setGradientFill (juce::ColourGradient (SamprLookAndFeel::panel().brighter (0.05f), 0.0f, 0.0f,

@@ -9,7 +9,8 @@
 namespace sampr
 {
 
-class StepSequencerComponent final : public juce::Component
+class StepSequencerComponent final : public juce::Component,
+                                     public juce::DragAndDropTarget
 {
 public:
     using ChangeCallback = std::function<void()>;
@@ -28,14 +29,16 @@ public:
     void mouseDrag (const juce::MouseEvent& event) override;
     void mouseUp (const juce::MouseEvent& event) override;
     bool keyPressed (const juce::KeyPress& key) override;
+    bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override;
+    void itemDropped (const SourceDetails& dragSourceDetails) override;
 
 private:
     struct LayoutMetrics
     {
         int rowHeaderWidth = 120;
-        int rowHeight = 28;
+        int rowHeight = 42;
         int toolbarHeight = 34;
-        int beatMarkerHeight = 18;
+        int beatMarkerHeight = 24;
     };
 
     juce::Rectangle<int> getGridBounds() const;
@@ -43,6 +46,9 @@ private:
     void handleCellInteraction (int row, int step, const juce::ModifierKeys& mods, bool isDrag);
     void paintBeatMarkers (juce::Graphics& g, juce::Rectangle<int> gridArea);
     void paintRows (juce::Graphics& g, juce::Rectangle<int> gridArea);
+    void paintEmptyPlaylistRows (juce::Graphics& g, juce::Rectangle<int> gridArea);
+    int addSelectedSampleRow();
+    int addDraggedSampleRow (const juce::var& description);
     void onToolbarChanged();
 
     PatternStore& patternStore;
