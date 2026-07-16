@@ -2,7 +2,8 @@
 """
 Download a YouTube source as audio and write ANNA provenance metadata.
 
-Requires yt-dlp and ffmpeg on PATH:
+Requires yt-dlp. ANNA uses system ffmpeg when available, otherwise the bundled
+imageio-ffmpeg runtime:
     python tools/youtube_sample_ingest.py "https://www.youtube.com/watch?v=..." --out Samples
 """
 
