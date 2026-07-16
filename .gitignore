@@ -1,0 +1,26 @@
+build*/
+out/
+dist/
+*.user
+*.suo
+*.vcxproj.user
+*.log
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# Local assistant sidecar dependencies
+assistant/node_modules/
+assistant/.env
+
+# Generated ANNA project/audio output
+*.anna.json
+*.anna-beat.json
+*.sampr.json
+*.sampr-beat.json
+*.wav
+*.mp3
+*.aiff
+*.flac
+
