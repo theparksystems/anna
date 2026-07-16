@@ -35,7 +35,7 @@ public:
     const Pattern& getPattern (int index) const;
 
     void selectPattern (int index);
-    void addPattern();
+    bool addPattern();
     void duplicateCurrentPattern();
     void setPatternName (int index, const juce::String& name);
 

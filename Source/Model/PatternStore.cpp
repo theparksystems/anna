@@ -75,16 +75,19 @@ void PatternStore::selectPattern (int index)
     if (! juce::isPositiveAndBelow (index, static_cast<int> (project.getPatterns().size())))
         return;
 
+    if (project.getSettings().currentPatternIndex == index)
+        return;
+
     project.getSettings().currentPatternIndex = index;
     notifyChanged();
 }
 
-void PatternStore::addPattern()
+bool PatternStore::addPattern()
 {
     auto& patterns = project.getPatterns();
 
     if (static_cast<int> (patterns.size()) >= ProjectModel::kMaxPatterns)
-        return;
+        return false;
 
     saveCheckpoint();
     Pattern pattern;
@@ -94,6 +97,7 @@ void PatternStore::addPattern()
     patterns.push_back (std::move (pattern));
     project.getSettings().currentPatternIndex = static_cast<int> (patterns.size()) - 1;
     notifyChanged();
+    return true;
 }
 
 void PatternStore::duplicateCurrentPattern()
@@ -136,8 +140,12 @@ void PatternStore::ensureStepArrays (Pattern& pattern)
 void PatternStore::setNumSteps (int numSteps)
 {
     numSteps = juce::jlimit (16, kMaxPatternSteps, numSteps);
-    saveCheckpoint();
     auto& pattern = getCurrentPattern();
+
+    if (pattern.numSteps == numSteps)
+        return;
+
+    saveCheckpoint();
     pattern.numSteps = numSteps;
     ensureStepArrays (pattern);
     notifyChanged();

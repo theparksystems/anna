@@ -89,6 +89,19 @@ juce::String getLastNonEmptyLine (const juce::String& text)
     return {};
 }
 
+void appendProcessOutput (juce::String& destination, const juce::String& chunk)
+{
+    if (chunk.isEmpty())
+        return;
+
+    static constexpr int kMaxProcessOutputChars = 12000;
+    destination << chunk;
+
+    if (destination.length() > kMaxProcessOutputChars)
+        destination = "... earlier converter output trimmed ...\n"
+            + destination.substring (destination.length() - kMaxProcessOutputChars);
+}
+
 juce::String buildSampledFromText (const sampr::ProjectModel& project)
 {
     juce::String text;
@@ -264,11 +277,11 @@ private:
                 if (threadShouldExit())
                     return;
 
-                lastOutput << process.readAllProcessOutput();
+                appendProcessOutput (lastOutput, process.readAllProcessOutput());
                 wait (100);
             }
 
-            lastOutput << process.readAllProcessOutput();
+            appendProcessOutput (lastOutput, process.readAllProcessOutput());
             const auto exitCode = process.getExitCode();
 
             if (exitCode != 0)
@@ -376,6 +389,7 @@ MainComponent::MainComponent()
     });
 
     stepSequencer.setChangeCallback ([this] { publishPatternSnapshot(); });
+    stepSequencer.setUserMessageCallback ([this] (const juce::String& message) { showUserMessage (message); });
     pianoRoll.setChangeCallback ([this] { publishPatternSnapshot(); });
     mixerPanel.setChangeCallback ([this] { publishPatternSnapshot(); });
     mixerPanel.setFxOpenCallback ([this] (int rowIndex)

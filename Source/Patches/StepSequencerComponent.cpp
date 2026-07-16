@@ -29,18 +29,30 @@ StepSequencerComponent::StepSequencerComponent (PatternStore& store)
 
     addRowButton.onClick = [this]
     {
-        patternStore.addRowFromSelectedAsset();
-        refresh();
-        if (onChange != nullptr)
-            onChange();
+        const auto row = patternStore.addRowFromSelectedAsset();
+
+        if (row < 0)
+        {
+            if (onUserMessage != nullptr)
+                onUserMessage ("Select or import a sample before adding a row.");
+            return;
+        }
+
+        if (onUserMessage != nullptr)
+            onUserMessage ("Added row " + juce::String (row + 1) + " from selected sample.");
     };
 
     addPatternButton.onClick = [this]
     {
-        patternStore.addPattern();
-        refresh();
-        if (onChange != nullptr)
-            onChange();
+        if (! patternStore.addPattern())
+        {
+            if (onUserMessage != nullptr)
+                onUserMessage ("Pattern limit reached.");
+            return;
+        }
+
+        if (onUserMessage != nullptr)
+            onUserMessage ("Added new pattern.");
     };
 
     clearPatternButton.onClick = [this]
@@ -67,6 +79,11 @@ void StepSequencerComponent::setChangeCallback (ChangeCallback callback)
     onChange = std::move (callback);
 }
 
+void StepSequencerComponent::setUserMessageCallback (UserMessageCallback callback)
+{
+    onUserMessage = std::move (callback);
+}
+
 void StepSequencerComponent::setCurrentStepIndex (int stepIndex)
 {
     if (currentStepIndex == stepIndex)
@@ -78,6 +95,8 @@ void StepSequencerComponent::setCurrentStepIndex (int stepIndex)
 
 void StepSequencerComponent::refresh()
 {
+    const juce::ScopedValueSetter<bool> guard (refreshingToolbar, true);
+
     patternSelector.clear();
     for (int i = 0; i < patternStore.getPatternCount(); ++i)
         patternSelector.addItem (patternStore.getPattern (i).name, i + 1);
@@ -89,10 +108,19 @@ void StepSequencerComponent::refresh()
 
 void StepSequencerComponent::onToolbarChanged()
 {
+    if (refreshingToolbar)
+        return;
+
+    const auto selectedPatternId = patternSelector.getSelectedId();
+    const auto selectedStepCount = stepCountSelector.getSelectedId();
+
+    if (selectedPatternId <= 0 || selectedStepCount <= 0)
+        return;
+
     patternStore.selectPattern (patternStore.getPatternCount() > 0
-                                    ? patternSelector.getSelectedId() - 1
+                                    ? selectedPatternId - 1
                                     : 0);
-    patternStore.setNumSteps (stepCountSelector.getSelectedId());
+    patternStore.setNumSteps (selectedStepCount);
     refresh();
 
     if (onChange != nullptr)

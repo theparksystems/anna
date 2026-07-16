@@ -13,10 +13,12 @@ class StepSequencerComponent final : public juce::Component
 {
 public:
     using ChangeCallback = std::function<void()>;
+    using UserMessageCallback = std::function<void (const juce::String&)>;
 
     explicit StepSequencerComponent (PatternStore& store);
 
     void setChangeCallback (ChangeCallback callback);
+    void setUserMessageCallback (UserMessageCallback callback);
     void setCurrentStepIndex (int stepIndex);
     void refresh();
 
@@ -59,7 +61,9 @@ private:
     bool velocityDragMode = false;
 
     ChangeCallback onChange;
+    UserMessageCallback onUserMessage;
     LayoutMetrics metrics;
+    bool refreshingToolbar = false;
 };
 
 } // namespace sampr
