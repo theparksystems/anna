@@ -17,6 +17,7 @@ constexpr int kTabPianoRoll = 1;
 constexpr int kTabArrangement = 2;
 constexpr int kTabFxRack = 3;
 constexpr int kTabAssistant = 4;
+constexpr int kYouTubeImportMaxSeconds = 300;
 
 juce::String makeSafeFileStem (juce::String name)
 {
@@ -262,6 +263,7 @@ private:
                 + " " + quoteCommandArg (url)
                 + " --out " + quoteCommandArg (outputFolder.getFullPathName())
                 + " --format " + format
+                + " --import-max-seconds " + juce::String (kYouTubeImportMaxSeconds)
                 + " --json-output";
 
             juce::ChildProcess process;

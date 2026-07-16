@@ -66,6 +66,8 @@ def main() -> int:
     parser.add_argument("url", help="YouTube URL to download")
     parser.add_argument("--out", default="Samples", help="Output folder for audio and sidecar metadata")
     parser.add_argument("--format", default="wav", choices=["wav", "mp3", "flac", "m4a"], help="Audio format")
+    parser.add_argument("--import-max-seconds", type=int, default=300,
+                        help="Maximum seconds rendered to ANNA's waveform-safe import WAV")
     parser.add_argument("--json-output", action="store_true", help="Print a machine-readable result object")
     args = parser.parse_args()
 
@@ -144,47 +146,52 @@ def main() -> int:
         return 1
 
     delivery_file = candidates[-1]
-    import_file = delivery_file
+    import_file = delivery_file.with_suffix(".anna-import.wav")
+    import_max_seconds = max(10, int(args.import_max_seconds))
+    if import_file.exists():
+        import_file.unlink()
     metadata = {
         "sourceType": "youtube",
         "sourceUrl": info.get("webpage_url") or args.url,
         "sourceTitle": info.get("title") or delivery_file.stem,
         "sourceAuthor": info.get("uploader") or info.get("channel") or "",
         "sourceId": video_id,
+        "sourceDurationSeconds": info.get("duration") or 0,
         "downloadedAt": datetime.now(timezone.utc).isoformat(),
         "localFileName": delivery_file.name,
     }
     sidecar = write_origin_sidecar(delivery_file, metadata)
 
-    if args.format != "wav":
-        import_file = delivery_file.with_suffix(".anna-import.wav")
-        try:
-            run(
-                [
-                    ffmpeg_location,
-                    "-y",
-                    "-i",
-                    str(delivery_file),
-                    "-vn",
-                    "-acodec",
-                    "pcm_s16le",
-                    "-ar",
-                    "44100",
-                    "-ac",
-                    "2",
-                    str(import_file),
-                ]
-            )
-        except CommandFailed as error:
-            print("ANNA waveform import render failed.", file=sys.stderr)
-            print(error.output, file=sys.stderr)
-            return error.returncode or 1
+    try:
+        run(
+            [
+                ffmpeg_location,
+                "-y",
+                "-i",
+                str(delivery_file),
+                "-vn",
+                "-t",
+                str(import_max_seconds),
+                "-acodec",
+                "pcm_s16le",
+                "-ar",
+                "44100",
+                "-ac",
+                "2",
+                str(import_file),
+            ]
+        )
+    except CommandFailed as error:
+        print("ANNA waveform import render failed.", file=sys.stderr)
+        print(error.output, file=sys.stderr)
+        return error.returncode or 1
 
-        import_metadata = dict(metadata)
-        import_metadata["localFileName"] = import_file.name
-        import_metadata["deliveryFileName"] = delivery_file.name
-        import_metadata["importRenderedFrom"] = str(delivery_file)
-        sidecar = write_origin_sidecar(import_file, import_metadata)
+    import_metadata = dict(metadata)
+    import_metadata["localFileName"] = import_file.name
+    import_metadata["deliveryFileName"] = delivery_file.name
+    import_metadata["importRenderedFrom"] = str(delivery_file)
+    import_metadata["importMaxSeconds"] = import_max_seconds
+    sidecar = write_origin_sidecar(import_file, import_metadata)
 
     if args.json_output:
         print(
@@ -202,7 +209,8 @@ def main() -> int:
             )
         )
     else:
-        print(f"Audio: {audio_file}")
+        print(f"Audio: {import_file}")
+        print(f"Delivery: {delivery_file}")
         print(f"Metadata: {sidecar}")
     return 0
 
