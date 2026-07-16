@@ -31,26 +31,42 @@ def main() -> int:
     parser.add_argument("url", help="YouTube URL to download")
     parser.add_argument("--out", default="Samples", help="Output folder for audio and sidecar metadata")
     parser.add_argument("--format", default="wav", choices=["wav", "mp3", "flac", "m4a"], help="Audio format")
+    parser.add_argument("--json-output", action="store_true", help="Print a machine-readable result object")
     args = parser.parse_args()
 
+    ytdlp = ["yt-dlp"]
     if shutil.which("yt-dlp") is None:
-        print("yt-dlp is required. Install it with: python -m pip install yt-dlp", file=sys.stderr)
-        return 2
+        try:
+            import yt_dlp  # noqa: F401
+            ytdlp = [sys.executable, "-m", "yt_dlp"]
+        except ImportError:
+            print("yt-dlp is required. Install it with: python -m pip install yt-dlp", file=sys.stderr)
+            return 2
 
     if shutil.which("ffmpeg") is None:
-        print("ffmpeg is required on PATH for audio extraction.", file=sys.stderr)
-        return 2
+        try:
+            import imageio_ffmpeg
+
+            ffmpeg = Path(imageio_ffmpeg.get_ffmpeg_exe())
+            if ffmpeg.exists():
+                path = str(ffmpeg.parent)
+                import os
+
+                os.environ["PATH"] = path + os.pathsep + os.environ.get("PATH", "")
+        except Exception:
+            print("ffmpeg is required on PATH for audio extraction.", file=sys.stderr)
+            return 2
 
     output_dir = Path(args.out).resolve()
     output_dir.mkdir(parents=True, exist_ok=True)
 
-    info = run_json(["yt-dlp", "--dump-single-json", "--no-playlist", args.url])
+    info = run_json(ytdlp + ["--dump-single-json", "--no-playlist", args.url])
     title_template = "%(title).180B [%(id)s].%(ext)s"
     output_template = str(output_dir / title_template)
 
     run(
         [
-            "yt-dlp",
+            *ytdlp,
             "--no-playlist",
             "--extract-audio",
             "--audio-format",
@@ -84,8 +100,22 @@ def main() -> int:
     }
     sidecar.write_text(json.dumps(metadata, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    print(f"Audio: {audio_file}")
-    print(f"Metadata: {sidecar}")
+    if args.json_output:
+        print(
+            json.dumps(
+                {
+                    "success": True,
+                    "audio": str(audio_file),
+                    "metadata": str(sidecar),
+                    "sourceTitle": metadata["sourceTitle"],
+                    "sourceUrl": metadata["sourceUrl"],
+                },
+                ensure_ascii=False,
+            )
+        )
+    else:
+        print(f"Audio: {audio_file}")
+        print(f"Metadata: {sidecar}")
     return 0
 
 

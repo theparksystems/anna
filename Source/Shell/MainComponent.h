@@ -67,6 +67,9 @@ private:
     void loadProjectFromDisk();
     void exportAudioToDisk();
     void exportSoundCloudReady();
+    void showYouTubeImportPopup();
+    void startYouTubeImport (const juce::String& url, const juce::String& format);
+    void finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage);
     void finishAsyncExport (const juce::File& file,
                             const sampr::OfflineExportResult& result,
                             bool wasPlaying);
@@ -92,6 +95,7 @@ private:
                                    const juce::String& seedMessage);
 
     class AsyncExportJob;
+    class AsyncYouTubeImportJob;
 
     sampr::AssistantClient assistantClient;
     sampr::ProjectModel projectModel;
@@ -126,12 +130,15 @@ private:
     juce::TextButton undoButton { "Undo" };
     juce::TextButton redoButton { "Redo" };
     juce::ToggleButton songModeButton { "Song Mode" };
+    juce::TextButton youtubeImportButton { "YouTube" };
     juce::Label statusLabel;
 
     juce::AudioFormatManager formatManager;
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<AsyncExportJob> exportJob;
+    std::unique_ptr<AsyncYouTubeImportJob> youtubeImportJob;
     juce::Component::SafePointer<juce::DialogWindow> sliceEditorDialog;
+    juce::Component::SafePointer<juce::DialogWindow> youtubeImportDialog;
 
     bool transportPlaying = false;
     double deviceSampleRate = 44100.0;
@@ -144,6 +151,7 @@ private:
     int assistantHealthTicks = 0;
     std::atomic<float> exportProgress { 0.0f };
     bool exportInProgress = false;
+    bool youtubeImportInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

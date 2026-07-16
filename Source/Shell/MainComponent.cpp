@@ -8,6 +8,7 @@
 #include "../UI/SamprLookAndFeel.h"
 
 #include <cmath>
+#include <memory>
 
 namespace
 {
@@ -39,6 +40,48 @@ juce::File getUniqueChildFile (const juce::File& folder,
         file = folder.getChildFile (stem + " " + juce::String (i) + extension);
 
     return file;
+}
+
+juce::String quoteCommandArg (juce::String value)
+{
+    value = value.replace ("\"", "\\\"");
+    return "\"" + value + "\"";
+}
+
+juce::File findSourceRoot()
+{
+    juce::Array<juce::File> candidates;
+    const auto cwd = juce::File::getCurrentWorkingDirectory();
+    const auto exe = juce::File::getSpecialLocation (juce::File::currentExecutableFile);
+
+    candidates.add (cwd);
+    candidates.add (cwd.getChildFile ("anna"));
+    candidates.add (exe.getParentDirectory());
+    candidates.add (exe.getParentDirectory().getParentDirectory().getParentDirectory().getParentDirectory().getChildFile ("anna"));
+    candidates.add (juce::File ("C:\\anna\\anna"));
+
+    for (const auto& candidate : candidates)
+    {
+        if (candidate.getChildFile ("tools").getChildFile ("youtube_sample_ingest.py").existsAsFile())
+            return candidate;
+    }
+
+    return {};
+}
+
+juce::String getLastNonEmptyLine (const juce::String& text)
+{
+    juce::StringArray lines;
+    lines.addLines (text);
+
+    for (int i = lines.size() - 1; i >= 0; --i)
+    {
+        const auto line = lines[i].trim();
+        if (line.isNotEmpty())
+            return line;
+    }
+
+    return {};
 }
 
 juce::String buildSampledFromText (const sampr::ProjectModel& project)
@@ -137,6 +180,120 @@ private:
     sampr::OfflineExportOptions options;
     bool wasPlaying = false;
     std::atomic<bool> cancelRequested { false };
+};
+
+class MainComponent::AsyncYouTubeImportJob final : private juce::Thread
+{
+public:
+    AsyncYouTubeImportJob (MainComponent& ownerIn, juce::String urlIn, juce::String formatIn)
+        : juce::Thread ("ANNA YouTube Import"),
+          ownerPtr (&ownerIn),
+          url (std::move (urlIn)),
+          format (std::move (formatIn))
+    {
+    }
+
+    ~AsyncYouTubeImportJob() override
+    {
+        signalThreadShouldExit();
+        stopThread (30000);
+    }
+
+    void start()
+    {
+        startThread (juce::Thread::Priority::normal);
+    }
+
+private:
+    void run() override
+    {
+        const auto sourceRoot = findSourceRoot();
+
+        if (sourceRoot == juce::File())
+        {
+            finish ({}, "Could not locate tools\\youtube_sample_ingest.py.");
+            return;
+        }
+
+        const auto script = sourceRoot.getChildFile ("tools").getChildFile ("youtube_sample_ingest.py");
+        const auto outputFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+                                      .getChildFile ("ANNA YouTube Imports");
+
+        if (! outputFolder.exists() && ! outputFolder.createDirectory())
+        {
+            finish ({}, "Could not create import folder:\n" + outputFolder.getFullPathName());
+            return;
+        }
+
+        const juce::StringArray launchers {
+            quoteCommandArg ("C:\\Users\\User\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"),
+            "py -3",
+            "python"
+        };
+        juce::String lastOutput;
+
+        for (const auto& launcher : launchers)
+        {
+            if (threadShouldExit())
+                return;
+
+            const auto command = launcher
+                + " " + quoteCommandArg (script.getFullPathName())
+                + " " + quoteCommandArg (url)
+                + " --out " + quoteCommandArg (outputFolder.getFullPathName())
+                + " --format " + format
+                + " --json-output";
+
+            juce::ChildProcess process;
+
+            if (! process.start (command))
+            {
+                lastOutput = "Could not start: " + launcher;
+                continue;
+            }
+
+            while (process.isRunning())
+            {
+                if (threadShouldExit())
+                    return;
+
+                lastOutput << process.readAllProcessOutput();
+                wait (100);
+            }
+
+            lastOutput << process.readAllProcessOutput();
+            const auto exitCode = process.getExitCode();
+
+            if (exitCode != 0)
+                continue;
+
+            const auto parsed = juce::JSON::parse (getLastNonEmptyLine (lastOutput));
+
+            if (! parsed.isObject())
+                finish ({}, "Import completed but ANNA could not read the converter result.\n" + lastOutput);
+            else
+                finish (juce::File (parsed.getProperty ("audio", juce::String()).toString()), {});
+
+            return;
+        }
+
+        finish ({}, "YouTube import failed.\n\nInstall yt-dlp and ffmpeg, then try again.\n\n" + lastOutput);
+    }
+
+    void finish (juce::File audioFile, juce::String errorMessage)
+    {
+        juce::MessageManager::callAsync ([safeOwner = ownerPtr,
+                                          file = std::move (audioFile),
+                                          error = std::move (errorMessage)]
+        {
+            if (safeOwner != nullptr)
+                safeOwner->finishYouTubeImport (file, error);
+        });
+    }
+
+    juce::Component::SafePointer<MainComponent> ownerPtr;
+    juce::String url;
+    juce::String format;
 };
 
 MainComponent::MainComponent()
@@ -438,6 +595,7 @@ MainComponent::MainComponent()
     undoButton.setTooltip ("Undo (Ctrl+Z)");
     redoButton.setTooltip ("Redo (Ctrl+Y)");
     songModeButton.setTooltip ("Song Mode plays the Arrangement timeline instead of looping the current pattern.");
+    youtubeImportButton.setTooltip ("Search YouTube, paste a source URL, convert audio, and import it with metadata.");
     songModeButton.onClick = [this]
     {
         const auto songMode = songModeButton.getToggleState();
@@ -469,6 +627,7 @@ MainComponent::MainComponent()
 
         updateStatusLabel();
     };
+    youtubeImportButton.onClick = [this] { showYouTubeImportPopup(); };
 
     songModeButton.setToggleState (settings.playbackMode == sampr::PlaybackMode::song,
                                    juce::dontSendNotification);
@@ -488,6 +647,7 @@ MainComponent::MainComponent()
     addAndMakeVisible (undoButton);
     addAndMakeVisible (redoButton);
     addAndMakeVisible (songModeButton);
+    addAndMakeVisible (youtubeImportButton);
     addAndMakeVisible (statusLabel);
 
     applyTransportSettings();
@@ -511,6 +671,7 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
+    youtubeImportJob.reset();
     exportJob.reset();
     patternTabs.getTabbedButtonBar().removeChangeListener (this);
     deviceManager.removeMidiInputDeviceCallback ({}, this);
@@ -777,6 +938,7 @@ void MainComponent::updateToolbarState()
     loadBeatButton.setEnabled (canEdit);
     askPatternButton.setEnabled (canEdit);
     songModeButton.setEnabled (canEdit);
+    youtubeImportButton.setEnabled (canEdit && ! youtubeImportInProgress);
     sampleBrowser.setEnabled (canEdit);
     sliceEditorButton.setEnabled (canEdit);
     patternTabs.setEnabled (canEdit);
@@ -881,6 +1043,8 @@ void MainComponent::resized()
     redoButton.setBounds (projectRow.removeFromLeft (60));
     projectRow.removeFromLeft (8);
     songModeButton.setBounds (projectRow.removeFromLeft (104));
+    projectRow.removeFromLeft (6);
+    youtubeImportButton.setBounds (projectRow.removeFromLeft (82));
     area.removeFromTop (4);
 
     statusLabel.setBounds (area.removeFromBottom (46));
@@ -981,6 +1145,59 @@ void MainComponent::importSampleFiles (const juce::StringArray& paths)
             "Import failed",
             result.lastError + "\n(" + juce::String (result.failedCount) + " file(s) failed)");
     }
+}
+
+void MainComponent::startYouTubeImport (const juce::String& url, const juce::String& format)
+{
+    if (youtubeImportInProgress || youtubeImportJob != nullptr)
+    {
+        showUserMessage ("YouTube import already running.");
+        return;
+    }
+
+    if (! url.startsWithIgnoreCase ("http"))
+    {
+        showUserMessage ("Paste a valid YouTube URL first.");
+        return;
+    }
+
+    youtubeImportInProgress = true;
+    updateToolbarState();
+    showUserMessage ("YouTube import started.");
+
+    if (youtubeImportDialog != nullptr)
+        youtubeImportDialog->exitModalState (0);
+
+    youtubeImportJob = std::make_unique<AsyncYouTubeImportJob> (*this, url, format);
+    youtubeImportJob->start();
+}
+
+void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage)
+{
+    youtubeImportJob.reset();
+    youtubeImportInProgress = false;
+    updateToolbarState();
+
+    if (errorMessage.isNotEmpty())
+    {
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "YouTube import failed",
+            errorMessage);
+        showUserMessage ("YouTube import failed.");
+        return;
+    }
+
+    if (! audioFile.existsAsFile())
+    {
+        showUserMessage ("YouTube import finished but no audio file was found.");
+        return;
+    }
+
+    juce::StringArray paths;
+    paths.add (audioFile.getFullPathName());
+    importSampleFiles (paths);
+    showUserMessage ("Imported YouTube sample with metadata.");
 }
 
 void MainComponent::loadSampleFromDisk()
@@ -1119,6 +1336,143 @@ void MainComponent::showAudioSettings()
     options.resizable                    = true;
     options.content.setOwned (selector);
     options.launchAsync();
+}
+
+void MainComponent::showYouTubeImportPopup()
+{
+    if (youtubeImportDialog != nullptr)
+    {
+        youtubeImportDialog->toFront (true);
+        return;
+    }
+
+    struct YouTubeDialogContent final : public juce::Component
+    {
+        YouTubeDialogContent (std::function<void (const juce::String&, const juce::String&)> importCallbackIn)
+            : importCallback (std::move (importCallbackIn))
+        {
+            titleLabel.setText ("YouTube Import", juce::dontSendNotification);
+            titleLabel.setFont (juce::FontOptions { 15.0f, juce::Font::bold });
+
+            searchLabel.setText ("Search", juce::dontSendNotification);
+            urlLabel.setText ("URL", juce::dontSendNotification);
+            formatLabel.setText ("Format", juce::dontSendNotification);
+
+            searchEditor.setTextToShowWhenEmpty ("artist, song, sound, drum break", sampr::SamprLookAndFeel::textMuted());
+            urlEditor.setTextToShowWhenEmpty ("Paste YouTube URL after choosing a source", sampr::SamprLookAndFeel::textMuted());
+
+            formatBox.addItem ("MP3", 1);
+            formatBox.addItem ("WAV", 2);
+            formatBox.addItem ("FLAC", 3);
+            formatBox.addItem ("M4A", 4);
+            formatBox.setSelectedId (1, juce::dontSendNotification);
+
+            rightsButton.setButtonText ("I have rights to use this source");
+            rightsButton.onClick = [this] { updateImportState(); };
+            urlEditor.onTextChange = [this] { updateImportState(); };
+
+            searchButton.onClick = [this]
+            {
+                const auto query = searchEditor.getText().trim();
+                if (query.isEmpty())
+                    return;
+
+                const auto escaped = juce::URL::addEscapeChars (query, true);
+                juce::URL ("https://www.youtube.com/results?search_query=" + escaped).launchInDefaultBrowser();
+            };
+
+            importButton.onClick = [this]
+            {
+                if (importCallback == nullptr)
+                    return;
+
+                importCallback (urlEditor.getText().trim(), getFormat());
+            };
+
+            addAndMakeVisible (titleLabel);
+            addAndMakeVisible (searchLabel);
+            addAndMakeVisible (searchEditor);
+            addAndMakeVisible (searchButton);
+            addAndMakeVisible (urlLabel);
+            addAndMakeVisible (urlEditor);
+            addAndMakeVisible (formatLabel);
+            addAndMakeVisible (formatBox);
+            addAndMakeVisible (rightsButton);
+            addAndMakeVisible (importButton);
+
+            updateImportState();
+            setSize (560, 220);
+        }
+
+        juce::String getFormat() const
+        {
+            switch (formatBox.getSelectedId())
+            {
+                case 2: return "wav";
+                case 3: return "flac";
+                case 4: return "m4a";
+                default: return "mp3";
+            }
+        }
+
+        void updateImportState()
+        {
+            importButton.setEnabled (rightsButton.getToggleState()
+                                     && urlEditor.getText().trim().startsWithIgnoreCase ("http"));
+        }
+
+        void resized() override
+        {
+            auto area = getLocalBounds().reduced (12);
+            titleLabel.setBounds (area.removeFromTop (24));
+            area.removeFromTop (8);
+
+            auto row = area.removeFromTop (28);
+            searchLabel.setBounds (row.removeFromLeft (52));
+            searchEditor.setBounds (row.removeFromLeft (row.getWidth() - 96));
+            row.removeFromLeft (8);
+            searchButton.setBounds (row);
+            area.removeFromTop (8);
+
+            row = area.removeFromTop (28);
+            urlLabel.setBounds (row.removeFromLeft (52));
+            urlEditor.setBounds (row);
+            area.removeFromTop (8);
+
+            row = area.removeFromTop (28);
+            formatLabel.setBounds (row.removeFromLeft (52));
+            formatBox.setBounds (row.removeFromLeft (110));
+            row.removeFromLeft (12);
+            rightsButton.setBounds (row);
+
+            importButton.setBounds (area.removeFromBottom (30).removeFromRight (132));
+        }
+
+        juce::Label titleLabel;
+        juce::Label searchLabel;
+        juce::Label urlLabel;
+        juce::Label formatLabel;
+        juce::TextEditor searchEditor;
+        juce::TextEditor urlEditor;
+        juce::TextButton searchButton { "Open Search" };
+        juce::ComboBox formatBox;
+        juce::ToggleButton rightsButton;
+        juce::TextButton importButton { "Convert + Import" };
+        std::function<void (const juce::String&, const juce::String&)> importCallback;
+    };
+
+    juce::DialogWindow::LaunchOptions options;
+    options.dialogTitle                  = "YouTube Import";
+    options.dialogBackgroundColour       = sampr::SamprLookAndFeel::background();
+    options.escapeKeyTriggersCloseButton = true;
+    options.useNativeTitleBar            = true;
+    options.resizable                    = false;
+    options.componentToCentreAround      = this;
+    options.content.setOwned (new YouTubeDialogContent ([this] (const juce::String& url, const juce::String& format)
+    {
+        startYouTubeImport (url, format);
+    }));
+    youtubeImportDialog = options.launchAsync();
 }
 
 void MainComponent::showSliceEditorPopup()
@@ -1394,6 +1748,9 @@ void MainComponent::updateStatusLabel()
 
     if (exportInProgress)
         text << "  |  Export: " << juce::String (static_cast<int> (exportProgress.load (std::memory_order_relaxed) * 100.0f)) << "%";
+
+    if (youtubeImportInProgress)
+        text << "  |  YouTube import running";
 
     statusLabel.setText (text, juce::dontSendNotification);
 }
