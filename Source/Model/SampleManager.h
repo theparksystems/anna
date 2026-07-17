@@ -61,6 +61,13 @@ public:
     bool exportSelectedSliceToWav (const juce::File& outputFile,
                                    juce::String& errorOut,
                                    const ChannelFxState* channelFxToRender = nullptr) const;
+    bool exportSelectedAssetVocalSplitToWavs (const juce::File& vocalsFile,
+                                              const juce::File& instrumentalFile,
+                                              juce::String& errorOut) const;
+    bool exportAssetVocalSplitToWavs (AssetId assetId,
+                                      const juce::File& vocalsFile,
+                                      const juce::File& instrumentalFile,
+                                      juce::String& errorOut) const;
 
     std::optional<SampleId> resolvePlaybackSampleId (AssetId assetId, int sliceIndex) const;
     bool slicePlaybackUsesBakedBuffer (AssetId assetId, int sliceIndex) const;

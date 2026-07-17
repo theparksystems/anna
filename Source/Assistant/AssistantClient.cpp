@@ -212,7 +212,7 @@ bool AssistantClient::performChatRequest()
 
     const auto options = juce::URL::InputStreamOptions (juce::URL::ParameterHandling::inPostData)
                              .withExtraHeaders ("Content-Type: application/json\r\n")
-                             .withConnectionTimeoutMs (90000);
+                             .withConnectionTimeoutMs (55000);
 
     if (auto stream = request.withPOSTData (jsonBody).createInputStream (options))
     {
@@ -236,7 +236,7 @@ bool AssistantClient::performChatRequest()
         return false;
     }
 
-    lastError = "Could not reach assistant service";
+    lastError = "ANNA did not receive a response from the local assistant service.";
     return false;
 }
 

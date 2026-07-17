@@ -15,7 +15,8 @@ class ProjectModel;
 class SampleManager;
 class AudioEngine;
 
-class AssistantPanel final : public juce::Component
+class AssistantPanel final : public juce::Component,
+                             private juce::Timer
 {
 public:
     AssistantPanel (AssistantClient& client,
@@ -48,6 +49,7 @@ private:
     void rebuildChatDisplay();
     void sendCurrentMessage();
     void setWaiting (bool waiting);
+    void timerCallback() override;
     TrackContextInput makeContextInput() const;
 
     AssistantClient& assistantClient;
@@ -71,6 +73,8 @@ private:
 
     std::vector<ChatMessage> messages;
     bool waitingForResponse = false;
+    int activeRequestId = 0;
+    int responseWaitTicks = 0;
     juce::String assistantModelName;
 };
 

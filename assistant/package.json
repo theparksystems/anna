@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "description": "Gemma mixing assistant sidecar for ANNA",
+  "description": "Local mixing assistant sidecar for ANNA",
   "scripts": {
     "start": "node server.js",
     "test": "node test/smoke.js"

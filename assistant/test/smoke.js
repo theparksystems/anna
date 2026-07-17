@@ -6,7 +6,7 @@ async function main() {
   const healthJson = await health.json();
   console.log('health:', healthJson.status, healthJson.model);
   if (!healthJson.modelAvailable) {
-    console.log('assistant reachable; Gemma model unavailable');
+    console.log('assistant reachable; ANNA local model unavailable');
     return;
   }
 

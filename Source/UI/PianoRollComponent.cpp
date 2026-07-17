@@ -318,12 +318,12 @@ void PianoRollComponent::paintNotes (juce::Graphics& g, juce::Rectangle<int> are
         g.setGradientFill (juce::ColourGradient (colour.brighter (0.18f), noteBounds.getX(), noteBounds.getY(),
                                                  colour.darker (0.18f), noteBounds.getX(), noteBounds.getBottom(),
                                                  false));
-        g.fillRoundedRectangle (noteBounds, 3.0f);
+        g.fillRect (noteBounds);
 
         if (selected)
         {
             g.setColour (SamprLookAndFeel::textPrimary());
-            g.drawRoundedRectangle (bounds.reduced (0.5f), 3.0f, 1.4f);
+            g.drawRect (bounds.reduced (0.5f), 1.4f);
         }
     }
 }

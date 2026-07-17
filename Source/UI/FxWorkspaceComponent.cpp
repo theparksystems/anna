@@ -43,7 +43,7 @@ FxWorkspaceComponent::FxWorkspaceComponent (PatternStore& store)
     fxTabs.addTab ("Reverb", SamprLookAndFeel::panel(), &reverbPanel, false);
     fxTabs.setCurrentTabIndex (0);
 
-    askButton.setTooltip ("Ask Gemma about this channel's FX chain");
+    askButton.setTooltip ("Ask ANNA about this channel's FX chain");
     askButton.onClick = [this]
     {
         if (channelIndex >= 0 && onAsk != nullptr)

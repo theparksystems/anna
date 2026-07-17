@@ -4,15 +4,17 @@ import { execSync } from 'child_process';
 const OLLAMA_HOST = process.env.OLLAMA_HOST || 'http://localhost:11434';
 
 const MODEL_PRIORITY = [
+  'llama3.1:8b',
+  'gemma3:4b',
+  'gemma2:2b',
   'gemma2:9b',
   'gemma:7b',
-  'gemma2:2b',
-  'gemma3:4b',
   'gemma2',
+  'qwen2.5:14b-instruct',
   'gemma3:12b'
 ];
 
-let activeModel = process.env.OLLAMA_MODEL || 'gemma2:9b';
+let activeModel = process.env.OLLAMA_MODEL || 'llama3.1:8b';
 let ollamaReachable = false;
 let modelAvailable = false;
 
@@ -40,11 +42,14 @@ function pickModel(installed, preferred) {
     if (hit) return hit;
   }
 
-  return installed.find(n => n.startsWith('gemma')) || null;
+  return installed.find(n => n.startsWith('llama3.1'))
+      || installed.find(n => n.startsWith('gemma'))
+      || installed[0]
+      || null;
 }
 
 export async function initModel() {
-  const preferred = process.env.OLLAMA_MODEL || 'gemma2:9b';
+  const preferred = process.env.OLLAMA_MODEL || 'llama3.1:8b';
 
   try {
     const res = await fetch(`${OLLAMA_HOST}/api/tags`, { signal: AbortSignal.timeout(5000) });
@@ -76,8 +81,8 @@ export async function initModel() {
 
   activeModel = preferred;
   modelAvailable = false;
-  console.warn(`[Ollama] No Gemma model found. Defaulting to ${activeModel}`);
-  console.warn('         Run: ollama pull gemma2:9b  (or gemma3:4b)');
+  console.warn(`[Ollama] No ANNA-compatible local model found. Defaulting to ${activeModel}`);
+  console.warn('         Run: ollama pull llama3.1:8b');
   return activeModel;
 }
 
@@ -85,11 +90,11 @@ export async function callOllama(messages, options = {}) {
   if (!modelAvailable) {
     await initModel();
     if (!modelAvailable)
-      throw new Error(`Gemma model unavailable. Run: ollama pull ${activeModel}`);
+      throw new Error(`ANNA local model unavailable. Run: ollama pull ${activeModel}`);
   }
 
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 90000);
+  const timeout = setTimeout(() => controller.abort(), options.timeoutMs || 18000);
 
   try {
     const res = await fetch(`${OLLAMA_HOST}/api/chat`, {
@@ -101,7 +106,8 @@ export async function callOllama(messages, options = {}) {
         stream: false,
         options: {
           temperature: options.temperature ?? 0.6,
-          num_predict: options.maxTokens ?? 600
+          num_ctx: options.contextTokens ?? 2048,
+          num_predict: options.maxTokens ?? 96
         }
       }),
       signal: controller.signal
@@ -118,6 +124,12 @@ export async function callOllama(messages, options = {}) {
     ollamaReachable = true;
     const data = await res.json();
     return data.message?.content || '';
+  } catch (e) {
+    if (e?.name === 'AbortError') {
+      throw new Error('ANNA local model timed out while generating a response.');
+    }
+
+    throw e;
   } finally {
     clearTimeout(timeout);
   }
@@ -125,29 +137,22 @@ export async function callOllama(messages, options = {}) {
 
 export function buildSystemPrompt({ memoryContext, trackContext }) {
   const contextJson = trackContext
-    ? JSON.stringify(trackContext, null, 2)
+    ? JSON.stringify(trackContext).slice(0, 3500)
     : '(no track context attached)';
 
   const memoryBlock = memoryContext
-    ? `\n## Conversation memory (secondary)\n${memoryContext}\n`
+    ? `\nMemory: ${memoryContext.slice(0, 500)}\n`
     : '';
 
-  return `You are Gemma, an ANNA mixing engineer assistant. You help producers diagnose and improve their beats using numeric track data.
+  return `You are ANNA, the local mixing engineer inside the ANNA music production app.
 
-## Primary data - current track context (JSON)
-Use ONLY these numbers when making claims about the mix. Cite specific values (gain, pan, peak, velocity stats, EQ dB, compressor settings, etc.).
-
-\`\`\`json
-${contextJson}
-\`\`\`
+Track context JSON: ${contextJson}
 ${memoryBlock}
-## Rules
-- Be conversational and practical - 2-5 sentences unless the user asks for detail
+- Be conversational and practical - 1-3 concise sentences unless the user asks for detail
 - Diagnose issues like "flat", "muddy", "thin", "harsh" using the numeric context above
 - Suggest concrete FX/mixer changes (EQ cuts/boosts in dB, compressor threshold/ratio, gain adjustments)
 - Do NOT invent spectral analysis, LUFS, or waveform data that is not in the JSON
-- Do NOT mention databases, correlations, or how your memory works
-- If track context is empty or missing channels, say what data you need
+- If data is missing, say what to check
 - You give advice only - you cannot change settings in the app`;
 }
 
@@ -157,7 +162,7 @@ export async function generateResponse({ message, trackContext, history, memoryC
   const messages = [{ role: 'system', content: systemPrompt }];
 
   if (Array.isArray(history)) {
-    for (const entry of history.slice(-8)) {
+    for (const entry of history.slice(-4)) {
       if (!entry?.content) continue;
       const role = entry.role === 'assistant' ? 'assistant' : 'user';
       messages.push({ role, content: String(entry.content) });
@@ -166,9 +171,42 @@ export async function generateResponse({ message, trackContext, history, memoryC
 
   messages.push({ role: 'user', content: message });
 
-  return callOllama(messages);
+  try {
+    return await callOllama(messages);
+  } catch (e) {
+    if (String(e?.message || '').toLowerCase().includes('timed out'))
+      return buildFallbackResponse(trackContext);
+
+    throw e;
+  }
 }
 
 export function getModelInfo() {
   return { host: OLLAMA_HOST, model: activeModel, ollamaReachable, modelAvailable };
+}
+
+function buildFallbackResponse(trackContext) {
+  const channel = trackContext?.channel || null;
+  const label = channel?.label || 'this track';
+  const peak = Number.isFinite(channel?.peakLevel) ? channel.peakLevel : null;
+  const gain = Number.isFinite(channel?.gain) ? channel.gain : null;
+  const activeSteps = channel?.steps?.activeSteps;
+  const velocity = channel?.steps?.avgVelocity;
+
+  const details = [];
+
+  if (gain !== null)
+    details.push(`gain is ${gain.toFixed(2)}`);
+
+  if (peak !== null)
+    details.push(`peak is ${peak.toFixed(2)}`);
+
+  if (Number.isFinite(activeSteps))
+    details.push(`${activeSteps} active steps`);
+
+  if (Number.isFinite(velocity))
+    details.push(`average velocity is ${velocity.toFixed(2)}`);
+
+  const basis = details.length ? ` I am reading ${details.join(', ')}.` : '';
+  return `ANNA's local model took too long, so here is the fast mix check for ${label}.${basis} If it sounds flat, raise variation first: change a few step velocities, add a small EQ presence boost around 2-5 kHz, and use light compression only if the peak is jumping too much.`;
 }

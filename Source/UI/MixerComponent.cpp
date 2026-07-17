@@ -37,7 +37,7 @@ public:
         muteButton.setTooltip ("Mute channel");
         soloButton.setTooltip ("Solo channel");
         fxButton.setTooltip ("Open FX Rack for this channel");
-        askButton.setTooltip ("Ask Gemma about this channel");
+        askButton.setTooltip ("Ask ANNA about this channel");
         muteButton.setClickingTogglesState (true);
         soloButton.setClickingTogglesState (true);
         muteButton.onClick = [this]

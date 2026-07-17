@@ -15,11 +15,16 @@ class SampleBrowserComponent final : public juce::Component,
 public:
     using SelectionCallback = std::function<void (AssetId assetId)>;
     using LoadRequestedCallback = std::function<void()>;
+    using SplitVocalsCallback = std::function<void()>;
+    using SourceInfoCallback = std::function<void()>;
 
     explicit SampleBrowserComponent (SampleManager& manager);
 
     void setSelectionCallback (SelectionCallback callback);
     void setLoadRequestedCallback (LoadRequestedCallback callback);
+    void setSplitVocalsCallback (SplitVocalsCallback callback);
+    void setSourceInfoCallback (SourceInfoCallback callback);
+    void setSplitVocalsInProgress (bool inProgress);
     void refresh();
 
     int getNumRows() override;
@@ -34,10 +39,15 @@ private:
     juce::Label titleLabel { {}, "Samples" };
     juce::ListBox listBox { "Samples", this };
     juce::TextButton loadButton { "Load..." };
+    juce::TextButton splitVocalsButton { "Split Vocals" };
+    juce::TextButton sourceInfoButton { "Source Info" };
     juce::TextButton copyCreditsButton { "Copy Credits" };
 
     SelectionCallback onSelectionChanged;
     LoadRequestedCallback onLoadRequested;
+    SplitVocalsCallback onSplitVocalsRequested;
+    SourceInfoCallback onSourceInfoRequested;
+    bool splitVocalsInProgress = false;
 };
 
 } // namespace sampr

@@ -71,6 +71,13 @@ private:
     void showYouTubeImportPopup();
     void startYouTubeImport (const juce::String& url, const juce::String& format);
     void finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage);
+    void splitSelectedSampleVocals();
+    void finishVocalSplit (sampr::AssetId sourceAssetId,
+                           const juce::File& vocalsFile,
+                           const juce::File& instrumentalFile,
+                           const juce::String& splitMethod,
+                           const juce::String& errorMessage);
+    void showSelectedSampleSourceInfo();
     void finishAsyncExport (const juce::File& file,
                             const sampr::OfflineExportResult& result,
                             bool wasPlaying);
@@ -99,6 +106,7 @@ private:
 
     class AsyncExportJob;
     class AsyncYouTubeImportJob;
+    class AsyncVocalSplitJob;
 
     sampr::AssistantClient assistantClient;
     sampr::ProjectModel projectModel;
@@ -129,7 +137,7 @@ private:
     juce::TextButton loadProjectButton { "Load" };
     juce::TextButton saveBeatButton { "Save Beat" };
     juce::TextButton loadBeatButton { "Load Beat" };
-    juce::TextButton askPatternButton { "Ask Gemma" };
+    juce::TextButton askPatternButton { "Ask ANNA" };
     juce::TextButton undoButton { "Undo" };
     juce::TextButton redoButton { "Redo" };
     juce::ToggleButton songModeButton { "Song Mode" };
@@ -140,6 +148,7 @@ private:
     std::unique_ptr<juce::FileChooser> fileChooser;
     std::unique_ptr<AsyncExportJob> exportJob;
     std::unique_ptr<AsyncYouTubeImportJob> youtubeImportJob;
+    std::unique_ptr<AsyncVocalSplitJob> vocalSplitJob;
     juce::Component::SafePointer<juce::DialogWindow> sliceEditorDialog;
     juce::Component::SafePointer<juce::DialogWindow> youtubeImportDialog;
 
@@ -155,6 +164,7 @@ private:
     std::atomic<float> exportProgress { 0.0f };
     bool exportInProgress = false;
     bool youtubeImportInProgress = false;
+    bool vocalSplitInProgress = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

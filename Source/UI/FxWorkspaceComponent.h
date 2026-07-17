@@ -42,7 +42,7 @@ private:
     int channelIndex = 0;
 
     juce::Label titleLabel;
-    juce::TextButton askButton { "Ask Gemma" };
+    juce::TextButton askButton { "Ask ANNA" };
     juce::Label channelLabel { {}, "Channel" };
     juce::ComboBox channelBox;
     juce::TabbedComponent fxTabs { juce::TabbedButtonBar::TabsAtTop };

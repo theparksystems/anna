@@ -115,6 +115,52 @@ namespace
 
         return output;
     }
+
+    bool writeBufferToWav (const juce::AudioBuffer<float>& buffer,
+                           double sampleRate,
+                           const juce::File& outputFile,
+                           juce::String& errorOut)
+    {
+        const auto parent = outputFile.getParentDirectory();
+        if (! parent.exists() && ! parent.createDirectory())
+        {
+            errorOut = "ANNA could not create the output folder.";
+            return false;
+        }
+
+        juce::WavAudioFormat wav;
+        std::unique_ptr<juce::FileOutputStream> stream (outputFile.createOutputStream());
+
+        if (stream == nullptr || ! stream->openedOk())
+        {
+            errorOut = "ANNA could not open the output WAV for writing.";
+            return false;
+        }
+
+        std::unique_ptr<juce::AudioFormatWriter> writer (
+            wav.createWriterFor (stream.get(),
+                                 sampleRate,
+                                 static_cast<unsigned int> (buffer.getNumChannels()),
+                                 24,
+                                 {},
+                                 0));
+
+        if (writer == nullptr)
+        {
+            errorOut = "ANNA could not create a WAV writer.";
+            return false;
+        }
+
+        stream.release();
+
+        if (! writer->writeFromAudioSampleBuffer (buffer, 0, buffer.getNumSamples()))
+        {
+            errorOut = "ANNA could not write the output WAV.";
+            return false;
+        }
+
+        return true;
+    }
 }
 
 SampleManager::SampleManager (AudioEngine& engine)
@@ -546,43 +592,59 @@ bool SampleManager::exportSelectedSliceToWav (const juce::File& outputFile,
     if (channelFxToRender != nullptr)
         renderBuffer = renderChannelFx (*renderBuffer, asset->sampleRate, *channelFxToRender);
 
-    const auto parent = outputFile.getParentDirectory();
-    if (! parent.exists() && ! parent.createDirectory())
+    return writeBufferToWav (*renderBuffer, asset->sampleRate, outputFile, errorOut);
+}
+
+bool SampleManager::exportSelectedAssetVocalSplitToWavs (const juce::File& vocalsFile,
+                                                         const juce::File& instrumentalFile,
+                                                         juce::String& errorOut) const
+{
+    return exportAssetVocalSplitToWavs (selectedAssetId, vocalsFile, instrumentalFile, errorOut);
+}
+
+bool SampleManager::exportAssetVocalSplitToWavs (AssetId assetId,
+                                                 const juce::File& vocalsFile,
+                                                 const juce::File& instrumentalFile,
+                                                 juce::String& errorOut) const
+{
+    const auto* asset = getAsset (assetId);
+
+    if (asset == nullptr || asset->sourceData == nullptr || asset->sourceData->buffer == nullptr)
     {
-        errorOut = "ANNA could not create the committed samples folder.";
+        errorOut = "Select a loaded stereo sample first.";
         return false;
     }
 
-    juce::WavAudioFormat wav;
-    std::unique_ptr<juce::FileOutputStream> stream (outputFile.createOutputStream());
+    const auto& source = *asset->sourceData->buffer;
 
-    if (stream == nullptr || ! stream->openedOk())
+    if (source.getNumChannels() < 2)
     {
-        errorOut = "ANNA could not open the committed sample file for writing.";
+        errorOut = "Vocal split needs a stereo sample. This selected track is mono.";
         return false;
     }
 
-    std::unique_ptr<juce::AudioFormatWriter> writer (
-        wav.createWriterFor (stream.get(),
-                             asset->sampleRate,
-                             static_cast<unsigned int> (renderBuffer->getNumChannels()),
-                             24,
-                             {},
-                             0));
+    const auto numSamples = source.getNumSamples();
+    juce::AudioBuffer<float> vocals (2, numSamples);
+    juce::AudioBuffer<float> instrumental (2, numSamples);
 
-    if (writer == nullptr)
+    for (int i = 0; i < numSamples; ++i)
     {
-        errorOut = "ANNA could not create a WAV writer for the committed sample.";
-        return false;
+        const auto left = source.getSample (0, i);
+        const auto right = source.getSample (1, i);
+        const auto centre = (left + right) * 0.5f;
+        const auto side = (left - right) * 0.5f;
+
+        vocals.setSample (0, i, centre);
+        vocals.setSample (1, i, centre);
+        instrumental.setSample (0, i, side);
+        instrumental.setSample (1, i, -side);
     }
 
-    stream.release();
-
-    if (! writer->writeFromAudioSampleBuffer (*renderBuffer, 0, renderBuffer->getNumSamples()))
-    {
-        errorOut = "ANNA could not write the committed sample audio.";
+    if (! writeBufferToWav (vocals, asset->sampleRate, vocalsFile, errorOut))
         return false;
-    }
+
+    if (! writeBufferToWav (instrumental, asset->sampleRate, instrumentalFile, errorOut))
+        return false;
 
     return true;
 }

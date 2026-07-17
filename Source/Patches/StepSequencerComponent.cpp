@@ -323,10 +323,10 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
         g.setColour (SamprLookAndFeel::surface().withAlpha (0.84f));
         g.fillRect (header);
         g.setColour (patternRow.colour.withAlpha (0.95f));
-        g.fillEllipse (static_cast<float> (header.getRight() - 14),
-                       static_cast<float> (header.getCentreY() - 4),
-                       8.0f,
-                       8.0f);
+        g.fillRect (juce::Rectangle<float> (static_cast<float> (header.getRight() - 14),
+                                            static_cast<float> (header.getCentreY() - 4),
+                                            8.0f,
+                                            8.0f));
 
         g.setColour (patternRow.colour.withAlpha (0.9f));
         g.setFont (juce::FontOptions { 12.0f, juce::Font::bold });
@@ -348,7 +348,7 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
             if (isCurrent)
             {
                 g.setColour (SamprLookAndFeel::accent().withAlpha (0.62f));
-                g.drawRoundedRectangle (cell.toFloat().reduced (0.5f), 3.0f, 1.5f);
+                g.drawRect (cell.toFloat().reduced (0.5f), 1.5f);
             }
 
             if (step % 4 == 0)
@@ -367,7 +367,7 @@ void StepSequencerComponent::paintRows (juce::Graphics& g, juce::Rectangle<int> 
                                                          patternRow.colour.darker (0.22f).withAlpha (alpha),
                                                          active.getX(), active.getBottom(),
                                                          false));
-                g.fillRoundedRectangle (active.reduced (1.0f, 5.0f), 3.0f);
+                g.fillRect (active.reduced (1.0f, 5.0f));
 
                 if (cellData.probability < 0.99f)
                 {
@@ -410,10 +410,10 @@ void StepSequencerComponent::paintEmptyPlaylistRows (juce::Graphics& g, juce::Re
         g.drawText ("Track " + juce::String (row + 1), header.reduced (8, 0), juce::Justification::centredLeft, true);
 
         g.setColour (SamprLookAndFeel::success().withAlpha (0.82f));
-        g.fillEllipse (static_cast<float> (header.getRight() - 14),
-                       static_cast<float> (header.getCentreY() - 4),
-                       8.0f,
-                       8.0f);
+        g.fillRect (juce::Rectangle<float> (static_cast<float> (header.getRight() - 14),
+                                            static_cast<float> (header.getCentreY() - 4),
+                                            8.0f,
+                                            8.0f));
 
         for (int step = 0; step < pattern.numSteps; ++step)
         {

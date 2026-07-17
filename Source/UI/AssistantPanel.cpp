@@ -46,7 +46,7 @@ AssistantPanel::AssistantPanel (AssistantClient& client,
       sampleManager (samples),
       audioEngine (engine)
 {
-    titleLabel.setText ("Gemma Assistant", juce::dontSendNotification);
+    titleLabel.setText ("ANNA Assistant", juce::dontSendNotification);
     titleLabel.setFont (juce::FontOptions { 14.0f, juce::Font::bold });
     titleLabel.setColour (juce::Label::textColourId, SamprLookAndFeel::textPrimary());
 
@@ -90,12 +90,12 @@ AssistantPanel::AssistantPanel (AssistantClient& client,
     inputEditor.onReturnKey = [this] { sendCurrentMessage(); return true; };
 
     sendButton.onClick = [this] { sendCurrentMessage(); };
-    sendButton.setTooltip ("Send question to Gemma (Enter)");
+    sendButton.setTooltip ("Send question to ANNA (Enter)");
 
     statusLabel.setFont (juce::FontOptions { 11.0f });
     statusLabel.setColour (juce::Label::textColourId, SamprLookAndFeel::textMuted());
 
-    emptyHintLabel.setText ("Ask why a track sounds flat — Gemma reads your mixer, FX, and step data.",
+    emptyHintLabel.setText ("Ask why a track sounds flat - ANNA reads your mixer, FX, and step data.",
                             juce::dontSendNotification);
     emptyHintLabel.setFont (juce::FontOptions { 12.0f });
     emptyHintLabel.setColour (juce::Label::textColourId, SamprLookAndFeel::textMuted());
@@ -190,8 +190,8 @@ void AssistantPanel::updateOnlineStatus()
 
     if (assistantClient.isOnline())
     {
-        const auto model = assistantModelName.isNotEmpty() ? assistantModelName : "gemma";
-        statusLabel.setText ("Gemma online (" + model + " via Ollama)", juce::dontSendNotification);
+        const auto model = assistantModelName.isNotEmpty() ? assistantModelName : "local model";
+        statusLabel.setText ("ANNA online (" + model + " via Ollama)", juce::dontSendNotification);
     }
     else
     {
@@ -238,7 +238,7 @@ void AssistantPanel::rebuildChatDisplay()
 
     for (const auto& msg : messages)
     {
-        display << (msg.fromUser ? "You: " : "Gemma: ");
+        display << (msg.fromUser ? "You: " : "ANNA: ");
         display << msg.text.trim();
         display << "\n\n";
     }
@@ -255,11 +255,41 @@ void AssistantPanel::setWaiting (bool waiting)
     inputEditor.setEnabled (! waiting);
 
     if (waiting)
-        statusLabel.setText ("Gemma is thinking...", juce::dontSendNotification);
+    {
+        responseWaitTicks = 0;
+        startTimerHz (2);
+        statusLabel.setText ("ANNA is thinking...", juce::dontSendNotification);
+    }
     else
+    {
+        stopTimer();
         updateOnlineStatus();
+    }
 
     emptyHintLabel.setVisible (messages.empty() && ! waiting);
+}
+
+void AssistantPanel::timerCallback()
+{
+    if (! waitingForResponse)
+    {
+        stopTimer();
+        return;
+    }
+
+    ++responseWaitTicks;
+
+    if (responseWaitTicks == 20)
+        statusLabel.setText ("ANNA is still working...", juce::dontSendNotification);
+
+    if (responseWaitTicks < 90)
+        return;
+
+    assistantClient.cancelPending();
+    setWaiting (false);
+    ++activeRequestId;
+    appendMessage (false, "ANNA response timed out. The local model did not answer fast enough, so the input was unlocked.");
+    statusLabel.setText ("ANNA timed out - try a shorter question or smaller model.", juce::dontSendNotification);
 }
 
 void AssistantPanel::sendCurrentMessage()
@@ -272,13 +302,14 @@ void AssistantPanel::sendCurrentMessage()
     if (! assistantClient.isOnline())
     {
         checkHealth();
-        appendMessage (false, "Assistant is offline. Run launch.ps1 to start the Gemma sidecar.");
+        appendMessage (false, "ANNA is offline. Run launch.ps1 to start the assistant sidecar.");
         return;
     }
 
     appendMessage (true, text);
     inputEditor.clear();
     setWaiting (true);
+    const auto requestId = ++activeRequestId;
 
     const auto context = TrackContextBuilder::build (makeContextInput());
 
@@ -293,8 +324,11 @@ void AssistantPanel::sendCurrentMessage()
     }
 
     assistantClient.sendChat (text, context, history,
-                              [this] (bool success, const juce::String& response, const juce::String& error)
+                              [this, requestId] (bool success, const juce::String& response, const juce::String& error)
     {
+        if (requestId != activeRequestId)
+            return;
+
         setWaiting (false);
 
         if (success)

@@ -159,7 +159,7 @@ app.post('/api/chat', async (req, res) => {
 });
 
 async function start() {
-  console.log('ANNA Gemma Assistant');
+  console.log('ANNA Assistant');
   await initDb();
   await initModel();
 

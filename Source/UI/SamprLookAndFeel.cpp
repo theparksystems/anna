@@ -113,12 +113,12 @@ void SamprLookAndFeel::paintPanelOutline (juce::Graphics& g, juce::Rectangle<int
     g.setGradientFill (juce::ColourGradient (panel().brighter (0.08f), r.getX(), r.getY(),
                                              panel().darker (0.16f), r.getX(), r.getBottom(),
                                              false));
-    g.fillRoundedRectangle (r, 4.0f);
+    g.fillRect (r);
     g.setColour (juce::Colours::white.withAlpha (0.035f));
     g.drawHorizontalLine (bounds.getY() + 1, static_cast<float> (bounds.getX() + 2),
                           static_cast<float> (bounds.getRight() - 2));
     g.setColour (border().withAlpha (0.82f));
-    g.drawRoundedRectangle (r, 4.0f, 1.0f);
+    g.drawRect (r, 1.0f);
 }
 
 void SamprLookAndFeel::paintHorizontalDivider (juce::Graphics& g, int y, int width)
@@ -143,20 +143,20 @@ void SamprLookAndFeel::drawButtonBackground (juce::Graphics& g,
 
     const auto fill = buttonFill (button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
     g.setColour (juce::Colours::black.withAlpha (0.32f));
-    g.fillRoundedRectangle (bounds.translated (0.0f, 1.0f), 4.0f);
+    g.fillRect (bounds.translated (0.0f, 1.0f));
     g.setGradientFill (juce::ColourGradient (fill.brighter (0.08f), bounds.getX(), bounds.getY(),
                                              fill.darker (0.14f), bounds.getX(), bounds.getBottom(),
                                              false));
-    g.fillRoundedRectangle (bounds, 4.0f);
+    g.fillRect (bounds);
     g.setColour (border().withAlpha (button.isEnabled() ? 0.95f : 0.45f));
-    g.drawRoundedRectangle (bounds, 4.0f, 1.0f);
+    g.drawRect (bounds, 1.0f);
 
     if (button.getButtonText().equalsIgnoreCase ("play")
         || button.getButtonText().equalsIgnoreCase ("stop")
         || button.getButtonText().containsIgnoreCase ("export"))
     {
         g.setColour (juce::Colours::white.withAlpha (0.10f));
-        g.fillRoundedRectangle (bounds.removeFromTop (bounds.getHeight() * 0.45f), 4.0f);
+        g.fillRect (bounds.removeFromTop (bounds.getHeight() * 0.45f));
     }
 }
 
@@ -169,13 +169,13 @@ void SamprLookAndFeel::drawToggleButton (juce::Graphics& g,
 
     const auto fill = buttonFill (button, shouldDrawButtonAsHighlighted, shouldDrawButtonAsDown);
     g.setColour (juce::Colours::black.withAlpha (0.28f));
-    g.fillRoundedRectangle (bounds.translated (0.0f, 1.0f), 4.0f);
+    g.fillRect (bounds.translated (0.0f, 1.0f));
     g.setGradientFill (juce::ColourGradient (fill.brighter (0.06f), bounds.getX(), bounds.getY(),
                                              fill.darker (0.16f), bounds.getX(), bounds.getBottom(),
                                              false));
-    g.fillRoundedRectangle (bounds, 4.0f);
+    g.fillRect (bounds);
     g.setColour (border());
-    g.drawRoundedRectangle (bounds, 4.0f, 1.0f);
+    g.drawRect (bounds, 1.0f);
 
     const auto tickSize = juce::jmin (14.0f, bounds.getHeight() - 6.0f);
     const auto tickX = bounds.getX() + 6.0f;
@@ -212,14 +212,14 @@ void SamprLookAndFeel::drawTickBox (juce::Graphics& g,
     const auto box = juce::Rectangle<float> (x, y, w, h).reduced (0.5f);
 
     g.setColour (isEnabled ? surface().brighter (0.04f) : surface().darker (0.2f));
-    g.fillRoundedRectangle (box, 2.0f);
+    g.fillRect (box);
     g.setColour (border());
-    g.drawRoundedRectangle (box, 2.0f, 1.0f);
+    g.drawRect (box, 1.0f);
 
     if (ticked)
     {
         g.setColour (isEnabled ? accent() : textMuted());
-        g.fillRoundedRectangle (box.reduced (3.0f), 1.5f);
+        g.fillRect (box.reduced (3.0f));
     }
 }
 
@@ -233,7 +233,7 @@ void SamprLookAndFeel::drawTabButton (juce::TabBarButton& button,
 
     const auto tab = area.toFloat().reduced (1.0f, 1.0f);
     g.setColour (isFront ? panel().brighter (0.06f) : background().brighter (0.02f));
-    g.fillRoundedRectangle (tab.withTrimmedBottom (-4.0f), 5.0f);
+    g.fillRect (tab.withTrimmedBottom (-4.0f));
 
     if (isMouseDown)
     {
@@ -290,9 +290,9 @@ void SamprLookAndFeel::drawComboBox (juce::Graphics& g,
     const auto bounds = toRect (0, 0, width, height).reduced (0.5f);
 
     g.setColour (isButtonDown ? divider() : surface().brighter (0.03f));
-    g.fillRoundedRectangle (bounds, 4.0f);
+    g.fillRect (bounds);
     g.setColour (border());
-    g.drawRoundedRectangle (bounds, 4.0f, 1.0f);
+    g.drawRect (bounds, 1.0f);
 
     juce::Path arrow;
     const auto arrowArea = toRect (buttonX, buttonY, buttonW, buttonH).reduced (6.0f);
@@ -353,7 +353,7 @@ void SamprLookAndFeel::drawLinearSlider (juce::Graphics& g,
         : bounds.withHeight (3.0f).withCentre (bounds.getCentre());
 
     g.setColour (surface().brighter (0.10f));
-    g.fillRoundedRectangle (track, 1.5f);
+    g.fillRect (track);
 
     if (slider.isEnabled())
     {
@@ -365,7 +365,7 @@ void SamprLookAndFeel::drawLinearSlider (juce::Graphics& g,
             g.setGradientFill (juce::ColourGradient (accent(), active.getX(), active.getY(),
                                                      accentCool().withAlpha (0.85f), active.getX(), active.getBottom(),
                                                      false));
-            g.fillRoundedRectangle (active, 1.5f);
+            g.fillRect (active);
         }
         else
         {
@@ -375,7 +375,7 @@ void SamprLookAndFeel::drawLinearSlider (juce::Graphics& g,
             g.setGradientFill (juce::ColourGradient (accent(), active.getX(), active.getY(),
                                                      accentCool().withAlpha (0.85f), active.getRight(), active.getY(),
                                                      false));
-            g.fillRoundedRectangle (active, 1.5f);
+            g.fillRect (active);
         }
     }
 
@@ -392,11 +392,11 @@ void SamprLookAndFeel::drawLinearSlider (juce::Graphics& g,
                   thumbSize, thumbSize };
 
     g.setColour (juce::Colours::black.withAlpha (0.28f));
-    g.fillRoundedRectangle (thumb.translated (0.0f, 1.0f), 2.0f);
+    g.fillRect (thumb.translated (0.0f, 1.0f));
     g.setColour (slider.isEnabled() ? accent() : textMuted());
-    g.fillRoundedRectangle (thumb, 2.0f);
+    g.fillRect (thumb);
     g.setColour (juce::Colours::white.withAlpha (0.22f));
-    g.drawRoundedRectangle (thumb.reduced (0.5f), 2.0f, 1.0f);
+    g.drawRect (thumb.reduced (0.5f), 1.0f);
 }
 
 void SamprLookAndFeel::drawRotarySlider (juce::Graphics& g,
@@ -410,17 +410,18 @@ void SamprLookAndFeel::drawRotarySlider (juce::Graphics& g,
                                          juce::Slider& slider)
 {
     const auto bounds = toRect (x, y, width, height).reduced (4.0f);
-    const auto radius = juce::jmin (bounds.getWidth(), bounds.getHeight()) * 0.5f;
-    const auto centre = bounds.getCentre();
+    const auto squareSize = juce::jmin (bounds.getWidth(), bounds.getHeight());
+    const auto square = juce::Rectangle<float> (squareSize, squareSize).withCentre (bounds.getCentre());
+    const auto centre = square.getCentre();
     const auto angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
 
     g.setColour (surface().brighter (0.04f));
-    g.fillEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f);
+    g.fillRect (square);
     g.setColour (divider());
-    g.drawEllipse (centre.x - radius, centre.y - radius, radius * 2.0f, radius * 2.0f, 1.0f);
+    g.drawRect (square, 1.0f);
 
     juce::Path indicator;
-    const auto indicatorLength = radius * 0.75f;
+    const auto indicatorLength = squareSize * 0.36f;
     indicator.startNewSubPath (centre.x, centre.y);
     indicator.lineTo (centre.x, centre.y - indicatorLength);
     indicator.applyTransform (juce::AffineTransform::rotation (angle, centre.x, centre.y));
@@ -461,7 +462,7 @@ void SamprLookAndFeel::drawScrollbar (juce::Graphics& g,
         colour = divider().brighter (0.15f);
 
     g.setColour (colour);
-    g.fillRoundedRectangle (thumbBounds.toFloat().reduced (1.0f), 3.0f);
+    g.fillRect (thumbBounds.toFloat().reduced (1.0f));
 }
 
 void SamprLookAndFeel::fillTextEditorBackground (juce::Graphics& g,

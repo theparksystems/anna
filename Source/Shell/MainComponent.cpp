@@ -154,6 +154,30 @@ bool writeCommittedSliceOriginSidecar (const juce::File& audioFile,
     const auto sidecar = audioFile.getSiblingFile (audioFile.getFileNameWithoutExtension() + ".anna-origin.json");
     return sidecar.replaceWithText (juce::JSON::toString (juce::var (obj), true));
 }
+
+bool writeStemOriginSidecar (const juce::File& audioFile,
+                             const sampr::SampleAsset& sourceAsset,
+                             const juce::String& stemKind,
+                             const juce::String& splitMethod)
+{
+    auto obj = new juce::DynamicObject();
+    obj->setProperty ("sourceType", "anna-vocal-split");
+    obj->setProperty ("sourceUrl", sourceAsset.origin.sourceUrl);
+    obj->setProperty ("sourceTitle", sourceAsset.origin.sourceTitle.isNotEmpty()
+                                         ? sourceAsset.origin.sourceTitle
+                                         : sourceAsset.displayName);
+    obj->setProperty ("sourceAuthor", sourceAsset.origin.sourceAuthor);
+    obj->setProperty ("sourceId", sourceAsset.origin.sourceId);
+    obj->setProperty ("downloadedAt", sourceAsset.origin.downloadedAt);
+    obj->setProperty ("localFileName", audioFile.getFileName());
+    obj->setProperty ("parentSampleFile", sourceAsset.filePath.getFullPathName());
+    obj->setProperty ("parentSampleName", sourceAsset.displayName);
+    obj->setProperty ("stemKind", stemKind);
+    obj->setProperty ("splitMethod", splitMethod);
+
+    const auto sidecar = audioFile.getSiblingFile (audioFile.getFileNameWithoutExtension() + ".anna-origin.json");
+    return sidecar.replaceWithText (juce::JSON::toString (juce::var (obj), true));
+}
 }
 
 class MainComponent::AsyncExportJob final : private juce::Thread
@@ -350,6 +374,180 @@ private:
     juce::String format;
 };
 
+class MainComponent::AsyncVocalSplitJob final : private juce::Thread
+{
+public:
+    AsyncVocalSplitJob (MainComponent& ownerIn,
+                        sampr::AssetId sourceAssetIdIn,
+                        juce::File sourceFileIn,
+                        juce::File vocalsFileIn,
+                        juce::File instrumentalFileIn)
+        : juce::Thread ("ANNA Vocal Split"),
+          owner (ownerIn),
+          ownerPtr (&ownerIn),
+          sourceAssetId (sourceAssetIdIn),
+          sourceFile (std::move (sourceFileIn)),
+          vocalsFile (std::move (vocalsFileIn)),
+          instrumentalFile (std::move (instrumentalFileIn))
+    {
+    }
+
+    ~AsyncVocalSplitJob() override
+    {
+        signalThreadShouldExit();
+        stopThread (30000);
+    }
+
+    void start()
+    {
+        startThread (juce::Thread::Priority::normal);
+    }
+
+private:
+    void run() override
+    {
+        juce::String error;
+        juce::String method = "stereo-center-extraction";
+
+        if (tryDemucsSplit (method, error))
+        {
+            lastMethod = method;
+            finish ({});
+            return;
+        }
+
+        if (threadShouldExit())
+            return;
+
+        error.clear();
+        if (! owner.sampleManager.exportAssetVocalSplitToWavs (sourceAssetId, vocalsFile, instrumentalFile, error))
+        {
+            finish (error);
+            return;
+        }
+
+        method = "stereo-center-extraction";
+        lastMethod = method;
+        finish ({});
+    }
+
+    bool tryDemucsSplit (juce::String& method, juce::String& errorOut)
+    {
+        if (! sourceFile.existsAsFile())
+        {
+            errorOut = "Selected sample has no source file for AI separation.";
+            return false;
+        }
+
+        const auto sourceRoot = findSourceRoot();
+        if (sourceRoot == juce::File())
+        {
+            errorOut = "Could not locate ANNA source tools.";
+            return false;
+        }
+
+        const auto script = sourceRoot.getChildFile ("tools").getChildFile ("vocal_separate.py");
+        if (! script.existsAsFile())
+        {
+            errorOut = "AI vocal separation script not found.";
+            return false;
+        }
+
+        const auto workFolder = vocalsFile.getParentDirectory().getChildFile ("AI Work");
+        workFolder.createDirectory();
+
+        juce::StringArray launchers;
+        const auto envPython = juce::SystemStats::getEnvironmentVariable ("ANNA_PYTHON", {});
+        if (envPython.isNotEmpty())
+            launchers.add (quoteCommandArg (envPython));
+        launchers.add (quoteCommandArg ("C:\\Users\\User\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe"));
+        launchers.add ("py -3");
+        launchers.add ("python");
+
+        juce::String lastOutput;
+
+        for (const auto& launcher : launchers)
+        {
+            if (threadShouldExit())
+                return false;
+
+            const auto command = launcher
+                + " " + quoteCommandArg (script.getFullPathName())
+                + " " + quoteCommandArg (sourceFile.getFullPathName())
+                + " --out " + quoteCommandArg (workFolder.getFullPathName());
+
+            juce::ChildProcess process;
+
+            if (! process.start (command))
+            {
+                lastOutput = "Could not start: " + launcher;
+                continue;
+            }
+
+            while (process.isRunning())
+            {
+                if (threadShouldExit())
+                    return false;
+
+                appendProcessOutput (lastOutput, process.readAllProcessOutput());
+                wait (150);
+            }
+
+            appendProcessOutput (lastOutput, process.readAllProcessOutput());
+
+            if (process.getExitCode() != 0)
+                continue;
+
+            const auto parsed = juce::JSON::parse (getLastNonEmptyLine (lastOutput));
+            if (! parsed.isObject())
+                continue;
+
+            const auto demucsVocals = juce::File (parsed.getProperty ("vocals", juce::String()).toString());
+            const auto demucsInstrumental = juce::File (parsed.getProperty ("instrumental", juce::String()).toString());
+
+            if (! demucsVocals.existsAsFile() || ! demucsInstrumental.existsAsFile())
+                continue;
+
+            vocalsFile.deleteFile();
+            instrumentalFile.deleteFile();
+
+            if (! demucsVocals.copyFileTo (vocalsFile) || ! demucsInstrumental.copyFileTo (instrumentalFile))
+            {
+                errorOut = "AI split succeeded, but ANNA could not copy the stem files.";
+                return false;
+            }
+
+            method = parsed.getProperty ("method", juce::String ("demucs")).toString();
+            return true;
+        }
+
+        errorOut = lastOutput.isNotEmpty() ? lastOutput : "Demucs is not installed.";
+        return false;
+    }
+
+    void finish (juce::String errorMessage)
+    {
+        juce::MessageManager::callAsync ([safeOwner = ownerPtr,
+                                          sourceId = sourceAssetId,
+                                          vocals = vocalsFile,
+                                          instrumental = instrumentalFile,
+                                          error = std::move (errorMessage),
+                                          splitMethod = lastMethod]
+        {
+            if (safeOwner != nullptr)
+                safeOwner->finishVocalSplit (sourceId, vocals, instrumental, splitMethod, error);
+        });
+    }
+
+    MainComponent& owner;
+    juce::Component::SafePointer<MainComponent> ownerPtr;
+    sampr::AssetId sourceAssetId = sampr::kInvalidAssetId;
+    juce::File sourceFile;
+    juce::File vocalsFile;
+    juce::File instrumentalFile;
+    juce::String lastMethod { "stereo-center-extraction" };
+};
+
 MainComponent::MainComponent()
     : sampleManager (audioEngine),
       patternStore (projectModel, sampleManager),
@@ -474,6 +672,8 @@ MainComponent::MainComponent()
     patternTabs.getTabbedButtonBar().addChangeListener (this);
 
     sampleBrowser.setLoadRequestedCallback ([this] { loadSampleFromDisk(); });
+    sampleBrowser.setSplitVocalsCallback ([this] { splitSelectedSampleVocals(); });
+    sampleBrowser.setSourceInfoCallback ([this] { showSelectedSampleSourceInfo(); });
     sampleBrowser.setSelectionCallback ([this] (sampr::AssetId)
     {
         refreshSampleViews();
@@ -622,7 +822,7 @@ MainComponent::MainComponent()
     loadProjectButton.setTooltip ("Load project (Ctrl+O)");
     saveBeatButton.setTooltip ("Save current pattern as beat preset");
     loadBeatButton.setTooltip ("Load beat preset into current pattern");
-    askPatternButton.setTooltip ("Ask Gemma about the current pattern mix");
+    askPatternButton.setTooltip ("Ask ANNA about the current pattern mix");
     askPatternButton.onClick = [this]
     {
         openAssistantWithContext (sampr::ContextScope::pattern,
@@ -708,6 +908,7 @@ MainComponent::MainComponent()
 
 MainComponent::~MainComponent()
 {
+    vocalSplitJob.reset();
     youtubeImportJob.reset();
     exportJob.reset();
     patternTabs.getTabbedButtonBar().removeChangeListener (this);
@@ -967,7 +1168,7 @@ void MainComponent::stopTransport()
 
 void MainComponent::updateToolbarState()
 {
-    const auto canEdit = ! exportInProgress;
+    const auto canEdit = ! exportInProgress && ! vocalSplitInProgress;
 
     saveProjectButton.setEnabled (canEdit);
     loadProjectButton.setEnabled (canEdit);
@@ -976,7 +1177,8 @@ void MainComponent::updateToolbarState()
     askPatternButton.setEnabled (canEdit);
     songModeButton.setEnabled (canEdit);
     youtubeImportButton.setEnabled (canEdit && ! youtubeImportInProgress);
-    sampleBrowser.setEnabled (canEdit);
+    sampleBrowser.setEnabled (! exportInProgress);
+    sampleBrowser.setSplitVocalsInProgress (vocalSplitInProgress);
     sliceEditorButton.setEnabled (canEdit);
     patternTabs.setEnabled (canEdit);
     transportBar.setEnabled (canEdit);
@@ -1263,6 +1465,170 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
     showUserMessage ("Imported YouTube sample with metadata.");
 }
 
+void MainComponent::splitSelectedSampleVocals()
+{
+    if (vocalSplitInProgress || vocalSplitJob != nullptr)
+    {
+        showUserMessage ("Vocal split already running.");
+        return;
+    }
+
+    const auto assetId = sampleManager.getSelectedAssetId();
+    const auto* asset = sampleManager.getAsset (assetId);
+
+    if (asset == nullptr)
+    {
+        showUserMessage ("Select a sample first.");
+        return;
+    }
+
+    if (asset->numChannels < 2)
+    {
+        showUserMessage ("Vocal split needs a stereo sample.");
+        return;
+    }
+
+    const auto stemsFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+        .getChildFile ("ANNA Vocal Splits");
+    const auto stem = makeSafeFileStem (asset->displayName);
+    const auto vocalsFile = getUniqueChildFile (stemsFolder, stem + " Vocals", ".wav");
+    const auto instrumentalFile = getUniqueChildFile (stemsFolder, stem + " Instrumental", ".wav");
+
+    vocalSplitInProgress = true;
+    updateToolbarState();
+    showUserMessage ("Vocal split started.");
+
+    vocalSplitJob = std::make_unique<AsyncVocalSplitJob> (*this,
+                                                          assetId,
+                                                          asset->filePath,
+                                                          vocalsFile,
+                                                          instrumentalFile);
+    vocalSplitJob->start();
+}
+
+void MainComponent::finishVocalSplit (sampr::AssetId sourceAssetId,
+                                      const juce::File& vocalsFile,
+                                      const juce::File& instrumentalFile,
+                                      const juce::String& splitMethod,
+                                      const juce::String& errorMessage)
+{
+    vocalSplitJob.reset();
+    vocalSplitInProgress = false;
+    updateToolbarState();
+
+    if (errorMessage.isNotEmpty())
+    {
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "Vocal split failed",
+            errorMessage);
+        showUserMessage ("Vocal split failed.");
+        return;
+    }
+
+    const auto* asset = sampleManager.getAsset (sourceAssetId);
+
+    if (asset == nullptr)
+    {
+        showUserMessage ("Vocal split finished, but the source sample was removed.");
+        return;
+    }
+
+    const auto wroteVocalsMetadata = writeStemOriginSidecar (vocalsFile, *asset, "vocals", splitMethod);
+    const auto wroteInstrumentalMetadata = writeStemOriginSidecar (instrumentalFile, *asset, "instrumental", splitMethod);
+
+    juce::StringArray paths;
+    paths.add (vocalsFile.getFullPathName());
+    paths.add (instrumentalFile.getFullPathName());
+    const auto result = importSampleFiles (paths);
+
+    if (result.loadedCount <= 0)
+    {
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "Stem import failed",
+            result.lastError.isNotEmpty()
+                ? result.lastError
+                : (vocalsFile.getFullPathName() + "\n" + instrumentalFile.getFullPathName()));
+        showUserMessage ("Stems were written, but ANNA could not import them.");
+        return;
+    }
+
+    patternTabs.setCurrentTabIndex (kTabStepSeq);
+    focusActiveEditorTab();
+
+    if (! wroteVocalsMetadata || ! wroteInstrumentalMetadata)
+        showUserMessage ("Vocal split imported, but one metadata sidecar could not be written.");
+    else
+        showUserMessage ((splitMethod == "demucs" ? "AI stems imported." : "Fallback stems imported."));
+}
+
+void MainComponent::showSelectedSampleSourceInfo()
+{
+    const auto* asset = sampleManager.getAsset (sampleManager.getSelectedAssetId());
+
+    if (asset == nullptr)
+    {
+        showUserMessage ("Select a sample first.");
+        return;
+    }
+
+    juce::String info;
+    info << "Sample: " << asset->displayName << "\n";
+    info << "File: " << asset->filePath.getFullPathName() << "\n";
+    info << "Channels: " << asset->numChannels
+         << "  Samples: " << asset->numSamples
+         << "  Rate: " << juce::String (asset->sampleRate, 0) << " Hz\n\n";
+
+    info << "Source Type: " << (asset->origin.sourceType.isNotEmpty() ? asset->origin.sourceType : "unknown") << "\n";
+
+    if (asset->origin.sourceTitle.isNotEmpty())
+        info << "Title: " << asset->origin.sourceTitle << "\n";
+
+    if (asset->origin.sourceAuthor.isNotEmpty())
+        info << "Author: " << asset->origin.sourceAuthor << "\n";
+
+    if (asset->origin.sourceUrl.isNotEmpty())
+        info << "URL: " << asset->origin.sourceUrl << "\n";
+
+    if (asset->origin.sourceId.isNotEmpty())
+        info << "Source ID: " << asset->origin.sourceId << "\n";
+
+    if (asset->origin.downloadedAt.isNotEmpty())
+        info << "Downloaded: " << asset->origin.downloadedAt << "\n";
+
+    const auto sidecar = asset->filePath.getSiblingFile (asset->filePath.getFileNameWithoutExtension() + ".anna-origin.json");
+    if (sidecar.existsAsFile())
+    {
+        juce::var parsed;
+        const auto parse = juce::JSON::parse (sidecar.loadFileAsString(), parsed);
+
+        if (parse.wasOk() && parsed.isObject())
+        {
+            info << "\nMetadata File: " << sidecar.getFullPathName() << "\n";
+
+            for (const auto& key : parsed.getDynamicObject()->getProperties())
+            {
+                const auto name = key.name.toString();
+                if (name == "sourceType" || name == "sourceUrl" || name == "sourceTitle"
+                    || name == "sourceAuthor" || name == "sourceId" || name == "downloadedAt"
+                    || name == "localFileName")
+                    continue;
+
+                info << name << ": " << key.value.toString() << "\n";
+            }
+        }
+    }
+
+    if (! asset->origin.hasSource())
+        info << "\nNo external source metadata is attached.";
+
+    juce::NativeMessageBox::showMessageBoxAsync (
+        juce::MessageBoxIconType::InfoIcon,
+        "Sample Source Info",
+        info);
+}
+
 int MainComponent::ensureSelectedSliceTrackRow()
 {
     const auto assetId = sampleManager.getSelectedAssetId();
@@ -1318,6 +1684,7 @@ void MainComponent::commitSelectedSliceToSampleBrowser()
         .getChildFile ("ANNA Committed Samples");
     const auto stem = makeSafeFileStem (sourceAsset->displayName + " Clip " + juce::String (sliceIndex + 1));
     const auto outputFile = getUniqueChildFile (committedFolder, stem, ".wav");
+    showUserMessage ("Rendering clip to sample browser...");
     const auto rowIndex = ensureSelectedSliceTrackRow();
     sampr::ChannelFxState channelFx;
     const sampr::ChannelFxState* channelFxToRender = nullptr;
@@ -1662,13 +2029,13 @@ void MainComponent::showSliceEditorPopup()
                             std::function<void()> onCommit,
                             std::function<void()> onFxChange,
                             std::function<void (int)> onAskFx,
-                            std::function<void()> onAskGemma)
+                            std::function<void()> onAskAnna)
             : slicePanel (panel),
               fxWorkspacePanel (store),
               commitCallback (std::move (onCommit)),
               fxChangeCallback (std::move (onFxChange)),
               fxAskCallback (std::move (onAskFx)),
-              askCallback (std::move (onAskGemma))
+              askCallback (std::move (onAskAnna))
         {
             if (slicePanel.getParentComponent() != nullptr)
                 slicePanel.getParentComponent()->removeChildComponent (&slicePanel);
@@ -1692,7 +2059,7 @@ void MainComponent::showSliceEditorPopup()
                     commitCallback();
             };
 
-            askButton.setTooltip ("Ask Gemma about this slice's pitch, timing, and boundaries");
+            askButton.setTooltip ("Ask ANNA about this slice's pitch, timing, and boundaries");
             askButton.onClick = [this]
             {
                 if (askCallback != nullptr)
@@ -1724,7 +2091,7 @@ void MainComponent::showSliceEditorPopup()
         sampr::SliceEditorPanel& slicePanel;
         sampr::FxWorkspaceComponent fxWorkspacePanel;
         juce::TextButton commitButton { "Commit To Samples" };
-        juce::TextButton askButton { "Ask Gemma" };
+        juce::TextButton askButton { "Ask ANNA" };
         std::function<void()> commitCallback;
         std::function<void()> fxChangeCallback;
         std::function<void (int)> fxAskCallback;
@@ -1977,7 +2344,7 @@ void MainComponent::updateStatusLabel()
     else if (auto* device = deviceManager.getCurrentAudioDevice())
         text << device->getName() << "  " << juce::String (device->getCurrentSampleRate(), 0) << " Hz";
 
-    text << "  |  Gemma: "
+    text << "  |  ANNA: "
          << (assistantClient.isOnline() ? "online" : "offline");
 
     if (assistantPanel.isWaitingForResponse())
@@ -1988,6 +2355,9 @@ void MainComponent::updateStatusLabel()
 
     if (youtubeImportInProgress)
         text << "  |  YouTube import running";
+
+    if (vocalSplitInProgress)
+        text << "  |  Vocal split running";
 
     statusLabel.setText (text, juce::dontSendNotification);
 }

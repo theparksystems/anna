@@ -14,9 +14,13 @@ SampleBrowserComponent::SampleBrowserComponent (SampleManager& manager)
     addAndMakeVisible (titleLabel);
     addAndMakeVisible (listBox);
     addAndMakeVisible (loadButton);
+    addAndMakeVisible (splitVocalsButton);
+    addAndMakeVisible (sourceInfoButton);
     addAndMakeVisible (copyCreditsButton);
 
     loadButton.setTooltip ("Load audio files (Ctrl+Shift+L). You can also drag and drop anywhere.");
+    splitVocalsButton.setTooltip ("Split the selected stereo sample into vocal and instrumental stems.");
+    sourceInfoButton.setTooltip ("Show metadata for the selected sample.");
     copyCreditsButton.setTooltip ("Copy sampled-from credits for sourced samples.");
     listBox.setTooltip ("Selected sample drives the chop area, piano roll recording, and + Row.");
 
@@ -24,6 +28,18 @@ SampleBrowserComponent::SampleBrowserComponent (SampleManager& manager)
     {
         if (onLoadRequested != nullptr)
             onLoadRequested();
+    };
+
+    splitVocalsButton.onClick = [this]
+    {
+        if (onSplitVocalsRequested != nullptr)
+            onSplitVocalsRequested();
+    };
+
+    sourceInfoButton.onClick = [this]
+    {
+        if (onSourceInfoRequested != nullptr)
+            onSourceInfoRequested();
     };
 
     copyCreditsButton.onClick = [this]
@@ -70,6 +86,23 @@ void SampleBrowserComponent::setLoadRequestedCallback (LoadRequestedCallback cal
     onLoadRequested = std::move (callback);
 }
 
+void SampleBrowserComponent::setSplitVocalsCallback (SplitVocalsCallback callback)
+{
+    onSplitVocalsRequested = std::move (callback);
+}
+
+void SampleBrowserComponent::setSourceInfoCallback (SourceInfoCallback callback)
+{
+    onSourceInfoRequested = std::move (callback);
+}
+
+void SampleBrowserComponent::setSplitVocalsInProgress (bool inProgress)
+{
+    splitVocalsInProgress = inProgress;
+    splitVocalsButton.setButtonText (inProgress ? "Splitting..." : "Split Vocals");
+    splitVocalsButton.setEnabled (! inProgress);
+}
+
 void SampleBrowserComponent::refresh()
 {
     listBox.updateContent();
@@ -109,12 +142,16 @@ void SampleBrowserComponent::paintListBoxItem (int rowNumber,
         g.setGradientFill (juce::ColourGradient (SamprLookAndFeel::accent().withAlpha (0.24f), 0.0f, 0.0f,
                                                  SamprLookAndFeel::accentCool().withAlpha (0.12f), static_cast<float> (width), 0.0f,
                                                  false));
-        g.fillRoundedRectangle (juce::Rectangle<float> (2.0f, 2.0f, static_cast<float> (width - 4), static_cast<float> (height - 4)), 4.0f);
+        g.fillRect (juce::Rectangle<float> (2.0f, 2.0f, static_cast<float> (width - 4), static_cast<float> (height - 4)));
+        g.setColour (SamprLookAndFeel::accent().withAlpha (0.72f));
+        g.drawRect (2, 2, width - 4, height - 4, 1);
     }
     else
     {
         g.setColour ((rowNumber % 2 == 0 ? SamprLookAndFeel::surface() : SamprLookAndFeel::panel()).withAlpha (0.52f));
-        g.fillRoundedRectangle (juce::Rectangle<float> (2.0f, 2.0f, static_cast<float> (width - 4), static_cast<float> (height - 4)), 4.0f);
+        g.fillRect (juce::Rectangle<float> (2.0f, 2.0f, static_cast<float> (width - 4), static_cast<float> (height - 4)));
+        g.setColour (SamprLookAndFeel::border().withAlpha (0.38f));
+        g.drawRect (2, 2, width - 4, height - 4, 1);
     }
 
     const auto* asset = sampleManager.getAsset (ids[static_cast<size_t> (rowNumber)]);
@@ -189,11 +226,15 @@ void SampleBrowserComponent::resized()
     auto area = getLocalBounds().reduced (4);
     titleLabel.setBounds (area.removeFromTop (18));
     area.removeFromTop (2);
-    auto buttons = area.removeFromTop (26);
-    const auto buttonWidth = (buttons.getWidth() - 4) / 2;
-    loadButton.setBounds (buttons.removeFromLeft (buttonWidth));
-    buttons.removeFromLeft (4);
-    copyCreditsButton.setBounds (buttons);
+    auto topButtons = area.removeFromTop (26);
+    const auto topButtonWidth = (topButtons.getWidth() - 8) / 3;
+    loadButton.setBounds (topButtons.removeFromLeft (topButtonWidth));
+    topButtons.removeFromLeft (4);
+    sourceInfoButton.setBounds (topButtons.removeFromLeft (topButtonWidth));
+    topButtons.removeFromLeft (4);
+    copyCreditsButton.setBounds (topButtons);
+    area.removeFromTop (4);
+    splitVocalsButton.setBounds (area.removeFromTop (26));
     area.removeFromTop (4);
     listBox.setBounds (area);
 }

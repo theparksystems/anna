@@ -169,19 +169,24 @@ function Get-AssistantHealthInfo {
     }
 }
 
-function Get-AvailableGemmaModel {
+function Get-AvailableAnnaModel {
     if (-not (Get-Command ollama -ErrorAction SilentlyContinue)) { return $null }
     $list = & ollama list 2>$null
     if ($null -eq $list) { return $null }
 
-    $priority = @('gemma2:9b', 'gemma:7b', 'gemma2:2b', 'gemma3:4b', 'gemma2', 'gemma3:12b')
+    $priority = @('llama3.1:8b', 'gemma3:4b', 'gemma2:2b', 'gemma2:9b', 'gemma:7b', 'gemma2', 'qwen2.5:14b-instruct', 'gemma3:12b')
     foreach ($candidate in $priority) {
         if ($list -match [regex]::Escape($candidate)) { return $candidate }
     }
 
     foreach ($line in $list -split "`n" | Select-Object -Skip 1) {
         $name = ($line.Trim() -split '\s+')[0]
-        if ($name -like 'gemma*') { return $name }
+        if ($name -like 'llama3.1*' -or $name -like 'gemma*') { return $name }
+    }
+
+    foreach ($line in $list -split "`n" | Select-Object -Skip 1) {
+        $name = ($line.Trim() -split '\s+')[0]
+        if ($name) { return $name }
     }
     return $null
 }
@@ -194,7 +199,7 @@ function Configure-AssistantEnv {
         Copy-Item $example $envFile -ErrorAction SilentlyContinue
     }
 
-    $model = Get-AvailableGemmaModel
+    $model = Get-AvailableAnnaModel
     if ($null -eq $model) { return }
 
     $content = Get-Content $envFile -ErrorAction SilentlyContinue
@@ -219,27 +224,27 @@ function Start-AssistantSidecar {
         $info = Get-AssistantHealthInfo
         $model = if ($info) { $info.model } else { "unknown" }
         if ($info -and $info.modelAvailable) {
-            Write-Host "Gemma assistant already running on port $assistantPort ($model)"
+            Write-Host "ANNA assistant already running on port $assistantPort ($model)"
         } else {
-            Write-Warning "Assistant sidecar is running, but no usable Gemma model is available. Recommended: ollama pull gemma2:9b"
+            Write-Warning "ANNA assistant sidecar is running, but no usable local model is available. Recommended: ollama pull llama3.1:8b"
         }
         return
     }
 
     if (-not (Test-Path (Join-Path $assistantDir "server.js"))) {
-        Write-Warning "Assistant sidecar not found - ANNA will run without Gemma."
+        Write-Warning "Assistant sidecar not found - ANNA will run without local assistant responses."
         return
     }
 
     $node = Find-NodeRuntime
     if ($null -eq $node) {
-        Write-Warning "Node.js not found - install Node 18+ for Gemma assistant."
+        Write-Warning "Node.js not found - install Node 18+ for the ANNA assistant."
         return
     }
 
-    $gemmaModel = Get-AvailableGemmaModel
-    if ($null -eq $gemmaModel) {
-        Write-Warning "No Gemma model in Ollama. Recommended: ollama pull gemma2:9b"
+    $assistantModel = Get-AvailableAnnaModel
+    if ($null -eq $assistantModel) {
+        Write-Warning "No ANNA-compatible local model in Ollama. Recommended: ollama pull llama3.1:8b"
     }
 
     if (-not (Test-Path (Join-Path $assistantDir "node_modules"))) {
@@ -252,7 +257,7 @@ function Start-AssistantSidecar {
             $pnpm = Find-PnpmRuntime
             if ($null -eq $pnpm) {
                 Pop-Location
-                Write-Warning "npm/pnpm not found - install Node 18+ with npm to enable the Gemma assistant sidecar."
+                Write-Warning "npm/pnpm not found - install Node 18+ with npm to enable the ANNA assistant sidecar."
                 return
             }
 
@@ -269,18 +274,18 @@ function Start-AssistantSidecar {
 
     Configure-AssistantEnv
 
-    Write-Host "Starting Gemma assistant sidecar..."
+    Write-Host "Starting ANNA assistant sidecar..."
     Start-Process -FilePath $node -ArgumentList "server.js" -WorkingDirectory $assistantDir -WindowStyle Hidden | Out-Null
 
     $deadline = (Get-Date).AddSeconds(8)
     while ((Get-Date) -lt $deadline) {
         if (Test-AssistantHealth) {
             $info = Get-AssistantHealthInfo
-            $model = if ($info) { $info.model } else { $gemmaModel }
+            $model = if ($info) { $info.model } else { $assistantModel }
             if ($info -and $info.modelAvailable) {
-                Write-Host "Gemma assistant online ($model)"
+                Write-Host "ANNA assistant online ($model)"
             } else {
-                Write-Warning "Assistant sidecar started, but no usable Gemma model is available. Recommended: ollama pull gemma2:9b"
+                Write-Warning "ANNA assistant sidecar started, but no usable local model is available. Recommended: ollama pull llama3.1:8b"
             }
             return
         }
@@ -328,7 +333,11 @@ Start-AssistantSidecar
 Write-Host "Launching ANNA..."
 $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
 if ($proc) {
-    Start-Sleep -Milliseconds 300
+    $deadline = (Get-Date).AddSeconds(5)
+    while ($proc.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline) {
+        Start-Sleep -Milliseconds 200
+        $proc.Refresh()
+    }
     Add-Type @"
 using System;
 using System.Runtime.InteropServices;
@@ -337,6 +346,8 @@ public static class AnnaWin32 {
     [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 }
 "@
-    [AnnaWin32]::ShowWindow($proc.MainWindowHandle, 9) | Out-Null
-    [AnnaWin32]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+    if ($proc.MainWindowHandle -ne 0) {
+        [AnnaWin32]::ShowWindow($proc.MainWindowHandle, 9) | Out-Null
+        [AnnaWin32]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+    }
 }
