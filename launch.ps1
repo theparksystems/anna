@@ -334,7 +334,7 @@ Write-Host "Launching ANNA..."
 $proc = Start-Process -FilePath $exe -WorkingDirectory (Split-Path $exe) -PassThru
 if ($proc) {
     $deadline = (Get-Date).AddSeconds(5)
-    while ($proc.MainWindowHandle -eq 0 -and (Get-Date) -lt $deadline) {
+    while (($null -eq $proc.MainWindowHandle -or $proc.MainWindowHandle -eq 0) -and (Get-Date) -lt $deadline) {
         Start-Sleep -Milliseconds 200
         $proc.Refresh()
     }
@@ -346,8 +346,13 @@ public static class AnnaWin32 {
     [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 }
 "@
-    if ($proc.MainWindowHandle -ne 0) {
-        [AnnaWin32]::ShowWindow($proc.MainWindowHandle, 9) | Out-Null
-        [AnnaWin32]::SetForegroundWindow($proc.MainWindowHandle) | Out-Null
+    $windowHandle = $proc.MainWindowHandle
+    if ($null -ne $windowHandle -and $windowHandle -ne 0) {
+        try {
+            [AnnaWin32]::ShowWindow($windowHandle, 9) | Out-Null
+            [AnnaWin32]::SetForegroundWindow($windowHandle) | Out-Null
+        } catch {
+            Write-Host "ANNA started; window focus will be handled by Windows."
+        }
     }
 }
