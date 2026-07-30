@@ -97,6 +97,7 @@ private:
     void pushFloatCommand (sampr::AudioCommandType type, float value);
     void recordPianoNote (int pitch, float velocity);
     void drainAudioDiagnostics();
+    void cleanupFinishedJobs();
     void toggleFullscreen();
     void changeListenerCallback (juce::ChangeBroadcaster* source) override;
     void focusActiveEditorTab();

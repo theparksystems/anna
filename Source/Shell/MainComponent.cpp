@@ -90,6 +90,27 @@ juce::String getLastNonEmptyLine (const juce::String& text)
     return {};
 }
 
+juce::var parseLastJsonObjectLine (const juce::String& text)
+{
+    juce::StringArray lines;
+    lines.addLines (text);
+
+    for (int i = lines.size() - 1; i >= 0; --i)
+    {
+        const auto line = lines[i].trim();
+
+        if (! line.startsWithChar ('{'))
+            continue;
+
+        auto parsed = juce::JSON::parse (line);
+
+        if (parsed.isObject())
+            return parsed;
+    }
+
+    return {};
+}
+
 void appendProcessOutput (juce::String& destination, const juce::String& chunk)
 {
     if (chunk.isEmpty())
@@ -242,6 +263,11 @@ public:
         cancelRequested.store (true, std::memory_order_release);
     }
 
+    bool hasStopped() const noexcept
+    {
+        return ! isThreadRunning();
+    }
+
 private:
     void run() override
     {
@@ -299,6 +325,11 @@ public:
     void start()
     {
         startThread (juce::Thread::Priority::normal);
+    }
+
+    bool hasStopped() const noexcept
+    {
+        return ! isThreadRunning();
     }
 
 private:
@@ -367,7 +398,7 @@ private:
             if (exitCode != 0)
                 continue;
 
-            const auto parsed = juce::JSON::parse (getLastNonEmptyLine (lastOutput));
+            const auto parsed = parseLastJsonObjectLine (lastOutput);
 
             if (! parsed.isObject())
                 finish ({}, "Import completed but ANNA could not read the converter result.\n" + lastOutput);
@@ -430,6 +461,11 @@ public:
     void start()
     {
         startThread (juce::Thread::Priority::normal);
+    }
+
+    bool hasStopped() const noexcept
+    {
+        return ! isThreadRunning();
     }
 
 private:
@@ -527,7 +563,7 @@ private:
             if (process.getExitCode() != 0)
                 continue;
 
-            const auto parsed = juce::JSON::parse (getLastNonEmptyLine (lastOutput));
+            const auto parsed = parseLastJsonObjectLine (lastOutput);
             if (! parsed.isObject())
                 continue;
 
@@ -992,6 +1028,8 @@ void MainComponent::applyTransportSettings()
 
 void MainComponent::timerCallback()
 {
+    cleanupFinishedJobs();
+
     const auto enginePlaying = audioEngine.isTransportPlaying();
 
     if (enginePlaying != transportPlaying)
@@ -1039,6 +1077,18 @@ void MainComponent::timerCallback()
 
     updateStatusLabel();
     drainAudioDiagnostics();
+}
+
+void MainComponent::cleanupFinishedJobs()
+{
+    if (! exportInProgress && exportJob != nullptr && exportJob->hasStopped())
+        exportJob.reset();
+
+    if (! youtubeImportInProgress && youtubeImportJob != nullptr && youtubeImportJob->hasStopped())
+        youtubeImportJob.reset();
+
+    if (! vocalSplitInProgress && vocalSplitJob != nullptr && vocalSplitJob->hasStopped())
+        vocalSplitJob.reset();
 }
 
 void MainComponent::setupKeyboardShortcuts()
@@ -1435,6 +1485,9 @@ sampr::SampleImportService::ImportResult MainComponent::importSampleFiles (const
 
 void MainComponent::startYouTubeImport (const juce::String& url, const juce::String& format)
 {
+    if (youtubeImportJob != nullptr && youtubeImportJob->hasStopped())
+        youtubeImportJob.reset();
+
     if (youtubeImportInProgress || youtubeImportJob != nullptr)
     {
         showUserMessage ("YouTube import already running.");
@@ -1460,7 +1513,6 @@ void MainComponent::startYouTubeImport (const juce::String& url, const juce::Str
 
 void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage)
 {
-    youtubeImportJob.reset();
     youtubeImportInProgress = false;
     updateToolbarState();
 
@@ -1549,7 +1601,6 @@ void MainComponent::finishVocalSplit (sampr::AssetId sourceAssetId,
                                       const juce::String& splitMethod,
                                       const juce::String& errorMessage)
 {
-    vocalSplitJob.reset();
     vocalSplitInProgress = false;
     updateToolbarState();
 
@@ -2542,6 +2593,9 @@ void MainComponent::loadProjectFromDisk()
 
 void MainComponent::exportAudioToDisk()
 {
+    if (exportJob != nullptr && exportJob->hasStopped())
+        exportJob.reset();
+
     if (exportInProgress)
     {
         showUserMessage ("Export already in progress.");
@@ -2588,6 +2642,9 @@ void MainComponent::exportAudioToDisk()
 
 void MainComponent::exportSoundCloudReady()
 {
+    if (exportJob != nullptr && exportJob->hasStopped())
+        exportJob.reset();
+
     if (exportInProgress)
     {
         showUserMessage ("Export already in progress.");
@@ -2635,7 +2692,6 @@ void MainComponent::finishAsyncExport (const juce::File& file,
                                        const sampr::OfflineExportResult& result,
                                        bool wasPlaying)
 {
-    exportJob.reset();
     exportInProgress = false;
     exportProgress.store (1.0f, std::memory_order_relaxed);
 
