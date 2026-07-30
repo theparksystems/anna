@@ -27,6 +27,7 @@ public:
     void setSourceInfoCallback (SourceInfoCallback callback);
     void setAddToTrackCallback (AddToTrackCallback callback);
     void setSplitVocalsInProgress (bool inProgress);
+    void revealSelectedSample();
     void refresh();
 
     int getNumRows() override;

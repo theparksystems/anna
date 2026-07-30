@@ -112,15 +112,26 @@ void SampleBrowserComponent::refresh()
 {
     listBox.updateContent();
     listBox.repaint();
+    revealSelectedSample();
+}
 
+void SampleBrowserComponent::revealSelectedSample()
+{
     const auto ids = sampleManager.getAssetIds();
     const auto selected = sampleManager.getSelectedAssetId();
+
+    listBox.deselectAllRows();
+
+    if (selected == kInvalidAssetId)
+        return;
 
     for (int i = 0; i < static_cast<int> (ids.size()); ++i)
     {
         if (ids[static_cast<size_t> (i)] == selected)
         {
             listBox.selectRow (i);
+            listBox.scrollToEnsureRowIsOnscreen (i);
+            listBox.repaintRow (i);
             break;
         }
     }

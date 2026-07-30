@@ -1537,6 +1537,7 @@ void MainComponent::refreshSampleViews()
 
     waveformView.setPeaks (asset->peaks);
     waveformView.setSliceMarkers (asset->slices, asset->selectedSliceIndex, asset->numSamples);
+    waveformView.repaint();
 }
 
 sampr::SampleImportService::ImportResult MainComponent::importSampleFiles (const juce::StringArray& paths)
@@ -1551,6 +1552,7 @@ sampr::SampleImportService::ImportResult MainComponent::importSampleFiles (const
 
         patternStore.syncRowsFromLoadedAssets();
         refreshProjectViews();
+        sampleBrowser.revealSelectedSample();
         sliceEditor.syncFromSelectedSlice();
         waveformView.repaint();
         showUserMessage ("Imported " + juce::String (result.loadedCount) + " sample(s).");
@@ -1662,6 +1664,7 @@ void MainComponent::processPendingYouTubeImport()
     paths.add (audioFile.getFullPathName());
     appendPipelineLog ("Loading sample into browser");
     const auto result = importSampleFiles (paths);
+    appendPipelineLog ("Sample manager count: " + juce::String (sampleManager.getAssetIds().size()));
 
     if (result.loadedCount <= 0)
     {
@@ -1679,8 +1682,14 @@ void MainComponent::processPendingYouTubeImport()
     }
 
     patternTabs.setCurrentTabIndex (kTabStepSeq);
+    sampleBrowser.setVisible (true);
+    sampleBrowser.revealSelectedSample();
+    refreshSampleViews();
     focusActiveEditorTab();
-    pipelineResultText = "YouTube: COMPLETE - waveform loaded, sample selected, sequencer ready";
+    if (const auto* selected = sampleManager.getAsset (sampleManager.getSelectedAssetId()))
+        pipelineResultText = "YouTube: COMPLETE - showing " + selected->displayName;
+    else
+        pipelineResultText = "YouTube: COMPLETE - waveform loaded, sample selected, sequencer ready";
     appendPipelineLog ("Waveform loaded and sequencer ready");
     showUserMessage ("Imported YouTube sample with metadata.");
 }
