@@ -72,6 +72,7 @@ private:
     void showYouTubeImportPopup();
     void startYouTubeImport (const juce::String& url, const juce::String& format);
     void finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage);
+    void processPendingYouTubeImport();
     void splitSelectedSampleVocals();
     void finishVocalSplit (sampr::AssetId sourceAssetId,
                            const juce::File& vocalsFile,
@@ -168,6 +169,9 @@ private:
     bool exportInProgress = false;
     bool youtubeImportInProgress = false;
     bool vocalSplitInProgress = false;
+    bool pendingYouTubeImport = false;
+    juce::File pendingYouTubeImportFile;
+    juce::String pendingYouTubeImportError;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };

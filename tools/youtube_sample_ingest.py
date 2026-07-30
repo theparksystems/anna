@@ -74,7 +74,8 @@ def main() -> int:
 
     parser = argparse.ArgumentParser(description="Download a YouTube sample with ANNA metadata.")
     parser.add_argument("url", help="YouTube URL to download")
-    parser.add_argument("--out", default="Samples", help="Output folder for audio and sidecar metadata")
+    parser.add_argument("--out", default="Samples", help="Output folder for ANNA-ready waveform import WAV files")
+    parser.add_argument("--raw-out", default="", help="Folder for downloaded delivery audio before ANNA WAV normalization")
     parser.add_argument("--format", default="wav", choices=["wav", "mp3", "flac", "m4a"], help="Audio format")
     parser.add_argument("--import-max-seconds", type=int, default=300,
                         help="Maximum seconds rendered to ANNA's waveform-safe import WAV")
@@ -113,7 +114,9 @@ def main() -> int:
         return 2
 
     output_dir = Path(args.out).resolve()
+    raw_dir = Path(args.raw_out).resolve() if args.raw_out else output_dir
     output_dir.mkdir(parents=True, exist_ok=True)
+    raw_dir.mkdir(parents=True, exist_ok=True)
 
     try:
         info = run_json(ytdlp + ["--dump-single-json", "--no-playlist", args.url])
@@ -122,7 +125,7 @@ def main() -> int:
         print(error.output, file=sys.stderr)
         return error.returncode or 1
     title_template = "%(title).180B [%(id)s].%(ext)s"
-    output_template = str(output_dir / title_template)
+    output_template = str(raw_dir / title_template)
 
     download_command = [
         *ytdlp,
@@ -149,14 +152,14 @@ def main() -> int:
 
     video_id = str(info.get("id", "")).strip()
     expected_suffix = f"[{video_id}].{args.format}"
-    candidates = sorted(path for path in output_dir.glob(f"*.{args.format}") if path.name.endswith(expected_suffix))
+    candidates = sorted(path for path in raw_dir.glob(f"*.{args.format}") if path.name.endswith(expected_suffix))
 
     if not candidates:
         print("Download completed, but the output file could not be located.", file=sys.stderr)
         return 1
 
     delivery_file = candidates[-1]
-    import_file = delivery_file.with_suffix(".anna-import.wav")
+    import_file = output_dir / f"{delivery_file.stem}.anna-import.wav"
     import_max_seconds = max(10, int(args.import_max_seconds))
     if import_file.exists():
         import_file.unlink()

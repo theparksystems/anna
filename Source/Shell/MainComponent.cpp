@@ -8,6 +8,7 @@
 #include "../UI/SamprLookAndFeel.h"
 
 #include <cmath>
+#include <limits>
 #include <memory>
 
 namespace
@@ -75,19 +76,43 @@ juce::File findSourceRoot()
     return {};
 }
 
-juce::String getLastNonEmptyLine (const juce::String& text)
+bool validateAudioFileForImport (const juce::File& file,
+                                 juce::AudioFormatManager& formatManager,
+                                 juce::String& errorOut)
 {
-    juce::StringArray lines;
-    lines.addLines (text);
-
-    for (int i = lines.size() - 1; i >= 0; --i)
+    if (! file.existsAsFile())
     {
-        const auto line = lines[i].trim();
-        if (line.isNotEmpty())
-            return line;
+        errorOut = "Converted audio file was not found:\n" + file.getFullPathName();
+        return false;
     }
 
-    return {};
+    if (file.getSize() < 44)
+    {
+        errorOut = "Converted audio file is empty or incomplete:\n" + file.getFullPathName();
+        return false;
+    }
+
+    std::unique_ptr<juce::AudioFormatReader> reader (formatManager.createReaderFor (file));
+
+    if (reader == nullptr)
+    {
+        errorOut = "ANNA could not open the converted WAV for import:\n" + file.getFullPathName();
+        return false;
+    }
+
+    if (reader->numChannels == 0 || reader->lengthInSamples <= 0 || reader->sampleRate <= 0.0)
+    {
+        errorOut = "Converted WAV has no readable audio stream:\n" + file.getFullPathName();
+        return false;
+    }
+
+    if (reader->numChannels > 64 || reader->lengthInSamples > std::numeric_limits<int>::max())
+    {
+        errorOut = "Converted WAV is too large for the waveform editor:\n" + file.getFullPathName();
+        return false;
+    }
+
+    return true;
 }
 
 juce::var parseLastJsonObjectLine (const juce::String& text)
@@ -344,12 +369,20 @@ private:
         }
 
         const auto script = sourceRoot.getChildFile ("tools").getChildFile ("youtube_sample_ingest.py");
-        const auto outputFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
-                                      .getChildFile ("ANNA YouTube Imports");
+        const auto importRoot = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+                                    .getChildFile ("ANNA YouTube Imports");
+        const auto outputFolder = importRoot.getChildFile ("Waveform Imports");
+        const auto rawFolder = importRoot.getChildFile ("Raw Audio");
 
         if (! outputFolder.exists() && ! outputFolder.createDirectory())
         {
             finish ({}, "Could not create import folder:\n" + outputFolder.getFullPathName());
+            return;
+        }
+
+        if (! rawFolder.exists() && ! rawFolder.createDirectory())
+        {
+            finish ({}, "Could not create raw audio folder:\n" + rawFolder.getFullPathName());
             return;
         }
 
@@ -371,6 +404,7 @@ private:
                 + " " + quoteCommandArg (script.getFullPathName())
                 + " " + quoteCommandArg (url)
                 + " --out " + quoteCommandArg (outputFolder.getFullPathName())
+                + " --raw-out " + quoteCommandArg (rawFolder.getFullPathName())
                 + " --format " + format
                 + " --import-max-seconds " + juce::String (kYouTubeImportMaxSeconds)
                 + " --json-output";
@@ -1030,6 +1064,9 @@ void MainComponent::timerCallback()
 {
     cleanupFinishedJobs();
 
+    if (pendingYouTubeImport && youtubeImportJob == nullptr)
+        processPendingYouTubeImport();
+
     const auto enginePlaying = audioEngine.isTransportPlaying();
 
     if (enginePlaying != transportPlaying)
@@ -1514,7 +1551,24 @@ void MainComponent::startYouTubeImport (const juce::String& url, const juce::Str
 void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce::String& errorMessage)
 {
     youtubeImportInProgress = false;
+    pendingYouTubeImport = true;
+    pendingYouTubeImportFile = audioFile;
+    pendingYouTubeImportError = errorMessage;
     updateToolbarState();
+
+    if (errorMessage.isEmpty())
+        showUserMessage ("YouTube conversion complete. Preparing waveform import...");
+    else
+        showUserMessage ("YouTube import failed.");
+}
+
+void MainComponent::processPendingYouTubeImport()
+{
+    pendingYouTubeImport = false;
+    const auto audioFile = pendingYouTubeImportFile;
+    const auto errorMessage = pendingYouTubeImportError;
+    pendingYouTubeImportFile = {};
+    pendingYouTubeImportError.clear();
 
     if (errorMessage.isNotEmpty())
     {
@@ -1526,9 +1580,14 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
         return;
     }
 
-    if (! audioFile.existsAsFile())
+    juce::String validationError;
+    if (! validateAudioFileForImport (audioFile, formatManager, validationError))
     {
-        showUserMessage ("YouTube import finished but no audio file was found.");
+        juce::NativeMessageBox::showMessageBoxAsync (
+            juce::MessageBoxIconType::WarningIcon,
+            "YouTube import file is not ready",
+            validationError);
+        showUserMessage ("YouTube conversion finished, but the WAV import file is not readable.");
         return;
     }
 
