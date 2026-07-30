@@ -1703,11 +1703,50 @@ void MainComponent::processPendingYouTubeImport()
     sampleBrowser.setVisible (true);
     sampleBrowser.revealSelectedSample();
     refreshSampleViews();
+
+    const auto selectedAssetId = sampleManager.getSelectedAssetId();
+    const auto* selected = sampleManager.getAsset (selectedAssetId);
+
+    if (selected == nullptr)
+    {
+        pipelineResultText = "YouTube: FAILED - frontend selection";
+        appendPipelineLog ("Frontend failed: imported sample is not selected");
+        showUserMessage ("YouTube import loaded, but no sample is selected in the UI.");
+        updateToolbarState();
+        return;
+    }
+
+    appendPipelineLog ("Frontend selected sample: " + selected->displayName);
+    appendPipelineLog ("Frontend waveform samples: " + juce::String (selected->numSamples)
+                       + ", peaks: " + juce::String (selected->peaks.numColumns));
+
+    auto rowVisible = false;
+    const auto& rows = patternStore.getCurrentPattern().rows;
+
+    for (const auto& row : rows)
+    {
+        if (row.assetId == selectedAssetId)
+        {
+            rowVisible = true;
+            break;
+        }
+    }
+
+    if (! rowVisible)
+    {
+        appendPipelineLog ("Frontend sequencer row missing; creating row");
+        patternStore.addRowFromAsset (selectedAssetId, selected->selectedSliceIndex);
+        refreshProjectViews();
+    }
+
+    appendPipelineLog ("Frontend sequencer rows: " + juce::String (patternStore.getCurrentPattern().rows.size()));
+    resized();
+    repaint();
+    sampleBrowser.repaint();
+    waveformView.repaint();
+    stepSequencer.repaint();
     focusActiveEditorTab();
-    if (const auto* selected = sampleManager.getAsset (sampleManager.getSelectedAssetId()))
-        pipelineResultText = "YouTube: COMPLETE - showing " + selected->displayName;
-    else
-        pipelineResultText = "YouTube: COMPLETE - waveform loaded, sample selected, sequencer ready";
+    pipelineResultText = "YouTube: COMPLETE - showing " + selected->displayName;
     appendPipelineLog ("Waveform loaded and sequencer ready");
     showUserMessage ("Imported YouTube sample with metadata.");
     updateToolbarState();
