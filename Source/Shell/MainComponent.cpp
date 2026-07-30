@@ -1461,7 +1461,7 @@ void MainComponent::resized()
     youtubeImportButton.setBounds (projectRow.removeFromLeft (82));
     area.removeFromTop (4);
 
-    statusLabel.setBounds (area.removeFromBottom (72));
+    statusLabel.setBounds (area.removeFromBottom (112));
     area.removeFromBottom (4);
     transportBar.setBounds (area.removeFromBottom (38));
     area.removeFromBottom (4);
@@ -1585,6 +1585,7 @@ void MainComponent::startYouTubeImport (const juce::String& url, const juce::Str
     }
 
     clearPipelineLog();
+    pipelineResultText = "YouTube: starting";
     appendPipelineLog ("URL accepted");
     youtubeImportInProgress = true;
     updateToolbarState();
@@ -1632,6 +1633,7 @@ void MainComponent::processPendingYouTubeImport()
 
     if (errorMessage.isNotEmpty())
     {
+        pipelineResultText = "YouTube: FAILED - converter error";
         appendPipelineLog ("Import stopped: converter returned an error");
         juce::NativeMessageBox::showMessageBoxAsync (
             juce::MessageBoxIconType::WarningIcon,
@@ -1645,6 +1647,7 @@ void MainComponent::processPendingYouTubeImport()
     appendPipelineLog ("Validating WAV: " + audioFile.getFullPathName());
     if (! validateAudioFileForImport (audioFile, formatManager, validationError))
     {
+        pipelineResultText = "YouTube: FAILED - WAV validation";
         appendPipelineLog ("WAV validation failed");
         juce::NativeMessageBox::showMessageBoxAsync (
             juce::MessageBoxIconType::WarningIcon,
@@ -1662,6 +1665,7 @@ void MainComponent::processPendingYouTubeImport()
 
     if (result.loadedCount <= 0)
     {
+        pipelineResultText = "YouTube: FAILED - sample load";
         appendPipelineLog ("Sample load failed");
         const auto detail = result.lastError.isNotEmpty()
             ? result.lastError
@@ -1676,6 +1680,7 @@ void MainComponent::processPendingYouTubeImport()
 
     patternTabs.setCurrentTabIndex (kTabStepSeq);
     focusActiveEditorTab();
+    pipelineResultText = "YouTube: COMPLETE - waveform loaded, sample selected, sequencer ready";
     appendPipelineLog ("Waveform loaded and sequencer ready");
     showUserMessage ("Imported YouTube sample with metadata.");
 }
@@ -2130,6 +2135,13 @@ void MainComponent::showAudioSettings()
 
 void MainComponent::showYouTubeImportPopup()
 {
+    if (youtubeImportInProgress || pendingYouTubeImport)
+    {
+        appendPipelineLog ("Import is already running; watching existing pipeline");
+        showUserMessage ("YouTube import is still running. Watch the bottom log.");
+        return;
+    }
+
     if (youtubeImportDialog != nullptr)
     {
         youtubeImportDialog->toFront (true);
@@ -2552,6 +2564,7 @@ void MainComponent::appendPipelineLog (const juce::String& message)
 void MainComponent::clearPipelineLog()
 {
     pipelineLogLines.clear();
+    pipelineResultText.clear();
     const auto logFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
                                .getChildFile ("ANNA YouTube Imports");
     if ((logFolder.exists() || logFolder.createDirectory()))
@@ -2622,8 +2635,11 @@ void MainComponent::updateStatusLabel()
 
     if (! pipelineLogLines.isEmpty())
     {
+        if (pipelineResultText.isNotEmpty())
+            text << pipelineResultText << "\n";
+
         text << "YouTube import log:\n";
-        const auto firstLine = juce::jmax (0, pipelineLogLines.size() - 5);
+        const auto firstLine = juce::jmax (0, pipelineLogLines.size() - 7);
 
         for (int i = firstLine; i < pipelineLogLines.size(); ++i)
             text << pipelineLogLines[i] << "\n";

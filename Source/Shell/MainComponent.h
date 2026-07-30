@@ -165,6 +165,7 @@ private:
     juce::String audioWarningText;
     int audioWarningTicks = 0;
     juce::String userMessageText;
+    juce::String pipelineResultText;
     juce::StringArray pipelineLogLines;
     int userMessageTicks = 0;
     int assistantHealthTicks = 0;
