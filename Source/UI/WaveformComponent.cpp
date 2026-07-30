@@ -163,7 +163,7 @@ void WaveformComponent::paint (juce::Graphics& g)
     SamprLookAndFeel::paintPanelOutline (g, bounds);
     const auto inner = getInnerBounds();
 
-    if (peaks.numColumns <= 0 || peaks.minMax.empty())
+    if (peaks.numColumns <= 0 || peaks.minMax.size() < static_cast<size_t> (peaks.numColumns * 2))
     {
         g.setColour (SamprLookAndFeel::textMuted());
         g.drawText ("Load a sample to view waveform", inner, juce::Justification::centred);
@@ -177,10 +177,15 @@ void WaveformComponent::paint (juce::Graphics& g)
     for (int column = 0; column < peaks.numColumns; ++column)
     {
         const auto idx = static_cast<size_t> (column * 2);
+        if (idx + 1 >= peaks.minMax.size())
+            break;
+
         const auto minVal = peaks.minMax[idx];
         const auto maxVal = peaks.minMax[idx + 1];
-        const auto x = inner.getX() + (static_cast<float> (column) / static_cast<float> (peaks.numColumns - 1))
-                       * inner.getWidth();
+        const auto x = peaks.numColumns <= 1
+            ? inner.getCentreX()
+            : inner.getX() + (static_cast<float> (column) / static_cast<float> (peaks.numColumns - 1))
+                             * inner.getWidth();
         const auto yTop = centreY - maxVal * halfHeight;
         const auto yBottom = centreY - minVal * halfHeight;
 

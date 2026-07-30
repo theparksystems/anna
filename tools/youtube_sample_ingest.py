@@ -18,6 +18,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 
+def configure_console_encoding() -> None:
+    """Keep Windows consoles from crashing on non-ASCII video titles."""
+    for stream_name in ("stdout", "stderr"):
+        stream = getattr(sys, stream_name, None)
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="backslashreplace")
+
+
 class CommandFailed(RuntimeError):
     def __init__(self, command: list[str], returncode: int, output: str):
         super().__init__(output)
@@ -62,6 +70,8 @@ def write_origin_sidecar(audio_file: Path, metadata: dict) -> Path:
 
 
 def main() -> int:
+    configure_console_encoding()
+
     parser = argparse.ArgumentParser(description="Download a YouTube sample with ANNA metadata.")
     parser.add_argument("url", help="YouTube URL to download")
     parser.add_argument("--out", default="Samples", help="Output folder for audio and sidecar metadata")
@@ -205,7 +215,7 @@ def main() -> int:
                     "sourceTitle": metadata["sourceTitle"],
                     "sourceUrl": metadata["sourceUrl"],
                 },
-                ensure_ascii=False,
+                ensure_ascii=True,
             )
         )
     else:
