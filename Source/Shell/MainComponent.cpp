@@ -1111,8 +1111,16 @@ void MainComponent::timerCallback()
 {
     cleanupFinishedJobs();
 
-    if (pendingYouTubeImport && youtubeImportJob == nullptr)
-        processPendingYouTubeImport();
+    if (pendingYouTubeImport)
+    {
+        ++pendingYouTubeImportTicks;
+
+        if (pendingYouTubeImportTicks == 1)
+            appendPipelineLog ("UI handoff queued for next tick");
+
+        if (pendingYouTubeImportTicks >= 2)
+            processPendingYouTubeImport();
+    }
 
     const auto enginePlaying = audioEngine.isTransportPlaying();
 
@@ -1612,6 +1620,7 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
 {
     youtubeImportInProgress = false;
     pendingYouTubeImport = true;
+    pendingYouTubeImportTicks = 0;
     pendingYouTubeImportFile = audioFile;
     pendingYouTubeImportError = errorMessage;
     updateToolbarState();
@@ -1630,12 +1639,14 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
 
 void MainComponent::processPendingYouTubeImport()
 {
-    appendPipelineLog ("Worker cleanup complete; starting UI import gate");
+    appendPipelineLog ("Starting UI import gate");
     pendingYouTubeImport = false;
+    pendingYouTubeImportTicks = 0;
     const auto audioFile = pendingYouTubeImportFile;
     const auto errorMessage = pendingYouTubeImportError;
     pendingYouTubeImportFile = {};
     pendingYouTubeImportError.clear();
+    updateToolbarState();
 
     if (errorMessage.isNotEmpty())
     {
@@ -1646,6 +1657,7 @@ void MainComponent::processPendingYouTubeImport()
             "YouTube import failed",
             errorMessage);
         showUserMessage ("YouTube import failed.");
+        updateToolbarState();
         return;
     }
 
@@ -1660,6 +1672,7 @@ void MainComponent::processPendingYouTubeImport()
             "YouTube import file is not ready",
             validationError);
         showUserMessage ("YouTube conversion finished, but the WAV import file is not readable.");
+        updateToolbarState();
         return;
     }
 
@@ -1682,6 +1695,7 @@ void MainComponent::processPendingYouTubeImport()
             "YouTube import decoded no sample",
             detail);
         showUserMessage ("YouTube conversion finished, but ANNA could not load the waveform.");
+        updateToolbarState();
         return;
     }
 
@@ -1696,6 +1710,7 @@ void MainComponent::processPendingYouTubeImport()
         pipelineResultText = "YouTube: COMPLETE - waveform loaded, sample selected, sequencer ready";
     appendPipelineLog ("Waveform loaded and sequencer ready");
     showUserMessage ("Imported YouTube sample with metadata.");
+    updateToolbarState();
 }
 
 void MainComponent::splitSelectedSampleVocals()

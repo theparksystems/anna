@@ -175,6 +175,7 @@ private:
     bool youtubeImportInProgress = false;
     bool vocalSplitInProgress = false;
     bool pendingYouTubeImport = false;
+    int pendingYouTubeImportTicks = 0;
     juce::File pendingYouTubeImportFile;
     juce::String pendingYouTubeImportError;
 
