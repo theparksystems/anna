@@ -360,6 +360,7 @@ public:
 private:
     void run() override
     {
+        log ("Locate converter tools");
         const auto sourceRoot = findSourceRoot();
 
         if (sourceRoot == juce::File())
@@ -369,10 +370,13 @@ private:
         }
 
         const auto script = sourceRoot.getChildFile ("tools").getChildFile ("youtube_sample_ingest.py");
+        log ("Converter script: " + script.getFullPathName());
         const auto importRoot = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
                                     .getChildFile ("ANNA YouTube Imports");
         const auto outputFolder = importRoot.getChildFile ("Waveform Imports");
         const auto rawFolder = importRoot.getChildFile ("Raw Audio");
+        log ("Raw audio folder: " + rawFolder.getFullPathName());
+        log ("Waveform import folder: " + outputFolder.getFullPathName());
 
         if (! outputFolder.exists() && ! outputFolder.createDirectory())
         {
@@ -400,6 +404,7 @@ private:
             if (threadShouldExit())
                 return;
 
+            log ("Start converter with " + launcher.unquoted());
             const auto command = launcher
                 + " " + quoteCommandArg (script.getFullPathName())
                 + " " + quoteCommandArg (url)
@@ -414,20 +419,27 @@ private:
             if (! process.start (command))
             {
                 lastOutput = "Could not start: " + launcher;
+                log ("Could not start " + launcher.unquoted());
                 continue;
             }
 
+            log ("Download/convert running...");
             while (process.isRunning())
             {
                 if (threadShouldExit())
                     return;
 
-                appendProcessOutput (lastOutput, process.readAllProcessOutput());
+                const auto chunk = process.readAllProcessOutput();
+                appendProcessOutput (lastOutput, chunk);
+                logProcessChunk (chunk);
                 wait (100);
             }
 
-            appendProcessOutput (lastOutput, process.readAllProcessOutput());
+            const auto finalChunk = process.readAllProcessOutput();
+            appendProcessOutput (lastOutput, finalChunk);
+            logProcessChunk (finalChunk);
             const auto exitCode = process.getExitCode();
+            log ("Converter exited with code " + juce::String (exitCode));
 
             if (exitCode != 0)
                 continue;
@@ -435,7 +447,10 @@ private:
             const auto parsed = parseLastJsonObjectLine (lastOutput);
 
             if (! parsed.isObject())
+            {
+                log ("Converter finished, but JSON result was not found");
                 finish ({}, "Import completed but ANNA could not read the converter result.\n" + lastOutput);
+            }
             else
             {
                 auto importAudio = parsed.getProperty ("importAudio", juce::String()).toString();
@@ -443,6 +458,8 @@ private:
                 if (importAudio.isEmpty())
                     importAudio = parsed.getProperty ("audio", juce::String()).toString();
 
+                log ("Converter JSON parsed");
+                log ("Prepared WAV: " + importAudio);
                 finish (juce::File (importAudio), {});
             }
 
@@ -461,6 +478,36 @@ private:
             if (safeOwner != nullptr)
                 safeOwner->finishYouTubeImport (file, error);
         });
+    }
+
+    void log (juce::String message)
+    {
+        juce::MessageManager::callAsync ([safeOwner = ownerPtr, text = std::move (message)]
+        {
+            if (safeOwner != nullptr)
+                safeOwner->appendPipelineLog (text);
+        });
+    }
+
+    void logProcessChunk (const juce::String& chunk)
+    {
+        if (chunk.isEmpty())
+            return;
+
+        if (chunk.containsIgnoreCase ("Extracting URL"))
+            log ("yt-dlp: extracting URL");
+        if (chunk.containsIgnoreCase ("Downloading webpage"))
+            log ("yt-dlp: downloading video page");
+        if (chunk.containsIgnoreCase ("Downloading 1 format"))
+            log ("yt-dlp: audio stream selected");
+        if (chunk.containsIgnoreCase ("Destination:"))
+            log ("yt-dlp: writing raw audio");
+        if (chunk.containsIgnoreCase ("ExtractAudio"))
+            log ("yt-dlp: extracting MP3");
+        if (chunk.containsIgnoreCase ("Output #0"))
+            log ("ffmpeg: rendering ANNA waveform WAV");
+        if (chunk.containsIgnoreCase ("size=") && chunk.containsIgnoreCase ("time="))
+            log ("ffmpeg: waveform render progress");
     }
 
     juce::Component::SafePointer<MainComponent> ownerPtr;
@@ -1414,7 +1461,7 @@ void MainComponent::resized()
     youtubeImportButton.setBounds (projectRow.removeFromLeft (82));
     area.removeFromTop (4);
 
-    statusLabel.setBounds (area.removeFromBottom (46));
+    statusLabel.setBounds (area.removeFromBottom (72));
     area.removeFromBottom (4);
     transportBar.setBounds (area.removeFromBottom (38));
     area.removeFromBottom (4);
@@ -1537,14 +1584,20 @@ void MainComponent::startYouTubeImport (const juce::String& url, const juce::Str
         return;
     }
 
+    clearPipelineLog();
+    appendPipelineLog ("URL accepted");
     youtubeImportInProgress = true;
     updateToolbarState();
     showUserMessage ("YouTube import started.");
 
     if (youtubeImportDialog != nullptr)
+    {
+        appendPipelineLog ("Closing import popup");
         youtubeImportDialog->exitModalState (0);
+    }
 
     youtubeImportJob = std::make_unique<AsyncYouTubeImportJob> (*this, url, format);
+    appendPipelineLog ("Background converter queued");
     youtubeImportJob->start();
 }
 
@@ -1557,13 +1610,20 @@ void MainComponent::finishYouTubeImport (const juce::File& audioFile, const juce
     updateToolbarState();
 
     if (errorMessage.isEmpty())
+    {
+        appendPipelineLog ("Converter completed; waiting for worker cleanup");
         showUserMessage ("YouTube conversion complete. Preparing waveform import...");
+    }
     else
+    {
+        appendPipelineLog ("Converter failed before import");
         showUserMessage ("YouTube import failed.");
+    }
 }
 
 void MainComponent::processPendingYouTubeImport()
 {
+    appendPipelineLog ("Worker cleanup complete; starting UI import gate");
     pendingYouTubeImport = false;
     const auto audioFile = pendingYouTubeImportFile;
     const auto errorMessage = pendingYouTubeImportError;
@@ -1572,6 +1632,7 @@ void MainComponent::processPendingYouTubeImport()
 
     if (errorMessage.isNotEmpty())
     {
+        appendPipelineLog ("Import stopped: converter returned an error");
         juce::NativeMessageBox::showMessageBoxAsync (
             juce::MessageBoxIconType::WarningIcon,
             "YouTube import failed",
@@ -1581,8 +1642,10 @@ void MainComponent::processPendingYouTubeImport()
     }
 
     juce::String validationError;
+    appendPipelineLog ("Validating WAV: " + audioFile.getFullPathName());
     if (! validateAudioFileForImport (audioFile, formatManager, validationError))
     {
+        appendPipelineLog ("WAV validation failed");
         juce::NativeMessageBox::showMessageBoxAsync (
             juce::MessageBoxIconType::WarningIcon,
             "YouTube import file is not ready",
@@ -1591,12 +1654,15 @@ void MainComponent::processPendingYouTubeImport()
         return;
     }
 
+    appendPipelineLog ("WAV validation passed");
     juce::StringArray paths;
     paths.add (audioFile.getFullPathName());
+    appendPipelineLog ("Loading sample into browser");
     const auto result = importSampleFiles (paths);
 
     if (result.loadedCount <= 0)
     {
+        appendPipelineLog ("Sample load failed");
         const auto detail = result.lastError.isNotEmpty()
             ? result.lastError
             : ("ANNA could not decode the converted audio:\n" + audioFile.getFullPathName());
@@ -1610,6 +1676,7 @@ void MainComponent::processPendingYouTubeImport()
 
     patternTabs.setCurrentTabIndex (kTabStepSeq);
     focusActiveEditorTab();
+    appendPipelineLog ("Waveform loaded and sequencer ready");
     showUserMessage ("Imported YouTube sample with metadata.");
 }
 
@@ -2464,6 +2531,35 @@ void MainComponent::showUserMessage (const juce::String& message)
     updateStatusLabel();
 }
 
+void MainComponent::appendPipelineLog (const juce::String& message)
+{
+    const auto timestamp = juce::Time::getCurrentTime().formatted ("%H:%M:%S");
+    const auto line = timestamp + "  " + message;
+    pipelineLogLines.add (line);
+
+    while (pipelineLogLines.size() > 8)
+        pipelineLogLines.remove (0);
+
+    const auto logFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+                               .getChildFile ("ANNA YouTube Imports");
+    if ((logFolder.exists() || logFolder.createDirectory()))
+        logFolder.getChildFile ("youtube-import-log.txt").appendText (line + "\n");
+
+    userMessageTicks = juce::jmax (userMessageTicks, 720);
+    updateStatusLabel();
+}
+
+void MainComponent::clearPipelineLog()
+{
+    pipelineLogLines.clear();
+    const auto logFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
+                               .getChildFile ("ANNA YouTube Imports");
+    if ((logFolder.exists() || logFolder.createDirectory()))
+        logFolder.getChildFile ("youtube-import-log.txt")
+            .replaceWithText ("ANNA YouTube import log\n");
+    updateStatusLabel();
+}
+
 bool MainComponent::ensureArrangementHasPlayableClip()
 {
     if (! projectModel.getArrangement().empty())
@@ -2523,6 +2619,18 @@ void MainComponent::updateStatusLabel()
         text << "  |  " << userMessageText;
 
     text << "\n";
+
+    if (! pipelineLogLines.isEmpty())
+    {
+        text << "YouTube import log:\n";
+        const auto firstLine = juce::jmax (0, pipelineLogLines.size() - 5);
+
+        for (int i = firstLine; i < pipelineLogLines.size(); ++i)
+            text << pipelineLogLines[i] << "\n";
+
+        statusLabel.setText (text.trimEnd(), juce::dontSendNotification);
+        return;
+    }
 
     if (audioWarningTicks > 0 && audioWarningText.isNotEmpty())
         text << "Warning: " << audioWarningText;

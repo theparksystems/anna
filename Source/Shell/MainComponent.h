@@ -103,6 +103,8 @@ private:
     void changeListenerCallback (juce::ChangeBroadcaster* source) override;
     void focusActiveEditorTab();
     void showUserMessage (const juce::String& message);
+    void appendPipelineLog (const juce::String& message);
+    void clearPipelineLog();
     bool ensureArrangementHasPlayableClip();
     void openAssistantWithContext (sampr::ContextScope scope,
                                    int channelIndex,
@@ -163,6 +165,7 @@ private:
     juce::String audioWarningText;
     int audioWarningTicks = 0;
     juce::String userMessageText;
+    juce::StringArray pipelineLogLines;
     int userMessageTicks = 0;
     int assistantHealthTicks = 0;
     std::atomic<float> exportProgress { 0.0f };
