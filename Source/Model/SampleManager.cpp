@@ -199,6 +199,18 @@ std::optional<AssetId> SampleManager::loadFromFile (const juce::File& file,
         return std::nullopt;
     }
 
+    if (reader->numChannels == 0 || reader->lengthInSamples <= 0)
+    {
+        DBG ("ANNA: invalid audio stream in " + file.getFullPathName());
+        return std::nullopt;
+    }
+
+    if (reader->numChannels > 64 || reader->lengthInSamples > std::numeric_limits<int>::max())
+    {
+        DBG ("ANNA: audio file too large to import safely: " + file.getFullPathName());
+        return std::nullopt;
+    }
+
     auto buffer = std::make_shared<juce::AudioBuffer<float>> (
         static_cast<int> (reader->numChannels),
         static_cast<int> (reader->lengthInSamples));

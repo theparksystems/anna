@@ -96,6 +96,11 @@ void SampleBrowserComponent::setSourceInfoCallback (SourceInfoCallback callback)
     onSourceInfoRequested = std::move (callback);
 }
 
+void SampleBrowserComponent::setAddToTrackCallback (AddToTrackCallback callback)
+{
+    onAddToTrackRequested = std::move (callback);
+}
+
 void SampleBrowserComponent::setSplitVocalsInProgress (bool inProgress)
 {
     splitVocalsInProgress = inProgress;
@@ -199,6 +204,39 @@ void SampleBrowserComponent::listBoxItemClicked (int row, const juce::MouseEvent
 
     if (onSelectionChanged != nullptr)
         onSelectionChanged (assetId);
+}
+
+void SampleBrowserComponent::listBoxItemDoubleClicked (int row, const juce::MouseEvent& event)
+{
+    juce::ignoreUnused (event);
+
+    const auto& ids = sampleManager.getAssetIds();
+
+    if (! juce::isPositiveAndBelow (row, static_cast<int> (ids.size())))
+        return;
+
+    const auto assetId = ids[static_cast<size_t> (row)];
+    sampleManager.setSelectedAssetId (assetId);
+
+    if (onSelectionChanged != nullptr)
+        onSelectionChanged (assetId);
+
+    if (onAddToTrackRequested != nullptr)
+        onAddToTrackRequested (assetId);
+}
+
+juce::var SampleBrowserComponent::getDragSourceDescription (const juce::SparseSet<int>& selectedRows)
+{
+    if (selectedRows.isEmpty())
+        return {};
+
+    const auto row = selectedRows[0];
+    const auto& ids = sampleManager.getAssetIds();
+
+    if (! juce::isPositiveAndBelow (row, static_cast<int> (ids.size())))
+        return {};
+
+    return "anna-sample:" + juce::String (ids[static_cast<size_t> (row)]);
 }
 
 void SampleBrowserComponent::paint (juce::Graphics& g)

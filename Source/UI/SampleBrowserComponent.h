@@ -17,6 +17,7 @@ public:
     using LoadRequestedCallback = std::function<void()>;
     using SplitVocalsCallback = std::function<void()>;
     using SourceInfoCallback = std::function<void()>;
+    using AddToTrackCallback = std::function<void (AssetId assetId)>;
 
     explicit SampleBrowserComponent (SampleManager& manager);
 
@@ -24,12 +25,15 @@ public:
     void setLoadRequestedCallback (LoadRequestedCallback callback);
     void setSplitVocalsCallback (SplitVocalsCallback callback);
     void setSourceInfoCallback (SourceInfoCallback callback);
+    void setAddToTrackCallback (AddToTrackCallback callback);
     void setSplitVocalsInProgress (bool inProgress);
     void refresh();
 
     int getNumRows() override;
     void paintListBoxItem (int rowNumber, juce::Graphics& g, int width, int height, bool rowIsSelected) override;
     void listBoxItemClicked (int row, const juce::MouseEvent&) override;
+    void listBoxItemDoubleClicked (int row, const juce::MouseEvent&) override;
+    juce::var getDragSourceDescription (const juce::SparseSet<int>& selectedRows) override;
 
     void paint (juce::Graphics& g) override;
     void resized() override;
@@ -47,6 +51,7 @@ private:
     LoadRequestedCallback onLoadRequested;
     SplitVocalsCallback onSplitVocalsRequested;
     SourceInfoCallback onSourceInfoRequested;
+    AddToTrackCallback onAddToTrackRequested;
     bool splitVocalsInProgress = false;
 };
 

@@ -130,6 +130,35 @@ juce::String buildSampledFromText (const sampr::ProjectModel& project)
     return text;
 }
 
+juce::String buildSampledFromText (const sampr::SampleManager& samples)
+{
+    juce::String text;
+
+    for (const auto assetId : samples.getAssetIds())
+    {
+        const auto* asset = samples.getAsset (assetId);
+
+        if (asset == nullptr || ! asset->origin.hasSource())
+            continue;
+
+        const auto title = asset->origin.sourceTitle.isNotEmpty() ? asset->origin.sourceTitle : asset->displayName;
+        text << "- " << title;
+
+        if (asset->origin.sourceAuthor.isNotEmpty())
+            text << " by " << asset->origin.sourceAuthor;
+
+        if (asset->origin.sourceUrl.isNotEmpty())
+            text << " - " << asset->origin.sourceUrl;
+
+        text << "\n";
+    }
+
+    if (text.isEmpty())
+        text = buildSampledFromText (sampr::ProjectModel());
+
+    return text;
+}
+
 bool writeCommittedSliceOriginSidecar (const juce::File& audioFile,
                                        const sampr::SampleAsset& sourceAsset,
                                        const sampr::SliceRegion& sourceSlice)
@@ -674,6 +703,7 @@ MainComponent::MainComponent()
     sampleBrowser.setLoadRequestedCallback ([this] { loadSampleFromDisk(); });
     sampleBrowser.setSplitVocalsCallback ([this] { splitSelectedSampleVocals(); });
     sampleBrowser.setSourceInfoCallback ([this] { showSelectedSampleSourceInfo(); });
+    sampleBrowser.setAddToTrackCallback ([this] (sampr::AssetId assetId) { addSampleAssetToSequencer (assetId); });
     sampleBrowser.setSelectionCallback ([this] (sampr::AssetId)
     {
         refreshSampleViews();
@@ -1134,6 +1164,13 @@ void MainComponent::fileDragExit (const juce::StringArray& files)
 void MainComponent::filesDropped (const juce::StringArray& files, int x, int y)
 {
     juce::ignoreUnused (x, y);
+
+    if (exportInProgress || vocalSplitInProgress)
+    {
+        showUserMessage ("Finish the current render before importing more audio.");
+        return;
+    }
+
     dragSamplesActive = false;
     importSampleFiles (files);
     repaint();
@@ -1177,7 +1214,7 @@ void MainComponent::updateToolbarState()
     askPatternButton.setEnabled (canEdit);
     songModeButton.setEnabled (canEdit);
     youtubeImportButton.setEnabled (canEdit && ! youtubeImportInProgress);
-    sampleBrowser.setEnabled (! exportInProgress);
+    sampleBrowser.setEnabled (canEdit);
     sampleBrowser.setSplitVocalsInProgress (vocalSplitInProgress);
     sliceEditorButton.setEnabled (canEdit);
     patternTabs.setEnabled (canEdit);
@@ -1629,6 +1666,37 @@ void MainComponent::showSelectedSampleSourceInfo()
         info);
 }
 
+void MainComponent::addSampleAssetToSequencer (sampr::AssetId assetId)
+{
+    if (exportInProgress || vocalSplitInProgress)
+    {
+        showUserMessage ("Finish the current render before changing tracks.");
+        return;
+    }
+
+    const auto* asset = sampleManager.getAsset (assetId);
+
+    if (asset == nullptr)
+    {
+        showUserMessage ("Select a sample first.");
+        return;
+    }
+
+    sampleManager.setSelectedAssetId (assetId);
+    const auto row = patternStore.addRowFromAsset (assetId, 0);
+
+    if (row < 0)
+    {
+        showUserMessage ("Could not add that sample to the sequencer.");
+        return;
+    }
+
+    patternTabs.setCurrentTabIndex (kTabStepSeq);
+    refreshProjectViews();
+    focusActiveEditorTab();
+    showUserMessage ("Added " + asset->displayName + " to track " + juce::String (row + 1) + ".");
+}
+
 int MainComponent::ensureSelectedSliceTrackRow()
 {
     const auto assetId = sampleManager.getSelectedAssetId();
@@ -1682,6 +1750,13 @@ void MainComponent::commitSelectedSliceToSampleBrowser()
     const auto sourceSlice = sourceAsset->slices[static_cast<size_t> (sliceIndex)];
     const auto committedFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
         .getChildFile ("ANNA Committed Samples");
+
+    if (! committedFolder.exists() && ! committedFolder.createDirectory())
+    {
+        showUserMessage ("Could not create committed sample folder.");
+        return;
+    }
+
     const auto stem = makeSafeFileStem (sourceAsset->displayName + " Clip " + juce::String (sliceIndex + 1));
     const auto outputFile = getUniqueChildFile (committedFolder, stem, ".wav");
     showUserMessage ("Rendering clip to sample browser...");
@@ -2589,7 +2664,7 @@ void MainComponent::finishAsyncExport (const juce::File& file,
     if (isSoundCloudExport)
     {
         file.getSiblingFile (file.getFileNameWithoutExtension() + " sampled-from.txt")
-            .replaceWithText (buildSampledFromText (projectModel));
+            .replaceWithText (buildSampledFromText (sampleManager));
         file.revealToUser();
     }
 

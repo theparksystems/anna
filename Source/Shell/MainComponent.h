@@ -27,6 +27,7 @@
 #include "../UI/WaveformComponent.h"
 
 class MainComponent final : public juce::AudioAppComponent,
+                            public juce::DragAndDropContainer,
                             private juce::Timer,
                             private juce::ChangeListener,
                             private juce::MidiInputCallback,
@@ -78,6 +79,7 @@ private:
                            const juce::String& splitMethod,
                            const juce::String& errorMessage);
     void showSelectedSampleSourceInfo();
+    void addSampleAssetToSequencer (sampr::AssetId assetId);
     void finishAsyncExport (const juce::File& file,
                             const sampr::OfflineExportResult& result,
                             bool wasPlaying);

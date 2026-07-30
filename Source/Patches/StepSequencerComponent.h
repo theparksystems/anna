@@ -9,7 +9,8 @@
 namespace sampr
 {
 
-class StepSequencerComponent final : public juce::Component
+class StepSequencerComponent final : public juce::Component,
+                                     public juce::DragAndDropTarget
 {
 public:
     using ChangeCallback = std::function<void()>;
@@ -28,6 +29,8 @@ public:
     void mouseDrag (const juce::MouseEvent& event) override;
     void mouseUp (const juce::MouseEvent& event) override;
     bool keyPressed (const juce::KeyPress& key) override;
+    bool isInterestedInDragSource (const SourceDetails& dragSourceDetails) override;
+    void itemDropped (const SourceDetails& dragSourceDetails) override;
 
 private:
     struct LayoutMetrics

@@ -273,6 +273,37 @@ bool StepSequencerComponent::keyPressed (const juce::KeyPress& key)
     return false;
 }
 
+bool StepSequencerComponent::isInterestedInDragSource (const SourceDetails& dragSourceDetails)
+{
+    return dragSourceDetails.description.toString().startsWith ("anna-sample:");
+}
+
+void StepSequencerComponent::itemDropped (const SourceDetails& dragSourceDetails)
+{
+    const auto description = dragSourceDetails.description.toString();
+
+    if (! description.startsWith ("anna-sample:"))
+        return;
+
+    const auto assetId = static_cast<AssetId> (description.fromFirstOccurrenceOf (":", false, false).getIntValue());
+    const auto row = patternStore.addRowFromAsset (assetId, 0);
+
+    if (row < 0)
+    {
+        if (onUserMessage != nullptr)
+            onUserMessage ("Could not add that sample to the sequencer.");
+        return;
+    }
+
+    refresh();
+
+    if (onChange != nullptr)
+        onChange();
+
+    if (onUserMessage != nullptr)
+        onUserMessage ("Added dropped sample to track " + juce::String (row + 1) + ".");
+}
+
 void StepSequencerComponent::paintBeatMarkers (juce::Graphics& g, juce::Rectangle<int> gridArea)
 {
     if (gridArea.getWidth() <= metrics.rowHeaderWidth || gridArea.getHeight() <= 0)
