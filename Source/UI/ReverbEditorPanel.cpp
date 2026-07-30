@@ -78,7 +78,7 @@ void ReverbEditorPanel::syncFromStore()
     const auto& reverb = row.channelReverb;
 
     syncing = true;
-    headerLabel.setText ("Reverb — " + row.label, juce::dontSendNotification);
+    headerLabel.setText ("Reverb - " + row.label, juce::dontSendNotification);
     enabledButton.setToggleState (reverb.enabled, juce::dontSendNotification);
     roomSlider.setValue (reverb.roomSize, juce::dontSendNotification);
     dampingSlider.setValue (reverb.damping, juce::dontSendNotification);

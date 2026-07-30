@@ -121,7 +121,7 @@ void FxWorkspaceComponent::updateTitle()
         return;
 
     const auto& row = pattern.rows[static_cast<size_t> (channelIndex)];
-    titleLabel.setText ("FX — Ch " + juce::String (channelIndex + 1) + ": " + row.label,
+    titleLabel.setText ("FX - Ch " + juce::String (channelIndex + 1) + ": " + row.label,
                         juce::dontSendNotification);
 }
 

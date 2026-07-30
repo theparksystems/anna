@@ -82,7 +82,7 @@ void DelayEditorPanel::syncFromStore()
     const auto& delay = row.channelDelay;
 
     syncing = true;
-    headerLabel.setText ("Delay — " + row.label, juce::dontSendNotification);
+    headerLabel.setText ("Delay - " + row.label, juce::dontSendNotification);
     enabledButton.setToggleState (delay.enabled, juce::dontSendNotification);
     timeSlider.setValue (delay.timeMs, juce::dontSendNotification);
     feedbackSlider.setValue (delay.feedback, juce::dontSendNotification);

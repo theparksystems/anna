@@ -188,7 +188,7 @@ void ArrangementTimelineComponent::paint (juce::Graphics& g)
     {
         g.setColour (SamprLookAndFeel::textMuted());
         g.setFont (juce::FontOptions { 12.0f });
-        g.drawText ("Timeline empty — choose a pattern and click + Clip.\nDrag clips to move. Enable Song Mode to play the arrangement.",
+        g.drawText ("Timeline empty - choose a pattern and click + Clip.\nDrag clips to move. Enable Song Mode to play the arrangement.",
                     timeline.reduced (12),
                     juce::Justification::centred);
     }

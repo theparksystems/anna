@@ -109,7 +109,7 @@ void EqEditorPanel::syncFromStore()
     const auto& eq = row.channelEq;
 
     syncing = true;
-    headerLabel.setText ("EQ — " + row.label, juce::dontSendNotification);
+    headerLabel.setText ("EQ - " + row.label, juce::dontSendNotification);
     enabledButton.setToggleState (eq.enabled, juce::dontSendNotification);
 
     lowBand.freqSlider.setValue (eq.low.frequencyHz, juce::dontSendNotification);

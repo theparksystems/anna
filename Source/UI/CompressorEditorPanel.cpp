@@ -87,7 +87,7 @@ void CompressorEditorPanel::syncFromStore()
     const auto& comp = row.channelCompressor;
 
     syncing = true;
-    headerLabel.setText ("Compressor — " + row.label, juce::dontSendNotification);
+    headerLabel.setText ("Compressor - " + row.label, juce::dontSendNotification);
     enabledButton.setToggleState (comp.enabled, juce::dontSendNotification);
     thresholdSlider.setValue (comp.thresholdDb, juce::dontSendNotification);
     ratioSlider.setValue (comp.ratio, juce::dontSendNotification);

@@ -849,7 +849,7 @@ MainComponent::MainComponent()
     });
 
     waveformView.setOpenSliceEditorCallback ([this] { showSliceEditorPopup(); });
-    sliceEditorButton.setTooltip ("Open slice editor — pitch, time stretch, auto-slice, and bake");
+    sliceEditorButton.setTooltip ("Open slice editor - pitch, time stretch, auto-slice, and bake");
     sliceEditorButton.onClick = [this] { showSliceEditorPopup(); };
 
     waveformView.setSliceTrimChangedCallback ([this] (int sliceIndex, int startSample, int endSample)
@@ -936,7 +936,7 @@ MainComponent::MainComponent()
         transportBar.setRecording (recording);
 
         if (recording && ! transportPlaying)
-            showUserMessage ("Record armed — press Play to capture MIDI steps or piano roll notes.");
+            showUserMessage ("Record armed - press Play to capture MIDI steps or piano roll notes.");
         else if (! recording)
             showUserMessage ("Record off.");
 
@@ -974,7 +974,7 @@ MainComponent::MainComponent()
     {
         openAssistantWithContext (sampr::ContextScope::pattern,
                                   fxWorkspace.getChannelIndex(),
-                                  "Analyze this pattern — which channels sound flat, muddy, or unbalanced?");
+                                  "Analyze this pattern - which channels sound flat, muddy, or unbalanced?");
     };
     undoButton.setTooltip ("Undo (Ctrl+Z)");
     redoButton.setTooltip ("Redo (Ctrl+Y)");
@@ -1002,11 +1002,11 @@ MainComponent::MainComponent()
         {
             patternTabs.setCurrentTabIndex (kTabArrangement);
             focusActiveEditorTab();
-            showUserMessage ("Song Mode on — edit and play clips in the Arrangement tab.");
+            showUserMessage ("Song Mode on - edit and play clips in the Arrangement tab.");
         }
         else
         {
-            showUserMessage ("Pattern Mode — looping the current pattern.");
+            showUserMessage ("Pattern Mode - looping the current pattern.");
         }
 
         updateStatusLabel();
@@ -1141,6 +1141,9 @@ void MainComponent::timerCallback()
 
     if (userMessageTicks > 0)
         --userMessageTicks;
+
+    if (pipelineLogTicks > 0 && ! youtubeImportInProgress && ! pendingYouTubeImport)
+        --pipelineLogTicks;
 
     if (audioWarningTicks > 0)
         --audioWarningTicks;
@@ -1347,7 +1350,8 @@ void MainComponent::updateToolbarState()
     loadBeatButton.setEnabled (canEdit);
     askPatternButton.setEnabled (canEdit);
     songModeButton.setEnabled (canEdit);
-    youtubeImportButton.setEnabled (canEdit && ! youtubeImportInProgress);
+    youtubeImportButton.setEnabled (! exportInProgress && ! vocalSplitInProgress);
+    youtubeImportButton.setButtonText ((youtubeImportInProgress || pendingYouTubeImport) ? "Importing..." : "YouTube");
     sampleBrowser.setEnabled (canEdit);
     sampleBrowser.setSplitVocalsInProgress (vocalSplitInProgress);
     sliceEditorButton.setEnabled (canEdit);
@@ -2103,11 +2107,11 @@ void MainComponent::triggerSelectedSlice()
             && slice->processingMode == sampr::StretchProcessingMode::preRenderOffline)
         {
             sampleManager.requestSelectedSliceBake();
-            showUserMessage ("Baking stretch for this slice — try Trigger again when complete.");
+            showUserMessage ("Baking stretch for this slice - try Trigger again when complete.");
         }
         else
         {
-            showUserMessage ("Slice not ready — check processing mode or open Edit Slices.");
+            showUserMessage ("Slice not ready - check processing mode or open Edit Slices.");
         }
 
         return;
@@ -2567,6 +2571,7 @@ void MainComponent::appendPipelineLog (const juce::String& message)
         logFolder.getChildFile ("youtube-import-log.txt").appendText (line + "\n");
 
     userMessageTicks = juce::jmax (userMessageTicks, 720);
+    pipelineLogTicks = 1800;
     updateStatusLabel();
 }
 
@@ -2574,6 +2579,7 @@ void MainComponent::clearPipelineLog()
 {
     pipelineLogLines.clear();
     pipelineResultText.clear();
+    pipelineLogTicks = 0;
     const auto logFolder = juce::File::getSpecialLocation (juce::File::userMusicDirectory)
                                .getChildFile ("ANNA YouTube Imports");
     if ((logFolder.exists() || logFolder.createDirectory()))
@@ -2635,14 +2641,17 @@ void MainComponent::updateStatusLabel()
     if (const auto* asset = sampleManager.getAsset (sampleManager.getSelectedAssetId()))
         text << "Sample: " << asset->displayName;
     else
-        text << "No sample selected — load or drop audio to begin.";
+        text << "No sample selected - load or drop audio to begin.";
 
     if (userMessageTicks > 0 && userMessageText.isNotEmpty())
         text << "  |  " << userMessageText;
 
     text << "\n";
 
-    if (! pipelineLogLines.isEmpty())
+    const auto showPipelineLog = ! pipelineLogLines.isEmpty()
+                                 && (youtubeImportInProgress || pendingYouTubeImport || pipelineLogTicks > 0);
+
+    if (showPipelineLog)
     {
         if (pipelineResultText.isNotEmpty())
             text << pipelineResultText << "\n";

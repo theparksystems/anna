@@ -285,7 +285,7 @@ void MixerComponent::paint (juce::Graphics& g)
         auto stripArea = stripViewport.getBounds();
         g.setColour (SamprLookAndFeel::textMuted());
         g.setFont (juce::FontOptions { 11.0f });
-        g.drawText ("No channels yet — add rows in Step Sequencer.",
+        g.drawText ("No channels yet - add rows in Step Sequencer.",
                     stripArea,
                     juce::Justification::centred);
     }

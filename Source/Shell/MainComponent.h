@@ -168,6 +168,7 @@ private:
     juce::String pipelineResultText;
     juce::StringArray pipelineLogLines;
     int userMessageTicks = 0;
+    int pipelineLogTicks = 0;
     int assistantHealthTicks = 0;
     std::atomic<float> exportProgress { 0.0f };
     bool exportInProgress = false;
