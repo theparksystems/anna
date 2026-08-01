@@ -2346,31 +2346,60 @@ void MainComponent::showYouTubeImportPopup()
 
 void MainComponent::showSliceEditorPopup()
 {
+    appendPipelineLog ("Slice editor requested");
+
     if (sliceEditorDialog != nullptr)
     {
+        appendPipelineLog ("Slice editor popup already open");
         sliceEditorDialog->toFront (true);
+        return;
+    }
+
+    if (sampleManager.getAsset (sampleManager.getSelectedAssetId()) == nullptr)
+    {
+        appendPipelineLog ("Slice editor blocked: no selected sample");
+        showUserMessage ("Select or import a sample before opening the slice editor.");
         return;
     }
 
     struct SliceDialogContent final : public juce::Component
     {
-        SliceDialogContent (sampr::SliceEditorPanel& panel,
+        SliceDialogContent (sampr::SampleManager& manager,
                             sampr::PatternStore& store,
                             int rowIndex,
                             std::function<void()> onCommit,
                             std::function<void()> onFxChange,
                             std::function<void (int)> onAskFx,
-                            std::function<void()> onAskAnna)
-            : slicePanel (panel),
+                            std::function<void()> onAskAnna,
+                            std::function<void()> onTriggerSlice)
+            : slicePanel (manager),
               fxWorkspacePanel (store),
               commitCallback (std::move (onCommit)),
               fxChangeCallback (std::move (onFxChange)),
               fxAskCallback (std::move (onAskFx)),
-              askCallback (std::move (onAskAnna))
+              askCallback (std::move (onAskAnna)),
+              triggerCallback (std::move (onTriggerSlice))
         {
-            if (slicePanel.getParentComponent() != nullptr)
-                slicePanel.getParentComponent()->removeChildComponent (&slicePanel);
-
+            slicePanel.setParameterChangedCallback ([this]
+            {
+                if (fxChangeCallback != nullptr)
+                    fxChangeCallback();
+            });
+            slicePanel.setAutoSliceCallback ([this]
+            {
+                if (fxChangeCallback != nullptr)
+                    fxChangeCallback();
+            });
+            slicePanel.setOpenFxCallback ([this]
+            {
+                fxWorkspacePanel.grabKeyboardFocus();
+            });
+            slicePanel.setTriggerCallback ([this]
+            {
+                if (triggerCallback != nullptr)
+                    triggerCallback();
+            });
+            slicePanel.syncFromSelectedSlice();
             fxWorkspacePanel.setChannel (rowIndex);
             fxWorkspacePanel.setChangeCallback ([this]
             {
@@ -2419,7 +2448,7 @@ void MainComponent::showSliceEditorPopup()
             fxWorkspacePanel.setBounds (area);
         }
 
-        sampr::SliceEditorPanel& slicePanel;
+        sampr::SliceEditorPanel slicePanel;
         sampr::FxWorkspaceComponent fxWorkspacePanel;
         juce::TextButton commitButton { "Commit To Samples" };
         juce::TextButton askButton { "Ask ANNA" };
@@ -2427,6 +2456,7 @@ void MainComponent::showSliceEditorPopup()
         std::function<void()> fxChangeCallback;
         std::function<void (int)> fxAskCallback;
         std::function<void()> askCallback;
+        std::function<void()> triggerCallback;
     };
 
     sliceEditor.syncFromSelectedSlice();
@@ -2445,7 +2475,7 @@ void MainComponent::showSliceEditorPopup()
     options.useNativeTitleBar            = true;
     options.resizable                    = true;
     options.componentToCentreAround      = this;
-    options.content.setOwned (new SliceDialogContent (sliceEditor, patternStore, rowIndex,
+    options.content.setOwned (new SliceDialogContent (sampleManager, patternStore, rowIndex,
     [this]
     {
         commitSelectedSliceToSampleBrowser();
@@ -2470,8 +2500,17 @@ void MainComponent::showSliceEditorPopup()
                                   ensureSelectedSliceTrackRow(),
                                   "Does this slice need pitch or time adjustments for a tighter mix?");
         assistantPanel.setScope (sampr::ContextScope::slice);
+    },
+    [this]
+    {
+        triggerSelectedSlice();
     }));
     sliceEditorDialog = options.launchAsync();
+
+    if (sliceEditorDialog != nullptr)
+        appendPipelineLog ("Slice editor popup launched");
+    else
+        appendPipelineLog ("Slice editor popup failed to launch");
 }
 
 void MainComponent::openAssistantWithContext (sampr::ContextScope scope,
