@@ -2709,9 +2709,12 @@ void MainComponent::updateStatusLabel()
     {
         if (pipelineResultText.isNotEmpty())
             text << pipelineResultText << "\n";
+        else
+            text << "YouTube: running\n";
 
-        text << "YouTube import log:\n";
-        const auto firstLine = juce::jmax (0, pipelineLogLines.size() - 7);
+        text << "Latest gate: " << pipelineLogLines[pipelineLogLines.size() - 1] << "\n";
+        text << "Details:\n";
+        const auto firstLine = juce::jmax (0, pipelineLogLines.size() - 3);
 
         for (int i = firstLine; i < pipelineLogLines.size(); ++i)
             text << pipelineLogLines[i] << "\n";
