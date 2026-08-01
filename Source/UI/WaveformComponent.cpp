@@ -342,6 +342,21 @@ void WaveformComponent::mouseDoubleClick (const juce::MouseEvent& event)
 {
     if (onOpenSliceEditor != nullptr)
     {
+        if (totalSamples > 0)
+        {
+            const auto markerIndex = hitTestSlice (static_cast<float> (event.x));
+
+            if (markerIndex >= 0)
+            {
+                if (onSliceClicked != nullptr)
+                    onSliceClicked (markerIndex);
+            }
+            else if (onAddSlice != nullptr)
+            {
+                onAddSlice (xToSample (static_cast<float> (event.x)));
+            }
+        }
+
         onOpenSliceEditor();
         return;
     }

@@ -2350,9 +2350,14 @@ void MainComponent::showSliceEditorPopup()
 
     if (sliceEditorDialog != nullptr)
     {
-        appendPipelineLog ("Slice editor popup already open");
-        sliceEditorDialog->toFront (true);
-        return;
+        if (sliceEditorDialog->isShowing())
+        {
+            appendPipelineLog ("Slice editor popup already open");
+            sliceEditorDialog->toFront (true);
+            return;
+        }
+
+        sliceEditorDialog = nullptr;
     }
 
     if (sampleManager.getAsset (sampleManager.getSelectedAssetId()) == nullptr)
@@ -2372,7 +2377,8 @@ void MainComponent::showSliceEditorPopup()
                             std::function<void (int)> onAskFx,
                             std::function<void()> onAskAnna,
                             std::function<void()> onTriggerSlice)
-            : slicePanel (manager),
+            : sampleManager (manager),
+              slicePanel (manager),
               fxWorkspacePanel (store),
               commitCallback (std::move (onCommit)),
               fxChangeCallback (std::move (onFxChange)),
@@ -2380,15 +2386,60 @@ void MainComponent::showSliceEditorPopup()
               askCallback (std::move (onAskAnna)),
               triggerCallback (std::move (onTriggerSlice))
         {
+            waveform.setSliceClickedCallback ([this] (int sliceIndex)
+            {
+                sampleManager.selectSlice (sampleManager.getSelectedAssetId(), sliceIndex);
+                syncEditorState();
+            });
+            waveform.setAddSliceCallback ([this] (int samplePosition)
+            {
+                sampleManager.addSliceAtSample (sampleManager.getSelectedAssetId(), samplePosition);
+                syncEditorState();
+            });
+            waveform.setRemoveSliceCallback ([this] (int sliceIndex)
+            {
+                sampleManager.removeSlice (sampleManager.getSelectedAssetId(), sliceIndex);
+                syncEditorState();
+            });
+            waveform.setSliceTrimChangedCallback ([this] (int sliceIndex, int startSample, int endSample)
+            {
+                const auto assetId = sampleManager.getSelectedAssetId();
+                auto* asset = sampleManager.getAsset (assetId);
+
+                if (asset == nullptr || ! juce::isPositiveAndBelow (sliceIndex, static_cast<int> (asset->slices.size())))
+                    return;
+
+                const auto& slice = asset->slices[static_cast<size_t> (sliceIndex)];
+
+                if (startSample != slice.startSample)
+                {
+                    sampleManager.updateSliceRange (assetId, sliceIndex, startSample, slice.endSample);
+                }
+                else if (endSample != slice.endSample)
+                {
+                    if (sliceIndex + 1 < static_cast<int> (asset->slices.size()))
+                    {
+                        const auto& nextSlice = asset->slices[static_cast<size_t> (sliceIndex + 1)];
+                        sampleManager.updateSliceRange (assetId, sliceIndex + 1, endSample, nextSlice.endSample);
+                    }
+                    else
+                    {
+                        sampleManager.updateSliceRange (assetId, sliceIndex, slice.startSample, endSample);
+                    }
+                }
+
+                syncEditorState();
+            });
+
             slicePanel.setParameterChangedCallback ([this]
             {
+                refreshWaveform();
                 if (fxChangeCallback != nullptr)
                     fxChangeCallback();
             });
             slicePanel.setAutoSliceCallback ([this]
             {
-                if (fxChangeCallback != nullptr)
-                    fxChangeCallback();
+                syncEditorState();
             });
             slicePanel.setOpenFxCallback ([this]
             {
@@ -2417,6 +2468,7 @@ void MainComponent::showSliceEditorPopup()
             {
                 if (commitCallback != nullptr)
                     commitCallback();
+                syncEditorState();
             };
 
             askButton.setTooltip ("Ask ANNA about this slice's pitch, timing, and boundaries");
@@ -2426,11 +2478,13 @@ void MainComponent::showSliceEditorPopup()
                     askCallback();
             };
 
+            addAndMakeVisible (waveform);
             addAndMakeVisible (slicePanel);
             addAndMakeVisible (fxWorkspacePanel);
             addAndMakeVisible (commitButton);
             addAndMakeVisible (askButton);
-            setSize (1040, 560);
+            refreshWaveform();
+            setSize (1120, 680);
         }
 
         void resized() override
@@ -2442,12 +2496,42 @@ void MainComponent::showSliceEditorPopup()
             commitButton.setBounds (footer.removeFromRight (172));
             area.removeFromBottom (8);
 
+            waveform.setBounds (area.removeFromTop (170));
+            area.removeFromTop (10);
+
             auto left = area.removeFromLeft (juce::jmin (420, area.getWidth() / 2));
             area.removeFromLeft (10);
             slicePanel.setBounds (left);
             fxWorkspacePanel.setBounds (area);
         }
 
+        void refreshWaveform()
+        {
+            const auto assetId = sampleManager.getSelectedAssetId();
+            const auto* asset = sampleManager.getAsset (assetId);
+
+            if (asset == nullptr)
+            {
+                waveform.clear();
+                return;
+            }
+
+            waveform.setPeaks (asset->peaks);
+            waveform.setSliceMarkers (asset->slices, asset->selectedSliceIndex, asset->numSamples);
+            waveform.repaint();
+        }
+
+        void syncEditorState()
+        {
+            slicePanel.syncFromSelectedSlice();
+            refreshWaveform();
+
+            if (fxChangeCallback != nullptr)
+                fxChangeCallback();
+        }
+
+        sampr::SampleManager& sampleManager;
+        sampr::WaveformComponent waveform;
         sampr::SliceEditorPanel slicePanel;
         sampr::FxWorkspaceComponent fxWorkspacePanel;
         juce::TextButton commitButton { "Commit To Samples" };
