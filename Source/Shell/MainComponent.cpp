@@ -1140,7 +1140,6 @@ void MainComponent::timerCallback()
 
     stepSequencer.setCurrentStepIndex (audioEngine.getCurrentSequencerStep());
     pianoRoll.setPlayheadBeats (beats);
-    sliceEditor.syncFromSelectedSlice();
     updateToolbarState();
 
     transportBar.setRecordEnabled (! patternStore.getCurrentPattern().rows.empty());
@@ -1168,7 +1167,8 @@ void MainComponent::timerCallback()
         }
     }
 
-    updateStatusLabel();
+    if (transportPlaying || youtubeImportInProgress || pendingYouTubeImport || exportInProgress || vocalSplitInProgress)
+        updateStatusLabel();
     drainAudioDiagnostics();
     cleanupFinishedJobs();
 }
@@ -1354,23 +1354,57 @@ void MainComponent::stopTransport()
 void MainComponent::updateToolbarState()
 {
     const auto canEdit = ! exportInProgress && ! vocalSplitInProgress;
+    const auto canYoutube = ! exportInProgress && ! vocalSplitInProgress;
+    const auto importing = youtubeImportInProgress || pendingYouTubeImport;
+    const auto canUndo = canEdit && projectController.canUndo();
+    const auto canRedo = canEdit && projectController.canRedo();
 
-    saveProjectButton.setEnabled (canEdit);
-    loadProjectButton.setEnabled (canEdit);
-    saveBeatButton.setEnabled (canEdit);
-    loadBeatButton.setEnabled (canEdit);
-    askPatternButton.setEnabled (canEdit);
-    songModeButton.setEnabled (canEdit);
-    youtubeImportButton.setEnabled (! exportInProgress && ! vocalSplitInProgress);
-    youtubeImportButton.setButtonText ((youtubeImportInProgress || pendingYouTubeImport) ? "Importing..." : "YouTube");
-    sampleBrowser.setEnabled (canEdit);
-    sampleBrowser.setSplitVocalsInProgress (vocalSplitInProgress);
-    sliceEditorButton.setEnabled (canEdit);
-    patternTabs.setEnabled (canEdit);
-    transportBar.setEnabled (canEdit);
+    if (! toolbarStateInitialized || lastToolbarCanEdit != canEdit)
+    {
+        saveProjectButton.setEnabled (canEdit);
+        loadProjectButton.setEnabled (canEdit);
+        saveBeatButton.setEnabled (canEdit);
+        loadBeatButton.setEnabled (canEdit);
+        askPatternButton.setEnabled (canEdit);
+        songModeButton.setEnabled (canEdit);
+        sampleBrowser.setEnabled (canEdit);
+        sliceEditorButton.setEnabled (canEdit);
+        patternTabs.setEnabled (canEdit);
+        transportBar.setEnabled (canEdit);
+        lastToolbarCanEdit = canEdit;
+    }
 
-    undoButton.setEnabled (canEdit && projectController.canUndo());
-    redoButton.setEnabled (canEdit && projectController.canRedo());
+    if (! toolbarStateInitialized || lastToolbarCanYoutube != canYoutube)
+    {
+        youtubeImportButton.setEnabled (canYoutube);
+        lastToolbarCanYoutube = canYoutube;
+    }
+
+    if (! toolbarStateInitialized || lastToolbarImporting != importing)
+    {
+        youtubeImportButton.setButtonText (importing ? "Importing..." : "YouTube");
+        lastToolbarImporting = importing;
+    }
+
+    if (! toolbarStateInitialized || lastToolbarSplitInProgress != vocalSplitInProgress)
+    {
+        sampleBrowser.setSplitVocalsInProgress (vocalSplitInProgress);
+        lastToolbarSplitInProgress = vocalSplitInProgress;
+    }
+
+    if (! toolbarStateInitialized || lastToolbarCanUndo != canUndo)
+    {
+        undoButton.setEnabled (canUndo);
+        lastToolbarCanUndo = canUndo;
+    }
+
+    if (! toolbarStateInitialized || lastToolbarCanRedo != canRedo)
+    {
+        redoButton.setEnabled (canRedo);
+        lastToolbarCanRedo = canRedo;
+    }
+
+    toolbarStateInitialized = true;
 }
 
 void MainComponent::handleIncomingMidiMessage (juce::MidiInput* source,

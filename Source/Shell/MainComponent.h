@@ -178,6 +178,13 @@ private:
     int pendingYouTubeImportTicks = 0;
     juce::File pendingYouTubeImportFile;
     juce::String pendingYouTubeImportError;
+    bool lastToolbarCanEdit = false;
+    bool lastToolbarCanYoutube = false;
+    bool lastToolbarImporting = false;
+    bool lastToolbarCanUndo = false;
+    bool lastToolbarCanRedo = false;
+    bool lastToolbarSplitInProgress = false;
+    bool toolbarStateInitialized = false;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainComponent)
 };
