@@ -1109,8 +1109,6 @@ void MainComponent::applyTransportSettings()
 
 void MainComponent::timerCallback()
 {
-    cleanupFinishedJobs();
-
     if (pendingYouTubeImport)
     {
         ++pendingYouTubeImportTicks;
@@ -1172,6 +1170,7 @@ void MainComponent::timerCallback()
 
     updateStatusLabel();
     drainAudioDiagnostics();
+    cleanupFinishedJobs();
 }
 
 void MainComponent::cleanupFinishedJobs()
@@ -1179,7 +1178,11 @@ void MainComponent::cleanupFinishedJobs()
     if (! exportInProgress && exportJob != nullptr && exportJob->hasStopped())
         exportJob.reset();
 
-    if (! youtubeImportInProgress && youtubeImportJob != nullptr && youtubeImportJob->hasStopped())
+    if (! youtubeImportInProgress
+        && ! pendingYouTubeImport
+        && youtubeImportJob != nullptr
+        && youtubeImportJob->hasStopped()
+        && pipelineLogTicks <= 0)
         youtubeImportJob.reset();
 
     if (! vocalSplitInProgress && vocalSplitJob != nullptr && vocalSplitJob->hasStopped())
@@ -1740,11 +1743,15 @@ void MainComponent::processPendingYouTubeImport()
     }
 
     appendPipelineLog ("Frontend sequencer rows: " + juce::String (patternStore.getCurrentPattern().rows.size()));
-    resized();
+    appendPipelineLog ("Frontend repaint: main component");
     repaint();
+    appendPipelineLog ("Frontend repaint: sample browser");
     sampleBrowser.repaint();
+    appendPipelineLog ("Frontend repaint: waveform");
     waveformView.repaint();
+    appendPipelineLog ("Frontend repaint: sequencer");
     stepSequencer.repaint();
+    appendPipelineLog ("Frontend focus: active editor");
     focusActiveEditorTab();
     pipelineResultText = "YouTube: COMPLETE - showing " + selected->displayName;
     appendPipelineLog ("Waveform loaded and sequencer ready");
